@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 1.0
+VERSION = 0.1
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -611,6 +611,9 @@ def run_update():
     saveproject_progress = open("project.progress", "r")
     saveproject_progress = saveproject_progress.read()
     
+    saveproject_data = open("project.data", "r")
+    saveproject_data = saveproject_data.read()
+    
     savepy_data_icon = open("py_data/icon.png", "r")
     savepy_data_icon = savepy_data_icon.read()
     
@@ -647,6 +650,10 @@ def run_update():
     
     project_progress = open("project.progress", "w")
     project_progress.write(saveproject_progress)
+    project_progress.close()
+    
+    project_progress = open("project.data", "w")
+    project_progress.write(saveproject_data)
     project_progress.close()
     
     project_progress = open("py_data/icon.png", "w")

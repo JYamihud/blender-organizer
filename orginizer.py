@@ -599,6 +599,56 @@ def main_window(widget):
     mainwin.show_all()
 
 
+def update():
+    
+    saveproject_progress = open("project.progress", "r")
+    saveproject_progress = saveproject_progress.read()
+    
+    savepy_data_icon = open("py_data/icon.png", "r")
+    savepy_data_icon = savepy_data_icon.read()
+    
+    savepy_data_banner = open("py_data/banner.png", "r")
+    savepy_data_banner = savepy_data_banner.read()
+    
+    import urllib2
+    
+ 
+    updatefile = urllib2.urlopen("https://github.com/JYamihud/blender-organizer/archive/master.zip")
+    updatefile = updatefile.read()
+    
+    
+    tmpzip = open("../tmpzip.zip", "w")
+    tmpzip.write(updatefile)
+    tmpzip.close()
+    
+    
+    thedir = os.getcwd()
+    
+    #os.system("rm -rf py_data")
+    
+    
+    #for i in os.listdir(thedir):
+        #os.remove(i)
+    
+    zipfile.ZipFile('../tmpzip.zip').extractall(thedir)
+    
+    os.system("mv "+thedir+"/JYExchange-master/* "+thedir+"/ --force")
+    os.system("rm -rf JYExchange-master")
+    
+    
+    os.system("rm -rf .git")
+    
+    project_progress = open("project.progress", "w")
+    project_progress.write(saveproject_progress)
+    project_progress.close()
+    
+    project_progress = open("py_data/icon.png", "w")
+    project_progress.write(savepy_data_icon)
+    project_progress.close()
+    
+    project_progress = open("py_data/banner.png", "w")
+    project_progress.write(savepy_data_banner)
+    project_progress.close()
 
 def curwid_changer(widget, ncwid):
     

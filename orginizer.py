@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 0.1
+VERSION = 1.0
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
 import threading #so I could start muliple things in the same time
 import datetime #to manage dates and time realed things
 import pango #For text formatting
+import zipfile #For Updates and shit
 
 ### IMAGE FOR LOADING THRUMBNAILS OF RENDERS
 try:
@@ -527,7 +528,7 @@ def main_window(widget):
                 #update window
                 
                 updwin = gtk.Window()
-                updwin.set_title("Update Available !!!")
+                updwin.set_title("Update Available !!!   CURRENT VERSION IS: "+str(VERSION))
                 updwin.set_position(gtk.WIN_POS_CENTER)
                 
                 updbox = gtk.VBox(False)
@@ -549,7 +550,7 @@ def main_window(widget):
                     while gtk.events_pending():
                         gtk.main_iteration_do(False)
                     
-                    update()
+                    run_update()
                 
                 
                 updateb = gtk.Button("Update")
@@ -560,8 +561,14 @@ def main_window(widget):
                 
                 
                 updwin.show_all()
+            else:
+                updwin = gtk.Window()
+                updwin.set_title("UP TO DATE!   CURRENT VERSION IS: "+str(VERSION))
+                updwin.set_position(gtk.WIN_POS_CENTER)    
+                updwin.set_size_request(300,300)
+                updwin.add(gtk.Label("\nYOUR orginizer.py\nIs UP TO DATE\n"))
                 
-                
+                updwin.show_all()
         except:
             raise
     update.connect("clicked", updater)
@@ -599,7 +606,7 @@ def main_window(widget):
     mainwin.show_all()
 
 
-def update():
+def run_update():
     
     saveproject_progress = open("project.progress", "r")
     saveproject_progress = saveproject_progress.read()
@@ -632,8 +639,8 @@ def update():
     
     zipfile.ZipFile('../tmpzip.zip').extractall(thedir)
     
-    os.system("mv "+thedir+"/JYExchange-master/* "+thedir+"/ --force")
-    os.system("rm -rf JYExchange-master")
+    os.system("mv "+thedir+"/blender-organizer-master/* "+thedir+"/ --force")
+    os.system("rm -rf blender-organizer-master")
     
     
     os.system("rm -rf .git")
@@ -649,7 +656,16 @@ def update():
     project_progress = open("py_data/banner.png", "w")
     project_progress.write(savepy_data_banner)
     project_progress.close()
-
+    
+    updwin = gtk.Window()
+    updwin.set_title("UP TO DATE!")
+    updwin.set_position(gtk.WIN_POS_CENTER)    
+    updwin.set_size_request(300,300)
+    updwin.add(gtk.Label("\nYOUR orginizer.py\nIs UP TO DATE\n\nRESTART TO SEE CHANGES!\n"))
+    
+    updwin.show_all()
+    
+    
 def curwid_changer(widget, ncwid):
     
     global curwid

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 0.1
+VERSION = 1.0
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface

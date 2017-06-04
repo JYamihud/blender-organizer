@@ -514,7 +514,7 @@ def main_window(widget):
     
             import urllib2
 
-            updatefile = urllib2.urlopen("https://raw.githubusercontent.com/JYamihud/JYExchange/master/UPDATES")
+            updatefile = urllib2.urlopen("https://raw.githubusercontent.com/JYamihud/blender-organizer/master/UPDATE")
             updatefile = updatefile.read() 
             
             

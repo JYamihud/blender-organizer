@@ -1,0 +1,1 @@
+/home/vcs/Desktop/BlenderVer/blender-2.78-DENOISING/blender /home/violencechildren2/MyDevelop/NotEvenHuman/dev/obj/Coat_for_4211D79th/Coat_for_4211D79th.blend

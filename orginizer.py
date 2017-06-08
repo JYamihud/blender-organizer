@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 1.0
+VERSION = 1.1
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -338,7 +338,7 @@ def welcome_window():
                +" Project status  : "+projectstatus+" \n"\
                +" Progect director: "+projectleader+" "
     
-    welL = gtk.Label("Organizer v1.0 by J.Y.Amihud")
+    welL = gtk.Label("Organizer "+str(VERSION)+" by J.Y.Amihud")
     welWAR = gtk.Label(" WARNING! Closing this window \n will quit the program ")
     welT = gtk.Label(welText)
     
@@ -3125,7 +3125,45 @@ def check_updatable(widget):
     DATESBOX.pack_start(enddatebutton)
     enddatebutton.connect("clicked", checkListOperations, "date", True)
     
+    # CALCULATING DAYS
+    fraction = 0.2
+    
+    date_format = "%d/%m/%Y"
+    a = datetime.datetime.strptime(startdate.get_text(), date_format)
+    b = datetime.datetime.strptime(enddate.get_text(), date_format)
+    delta = b - a
+    alltime = int(delta.days)
+    
+    a = datetime.datetime.strptime(startdate.get_text(), date_format)
+    b = datetime.datetime.today()
+    delta =  b - a
+    
+    passed = int(delta.days)
+    
+    print "PASSED", passed, alltime
+    
+    try:
+        fraction = (1.0/alltime)*passed
+    except:
+        fraction = 0
+    
+    checkdatesprogress = gtk.ProgressBar()
+    checkdatesprogress.set_fraction(fraction)
+    checkdatesprogress.set_text("TIME PASSED: "+str(int(fraction*100))+"%  DAYS LEFT: "+str(alltime-passed))
+    
+    checkbox.pack_start(checkdatesprogress, False)
+    
+    
+    checkbox.pack_start(gtk.HSeparator(), False)
+    
+    
+    allcheckprogress = gtk.ProgressBar()
+    checkbox.pack_start(allcheckprogress,  False)
+    
     # Checklist him self
+    
+    checkfracs = []
+    
     
     checktext = []
     
@@ -3362,6 +3400,7 @@ def check_updatable(widget):
                 
                 
                 globals()["progress%s" % index].set_fraction(1)
+                checkfracs.append(1.0)
                 
             elif i[:4] == "[ ] ":
                 print " ___ "
@@ -3386,8 +3425,10 @@ def check_updatable(widget):
                     print "DON = "+str(DON)
                     try:
                         globals()["progress%s" % index].set_fraction((DON/ALL))
+                        checkfracs.append(DON/ALL)
                     except:
                         globals()["progress%s" % index].set_fraction(0)
+                        checkfracs.append(0.0)
                 except:
                     for b in range((x+1), len(checkfile)):
                         
@@ -3403,9 +3444,17 @@ def check_updatable(widget):
                     print "DON = "+str(DON)
                     try:
                         globals()["progress%s" % index].set_fraction((DON/ALL))
+                        checkfracs.append(DON/ALL)
                     except:
                         globals()["progress%s" % index].set_fraction(0)
-                
+                        checkfracs.append(0.0)
+    
+    fraction = sum(checkfracs)/len(checkfracs)
+    
+    
+    
+    allcheckprogress.set_fraction(fraction)
+    allcheckprogress.set_text("CHECK LIST DONE: "+str(int(fraction*100))+"%")
                 
     newtaskmainbox = gtk.HBox(False, 5)
     checkbox.pack_start(newtaskmainbox)

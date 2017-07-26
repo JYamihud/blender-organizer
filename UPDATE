@@ -1,6 +1,23 @@
+1.2
+  
+  Now there is a render animation ( console ) button near every shot in scenes
+  
+  W A R N I N G ! ! !
+  
+    If the feature does not work... You might need to manually add all the missing
+    new files to the py_data folder... You can get the whole package on the project's
+    GIT HUB page [ https://github.com/JYamihud/blender-organizer ]
+    just click CLONE AND DOWNLOAD... and extract only the py_data folder...
+    
+    This Update issue is being worked on... In few next version this inconvinience
+    will be fixed and the missing will not accur.
+
+
+
 1.1
   
-  Now checklists show you the amount of the whole checklist done and the time left inside the checklist window.
+  Now checklists show you the amount of the whole checklist done and the time left 
+  inside the checklist window.
   Especially handy the time passed feature...
 
 

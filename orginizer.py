@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 1.1
+VERSION = 1.2
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -663,6 +663,8 @@ def run_update():
     project_progress = open("py_data/banner.png", "w")
     project_progress.write(savepy_data_banner)
     project_progress.close()
+    
+    
     
     updwin = gtk.Window()
     updwin.set_title("UP TO DATE!")
@@ -2790,6 +2792,16 @@ def scene_box(widget):
                         
                         
                         if h != False:
+                            
+                            # adding a box here SORRY
+                            
+                            com = "filebuttonsbox"+n+"_"+k+" = gtk.HBox(False)"
+                            exec(com) in locals(), globals()
+                            
+                            com = "inframebox"+n+".pack_start(filebuttonsbox"+n+"_"+k+")"
+                            exec(com) in locals(), globals()
+                            
+                            
                             com = "filebutton"+n+"_"+k+" = gtk.Button('"+h+"')"
                             exec(com) in locals(), globals()
                             
@@ -2799,7 +2811,7 @@ def scene_box(widget):
                             com = "filebutton"+n+"_"+k+".set_use_underline(False)"
                             exec(com) in locals(), globals()
                             
-                            com = "inframebox"+n+".pack_start(filebutton"+n+"_"+k+")"
+                            com = "filebuttonsbox"+n+"_"+k+".pack_start(filebutton"+n+"_"+k+")"
                             exec(com) in locals(), globals()
                             
                             def openinblender(w, path):
@@ -2814,6 +2826,114 @@ def scene_box(widget):
                             
                             path = os.getcwd()+"/rnd/"+scenesinfolist[selectedscene][0]+"/"+i[0]+"/"+h
                             com = "filebutton"+n+"_"+k+".connect('clicked', openinblender, '"+path+"')"
+                            exec(com) in locals(), globals()
+                            
+                            
+                            # RENDER BUTTON
+                            
+                            com = "render"+n+"_"+k+" = gtk.Button()"
+                            exec(com) in locals(), globals()
+                            
+                            com = "rendericon"+n+"_"+k+" =gtk.Image()"
+                            exec(com) in locals(), globals()
+                            
+                            com = "rendericon"+n+"_"+k+".set_from_file('py_data/icons/render.png')"
+                            exec(com) in locals(), globals()
+                            
+                            com = "renderbox"+n+"_"+k+" = gtk.HBox(False)"
+                            exec(com) in locals(), globals()
+                            
+                            com = "render"+n+"_"+k+".add(renderbox"+n+"_"+k+")"
+                            exec(com) in locals(), globals()
+                            
+                            com = "renderbox"+n+"_"+k+".pack_start(rendericon"+n+"_"+k+", False)"
+                            exec(com) in locals(), globals()
+                            
+                            com = "renderbox"+n+"_"+k+".pack_end(gtk.Label('Render Animation'), False)"
+                            exec(com) in locals(), globals()
+                            
+                            com = "render"+n+"_"+k+".modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('#A1A1A1'))"
+                            exec(com) in locals(), globals()
+                            
+                            com = "filebuttonsbox"+n+"_"+k+".pack_end(render"+n+"_"+k+", False)"
+                            exec(com) in locals(), globals()
+                            
+                            def rendering(w, path):
+                                
+                                renderdialog = gtk.Dialog("RENDER ANIMATION", None, 0, (gtk.STOCK_EXECUTE,  gtk.RESPONSE_APPLY, 
+                                               gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+                                
+                                renderbox = renderdialog.get_child()
+                                
+                                disclaimer = open("py_data/render.data", "r")
+                                
+                                dscroll = gtk.ScrolledWindow()
+                                dscroll.set_size_request(700, 200)
+                                renderbox.pack_start(dscroll, True)
+                                dscroll.add_with_viewport(gtk.Label(disclaimer.read()))
+                                
+                                # render file
+                                
+                                renderfilebox = gtk.HBox(False)
+                                renderbox.pack_start(renderfilebox, False)
+                                
+                                renderfilebox.pack_start(gtk.Label("Blend File: "), False)
+                                
+                                renderfile = gtk.Entry()
+                                renderfilebox.pack_start(renderfile)
+                                
+                                renderfile.set_text(path)
+                                
+                                #render blender version
+                                
+                                rendverbox = gtk.HBox(False)
+                                renderbox.pack_start(rendverbox, False)
+                                
+                                rendverbox.pack_start(gtk.Label("Blender command:"), False)
+                                
+                                rendver = gtk.Entry()
+                                rendverbox.pack_start(rendver)                                
+                                
+                                rendver.set_text(custompath)
+                                
+                                # time
+                                
+                                rendertimebox = gtk.HBox(False)
+                                renderbox.pack_start(rendertimebox, False)
+                                
+                                rendertimebox.pack_start(gtk.Label("Start Frame: "))
+                                
+                                startframe = gtk.Entry()
+                                startframe.set_text("1")
+                                rendertimebox.pack_start(startframe)
+                                
+                                rendertimebox.pack_start(gtk.Label("End Frame: "))
+                                
+                                endframe = gtk.Entry()
+                                endframe.set_text("250")
+                                rendertimebox.pack_start(endframe)
+                                
+                                renderbox.show_all()
+                                
+                                
+                                ifrender = renderdialog.run()
+                                
+                                if ifrender == gtk.RESPONSE_APPLY:
+                                    
+                                    infofile = open("py_data/renderinfo.data", "w")
+                                    infofile.write(renderfile.get_text()+"\n")
+                                    infofile.write(rendver.get_text()+"\n")
+                                    infofile.write(startframe.get_text()+"\n")
+                                    infofile.write(endframe.get_text())
+                                    infofile.close()
+                                    
+                                    sysopen("xterm -e python "+os.getcwd()+"/py_data/renderer.py")
+                                    
+                                renderdialog.destroy()
+                                
+                                
+                            
+                            com = "render"+n+"_"+k+".connect('clicked', rendering, '"+path+"')"
                             exec(com) in locals(), globals()
                                                                         
                         else:

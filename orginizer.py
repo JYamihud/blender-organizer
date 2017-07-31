@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 1.2
+VERSION = 1.3
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -2599,8 +2599,54 @@ def scene_box(widget):
             shotsbox = gtk.VBox(False, 20)
             shotsscroll.add_with_viewport(shotsbox)
             
+                        
+            addingshots = gtk.HBox(False)
+            
+            shotsbox.pack_start(gtk.HSeparator(), False)
+            shotsbox.pack_start(addingshots, False)
+            
+            
+            
+            addingshots.pack_start(gtk.Label("  New shot:"), False)
+            
+            shotnameentry = gtk.Entry()
+            shotnameentry.set_text("The_New_Shot_Name")
+            
+            addingshots.pack_start(shotnameentry)
+            
+            def addnewshot(w, path):
+                
+                path = path+shotnameentry.get_text().replace(" ", "_")
+                
+                if not os.path.exists(path):
+                    try:
+                        os.mkdir(path)
+                        os.mkdir(path+"/storyboard")
+                        os.mkdir(path+"/opengl")
+                        os.mkdir(path+"/rendered")
+                        
+                        Refresher()
+                        
+                    except:
+                        print "WELL FAILED TO CREATE THE SHOT"
+            
+            path = os.getcwd()+"/rnd/"+scenesinfolist[selectedscene][0]+"/"
+            newshotbutton = gtk.Button("Add New Shot")
+            newshotbutton.connect("clicked",addnewshot, path)
+            shotnameentry.connect("activate",addnewshot, path)
+            addingshots.pack_end(newshotbutton, False)
+            
+            
+            shotsbox.pack_start(gtk.HSeparator(), False)
+            
             
             thelist = sorted(scenesinfolist[selectedscene])
+            
+            #reversing
+            x = thelist
+            thelist = reversed(x)
+            
+            
             
             for x, i in enumerate(thelist):
                 
@@ -2776,6 +2822,113 @@ def scene_box(widget):
                     exec(com) in locals(), globals()
                     
                     
+                    com = "thubnailbox"+n+" = gtk.HBox(False)"
+                    exec(com) in locals(), globals()
+                    
+                    com = "inframebox"+n+".pack_start(thubnailbox"+n+")"
+                    exec(com) in locals(), globals()
+                    
+                    
+                    #test
+                    
+                    
+                    com = "thubnailVBOX"+n+" = gtk.VBox(False)"
+                    exec(com) in locals(), globals()
+                    
+                    
+                    com = "thubnailbox"+n+".pack_start(thubnailVBOX"+n+", False)"
+                    exec(com) in locals(), globals()
+                    
+                    
+                    
+                    
+                    filethumb = "No Render"
+                    
+                    for attempt in range(3):
+                        
+                        if attempt == 0:
+                            url = os.getcwd()+"/rnd/"+scenesinfolist[selectedscene][0]+"/"+i[0]+"/rendered"
+                        
+                        elif attempt == 1:
+                            url = os.getcwd()+"/rnd/"+scenesinfolist[selectedscene][0]+"/"+i[0]+"/opengl"
+                        
+                        elif attempt == 2:
+                            url = os.getcwd()+"/rnd/"+scenesinfolist[selectedscene][0]+"/"+i[0]+"/storyboard"
+                        
+                        else:
+                            url = os.getcwd()+"/rnd/"+scenesinfolist[selectedscene][0]+"/"+i[0]
+                        
+                        
+                        walk = os.walk(url)
+                        tmpwalk = []
+                        for item in walk:
+                            tmpwalk.append(item)
+                        
+                        walk = tmpwalk
+                        
+                        ourdirlist = ""
+                        ourfilelist = ""
+                        
+                        for p in walk:
+                            ourdirlist = ourdirlist+"\n"+p[0]
+                            
+                            for f in p[-1]:
+                                ourfilelist = ourfilelist+"\n"+p[0]+"/"+f
+                            
+                        ourdirlist = ourdirlist[1:]
+                        ourfilelist = ourfilelist[1:]
+                        
+                        
+                        
+                            
+                        for image in ourfilelist.split("\n"):
+                        
+                            if image.endswith(".jpg") or image.endswith(".png"):
+                                filethumb = image
+                            
+                        if filethumb == "No Render":
+                            for image in ourfilelist.split("\n"):
+                            
+                                if image.endswith(".mp4") or image.endswith(".avi") or image.endswith(".ogv"):
+                                    
+                                    os.system("totem-video-thumbnailer "+image+ " /tmp/orgthumb.png")
+                                    
+                                    
+                                    
+                                    filethumb = "/tmp/orgthumb.png"
+                    
+                    if filethumb != "No Render":
+                        
+                        
+                        thrumb = Image.open(filethumb)
+                        size = 150, 150
+                        thrumb.thumbnail(size, Image.ANTIALIAS)
+                        thrumb.save("py_data/tmp.jpg", "JPEG")
+                        
+                        
+                        com = "thelittleicon"+n+" = gtk.Image()"
+                        exec(com) in locals(), globals()
+                        
+                        com = "thelittleicon"+n+".set_from_file('py_data/tmp.jpg')"
+                        exec(com) in locals(), globals()
+                        
+                        com = "thubnailVBOX"+n+".pack_start(thelittleicon"+n+", False)"
+                        exec(com) in locals(), globals()
+                        
+                    else:
+                                
+                                
+                            
+                        com = "thubnailVBOX"+n+".pack_start(gtk.Label('"+filethumb+"'), False)"
+                        exec(com) in locals(), globals()
+                    
+                    
+                    com = "afterthumbbox"+n+" = gtk.VBox(False)"
+                    exec(com) in locals(), globals()
+                    
+                    com = "thubnailbox"+n+".pack_end(afterthumbbox"+n+", True)"
+                    exec(com) in locals(), globals()
+                    
                     
                     blendfileofthescene = []
                     for h in os.listdir(os.getcwd()+"/rnd/"+scenesinfolist[selectedscene][0]+"/"+i[0]):
@@ -2798,7 +2951,7 @@ def scene_box(widget):
                             com = "filebuttonsbox"+n+"_"+k+" = gtk.HBox(False)"
                             exec(com) in locals(), globals()
                             
-                            com = "inframebox"+n+".pack_start(filebuttonsbox"+n+"_"+k+")"
+                            com = "afterthumbbox"+n+".pack_start(filebuttonsbox"+n+"_"+k+", False)"
                             exec(com) in locals(), globals()
                             
                             
@@ -2957,45 +3110,7 @@ def scene_box(widget):
             
             
             
-                        
-            addingshots = gtk.HBox(False)
             
-            shotsbox.pack_start(gtk.HSeparator(), False)
-            shotsbox.pack_start(addingshots, False)
-            
-            
-            
-            addingshots.pack_start(gtk.Label("  New shot:"), False)
-            
-            shotnameentry = gtk.Entry()
-            shotnameentry.set_text("The_New_Shot_Name")
-            
-            addingshots.pack_start(shotnameentry)
-            
-            def addnewshot(w, path):
-                
-                path = path+shotnameentry.get_text().replace(" ", "_")
-                
-                if not os.path.exists(path):
-                    try:
-                        os.mkdir(path)
-                        os.mkdir(path+"/storyboard")
-                        os.mkdir(path+"/opengl")
-                        os.mkdir(path+"/rendered")
-                        
-                        Refresher()
-                        
-                    except:
-                        print "WELL FAILED TO CREATE THE SHOT"
-            
-            path = os.getcwd()+"/rnd/"+scenesinfolist[selectedscene][0]+"/"
-            newshotbutton = gtk.Button("Add New Shot")
-            newshotbutton.connect("clicked",addnewshot, path)
-            shotnameentry.connect("activate",addnewshot, path)
-            addingshots.pack_end(newshotbutton, False)
-            
-            
-            shotsbox.pack_start(gtk.HSeparator(), False)
     
             
         except Exception, expection:

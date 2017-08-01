@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 1.3
+VERSION = 1.4
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -485,7 +485,7 @@ def main_window(widget):
     scenbox.pack_start(scentitle)
     
     update = gtk.Button()
-    update.set_tooltip_text("Manage updatees:\nStoryboards\nRecordings\nAnimations\nRenders")
+    update.set_tooltip_text("Check for updates")
     
     updatebox = gtk.HBox(False)
     update.add(updatebox)
@@ -503,6 +503,15 @@ def main_window(widget):
     menubox.pack_start(loca)
     menubox.pack_start(scen)
     menubox.pack_start(update)
+    
+    def tutorials(w):
+        os.system("xdg-open https://www.youtube.com/playlist?list=PLhqk0hUdhXIxo5ThbegJz22od272WoJmc")
+    
+    tutorialbutton = gtk.Button("⛾ Tutorials")
+    tutorialbutton.set_tooltip_text("Open the youtube playlist of tutorials for Orginizer")
+    tutorialbutton.connect("clicked", tutorials)
+    menubox.pack_start(tutorialbutton)
+    
     
     char.connect("clicked", curwid_changer, "char")
     vehi.connect("clicked", curwid_changer, "vehi")
@@ -2885,7 +2894,9 @@ def scene_box(widget):
                         
                             if image.endswith(".jpg") or image.endswith(".png"):
                                 filethumb = image
-                            
+                                break
+                                
+                                
                         if filethumb == "No Render":
                             for image in ourfilelist.split("\n"):
                             
@@ -2896,7 +2907,9 @@ def scene_box(widget):
                                     
                                     
                                     filethumb = "/tmp/orgthumb.png"
-                    
+                                    break
+                                    
+                                    
                     if filethumb != "No Render":
                         
                         

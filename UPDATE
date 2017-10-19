@@ -1,3 +1,8 @@
+1.5
+  Now you have little "Generate Sequence Editor" button in the Scenes dialog. 
+  It generates a file for editing. (Blend file)
+  If file exits. It will open the file instead of generating it.
+
 1.4
   
   Has now a Tutorials button on the top pannel. Which open a Youtube playlist

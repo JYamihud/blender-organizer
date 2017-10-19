@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 1.4
+VERSION = 1.5
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -1753,7 +1753,7 @@ def organ(widget):
                 thrumb = Image.open(os.getcwd()+"/dev/"+cfplease+"/"+curfile+"/renders/Preview.jpg")
                 size = 200, 200
                 thrumb.thumbnail(size, Image.ANTIALIAS)
-                thrumb.save("py_data/tmp.jpg", "JPEG")
+                thrumb.save("py_data/tmp.jpg", "PNG")
                 
                 
                 
@@ -1777,7 +1777,7 @@ def organ(widget):
                 thrumb = Image.open(os.getcwd()+"/dev/"+cfplease+"/"+curfile+"/renders/Wired.jpg")
                 size = 200, 200
                 thrumb.thumbnail(size, Image.ANTIALIAS)
-                thrumb.save("py_data/tmp.jpg", "JPEG")
+                thrumb.save("py_data/tmp.jpg", "PNG")
                 
                 
                 
@@ -2371,10 +2371,59 @@ def scene_box(widget):
     folderbuttons = gtk.HBox(False)
     progresbox.pack_start(folderbuttons, False)
     
+    
+    def sequencer(w=None):
+        try:
+            open("rnd/sequence.blend", "r")
+            
+            if check274tf == False:
+                os.system("xdg-open "+"rnd/sequence.blend")
+                
+            if check274tf == True:
+                sysopen(""+custompath+" "+"rnd/sequence.blend")
+            
+        except:
+            out = open("py_data/empty.blend", "r")
+            ins = open("rnd/sequence.blend", "w")
+            ins.write(out.read())
+            ins.close()
+            
+            Refresher()
+    
+    seqbutton = gtk.Button()
+    seqbutton.connect("clicked", sequencer)
+    seqbox = gtk.HBox(False)
+    seqbutton.add(seqbox)
+    
+    seqicon = gtk.Image()
+    seqicon.set_from_file("py_data/icons/render.png")
+    seqbox.pack_start(seqicon, False)
+    
+    try:
+        open("rnd/sequence.blend", "r")
+        seqbox.pack_start(gtk.Label("Open Sequence Editor"))
+        seqbutton.set_tooltip_text("Open a blend file\nfor the editing.\nthe location at\nrnd/sequence.blend")
+        
+        
+    except:
+        seqbox.pack_start(gtk.Label("Generate Sequence Editor"))
+        seqbutton.set_tooltip_text("Generate a blend file\nfor the editing.\nthe location at\nrnd/sequence.blend")
+    
+    
+    
+    
+    folderbuttons.pack_start(seqbutton, False)
+    
+    
+    
     def openrndfolder(w):
         os.system("nautilus "+os.getcwd()+"/rnd/")
     
     opendevdictbox = gtk.HBox(False)
+    
+    
+    
+    
         
     foldericon = gtk.Image()
     foldericon.set_from_file("py_data/icons/folder.png")
@@ -2916,7 +2965,7 @@ def scene_box(widget):
                         thrumb = Image.open(filethumb)
                         size = 150, 150
                         thrumb.thumbnail(size, Image.ANTIALIAS)
-                        thrumb.save("py_data/tmp.jpg", "JPEG")
+                        thrumb.save("py_data/tmp.jpg", "PNG")
                         
                         
                         com = "thelittleicon"+n+" = gtk.Image()"

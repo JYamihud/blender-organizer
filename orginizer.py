@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 1.5
+VERSION = 1.6
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -1254,7 +1254,7 @@ def organ(widget):
         if len(i) < assetnamesize:
             spaces = ""
             for b in range(0, (assetnamesize-len(i))):
-                spaces = spaces + " "
+                spaces = spaces + ""
             append = i + spaces
         filelabels.append(append)
     
@@ -1310,16 +1310,96 @@ def organ(widget):
         asseticonbox = gtk.VBox()
         asseticonbox.pack_start(asseticon)
         
-        assetlabelbox = gtk.HButtonBox()
         
-        assetlabelbox.set_layout(gtk.BUTTONBOX_START)
-        assetlabelbox.pack_start(assetlabel)
         
         add_icon = "bbox_"+str(index2)+".pack_start(asseticonbox, False)"
         exec (add_icon) in globals(), locals()
         
-        add_icon = "bbox_"+str(index2)+".pack_start(assetlabelbox, False)"
+        add_icon = "bbox_"+str(index2)+".pack_start(assetlabel, False)"
         exec (add_icon) in globals(), locals()
+        
+        # making readable percentage
+        
+        
+        code = "filepercentage"+str(index2)+" = gtk.ProgressBar()"
+        exec (code) in globals(), locals()
+        
+        code = "filepercentage"+str(index2)+".set_size_request(100, 10)"
+        exec (code) in globals(), locals()
+        
+        thepercentage = 0.0
+        
+        if i in astunits: 
+            thepercentage = 1.0
+        else:
+            
+            thepercentage = 0.0
+            
+            try:
+                readfile = tuple(open("dev/"+cfplease+"/"+filelabels[index2]+"/asset.progress", "r"))
+                
+                EMPTY = 0.0
+                DONE = 0.0
+                #OTHER = 0
+                DONEi = False
+                DONEc = 0
+                DONEd = 0
+                print "START READING"
+                for line in readfile:
+                    if line[:4] in ["[ ] ", "[V] ", "[X] "]:
+                        
+                        EMPTY = EMPTY + 1
+                        
+                    if line[:4] == "[ ] ":
+                        
+                        DONEi = False
+                        
+                        
+                    elif line[:4] in ["[V] ", "[X] "]:
+                        DONE = DONE + 1
+                        DONEi = True
+                        
+                        print "NO INENTATION"
+                        print "\nDONE  = "+str(DONE)+"\n"
+                    elif line[:4] == "    " and DONEi == False:
+                        
+                        if line[:8] in ["    [ ] ", "    [V] ", "    [X] "]:
+                            if line[:8] in ["    [V] ", "    [X] "]:
+                                DONEd = DONEd + 1
+                            DONEc = DONEc + 1
+                    if line[:4] != "    ":
+                        try:
+                            DONE = DONE + ((float(DONEd))/float(DONEc))
+                            print "DONEc  = "+str(DONEc)
+                            print "DONEd  = "+str(DONEd)
+                            print "\nDONE  = "+str(DONE)+"\n"
+                            DONEc = 0.0
+                            DONEd = 0.0
+                        except:
+                            print "NO INENTATION"
+                
+                try:
+                    thepercentage = ((float(DONE))/float(EMPTY))
+                    
+                    
+                    print "!!!!!!!!!!!       ", thepercentage
+                    
+                except:
+                    thepercentage = 1.0
+                
+                
+                
+            except:
+                pass
+        
+        
+        
+        code = "filepercentage"+str(index2)+".set_fraction(thepercentage)"
+        exec (code) in globals(), locals()
+        
+        
+        code = "bbox_"+str(index2)+".pack_end(filepercentage"+str(index2)+", False)"
+        exec (code) in globals(), locals()
         
         underscores = "file_"+str(index2)+".set_use_underline(False)"
         exec (underscores) in globals(), locals()
@@ -1426,7 +1506,7 @@ def organ(widget):
                         ASSERPERCENT = int(ASSERPERCENT*100)
                         ASSERPERCENT = str(float(ASSERPERCENT)/100.0)
                     except:
-                        ASSERPERCENT = "100.0"
+                        ASSERPERCENT = "100.0"                                                                                                                                          
                     
                     print "EMPTY = "+str(EMPTY)
                     print "FINISH READING"

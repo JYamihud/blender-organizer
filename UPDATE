@@ -1,3 +1,7 @@
+1.6
+  Now you can see the progress of each item in the list by the left side
+  similar to how you saw it in the scenes dialogue.
+
 1.5
   Now you have little "Generate Sequence Editor" button in the Scenes dialog. 
   It generates a file for editing. (Blend file)

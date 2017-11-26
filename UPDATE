@@ -1,3 +1,19 @@
+2.2
+  SYNCRONIZER feature that uses JYEXCHANGE ( temporarelly you have to
+  install JYExchange manually.) you can get it at
+  https://github.com/JYamihud/JYExchange
+  
+  This feature is going to synchronize missing and updated files / folders
+  of your project. Between the computers.
+  
+  WARNING !!! This feature might need MANUAL UPDATE of the py_data folder
+    you can download the full Orginizer at  
+    https://github.com/JYamihud/blender-organizer
+    (simply replace the old py_data folder with the new one)
+  
+  Also few minor changes to make the life easier.
+
+
 1.6
   Now you can see the progress of each item in the list by the left side
   similar to how you saw it in the scenes dialogue.

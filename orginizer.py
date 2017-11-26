@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 1.6
+VERSION = 2.2
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -497,12 +497,356 @@ def main_window(widget):
     updatetitle = gtk.Label("Updates")
     updatebox.pack_start(updatetitle)
     
+    
+    # SYNCHRONIZATION sync.png
+    
+    
+    def SYNC(w=None):
+        
+        try:
+            w.set_sensitive(False)
+        except:
+            raise
+            print "PROBABLY RAN BY CALLING OUT THE FUNCTION"
+        
+        syncwindow = gtk.Window()
+        
+        def destroy(f=None):
+            try:
+                w.set_sensitive(True)
+            except:
+                raise
+                print "PROBABLY RAN BY CALLING OUT THE FUNCTION"
+        
+        
+        syncwindow.connect("destroy", destroy)
+        syncwindow.set_position(gtk.WIN_POS_CENTER)
+        syncwindow.set_title("SYNCHRONIZATION OPTIONS")
+        syncwindow.set_default_size(300, 300)
+        
+        
+        syncb = gtk.VBox(False)
+        syncwindow.add(syncb)
+        
+        globals()["settings"] = None
+        
+        globals()["jyexchangeline"] = gtk.HBox(False)
+        
+        
+        jyline = gtk.HBox()
+        syncb.pack_start(jyline, False)
+        
+        
+        # OPENIG LAST SETTINGS
+            
+        global settings 
+        
+        try:
+            settings = open("py_data/sync.data", "r")
+            settings = settings.read()
+        except:
+            settings = open("py_data/sync.data", "w")
+            settings.write("NO JYEXCHANGE\nTrue\nTrue\nFalse\n"+projectname+"\nTrue\nTrue")
+            settings.close()
+            
+            settings = open("py_data/sync.data", "r")
+            settings = settings.read()
+        
+        globals()["jyset"] = None
+        global jyset
+        
+        jyset = settings.split("\n")[0]
+        
+         
+        def jyexchangereload(w=None):
+            
+            global jyexchangeline
+            jyexchangeline.destroy()
+            
+            
+            jyexchangeline = gtk.HBox(False)
+            jyline.pack_start(jyexchangeline)
+            
+            #☐☑☒
+            
+            
+            # CHECKING IF J.Y.EXCHANGE INSTALLED
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            jylabel = gtk.Label()
+            
+            
+            
+            
+            
+            
+            if os.path.exists(jyset) == False:
+            
+                jylabel.set_markup('<span color="red">☒</span> JYExchange Software')
+                jylabel.modify_font(pango.FontDescription("Bold"))
+                
+                jyexchangeline.pack_start(jylabel, False)
+                
+                syncb.pack_start(gtk.HSeparator(), False)
+                
+                
+                # GETTING JYEXCHANGE FROM FOLDER
+                
+                
+                    
+                    
+                    
+                    
+                folget = gtk.Button()
+                folget.props.relief = gtk.RELIEF_NONE
+                folgeticon = gtk.Image()
+                folgeticon.set_from_file("py_data/icons/folder.png")
+                folget.add(folgeticon)
+                folget.set_tooltip_text("Specify the location of JYExchange if installed (version 1.3 or newer)")
+                folget.connect("clicked", getjyfromfile)
+                
+                jyexchangeline.pack_end(folget, False)
+                
+                # GITHUB GET JYEXCHANGE
+                
+                gitget = gtk.Button()
+                gitget.props.relief = gtk.RELIEF_NONE
+                gitgeticon = gtk.Image()
+                gitgeticon.set_from_file("py_data/icons/update.png")
+                gitget.add(gitgeticon)
+                gitget.set_tooltip_text("Install JYExchange automatically using official github respository\n(Function is In developing)")
+                
+                # UNTILL I HAVE INTERNET
+                gitget.set_sensitive(False)
+                
+                jyexchangeline.pack_end(gitget, False)
+                
+                
+                
+                
+                
+                
+            else:
+                jylabel.set_markup('<span color="green">☑</span> JYExchange Software')
+                jylabel.modify_font(pango.FontDescription("Bold"))
+            
+                jyexchangeline.pack_start(jylabel, False)
+                
+                
+                # GETTING JYEXCHANGE FROM FOLDER
+                
+                folget = gtk.Button()
+                folget.props.relief = gtk.RELIEF_NONE
+                folgeticon = gtk.Image()
+                folgeticon.set_from_file("py_data/icons/folder.png")
+                folget.add(folgeticon)
+                folget.set_tooltip_text("Change the location of JYExchange (version 1.3 or newer)")
+                folget.connect("clicked", getjyfromfile)
+                
+                jyexchangeline.pack_end(folget, False)
+                
+                
+                syncb.pack_start(gtk.HSeparator(), False)
+        
+            jyexchangeline.show_all()
+        def getjyfromfile(w=None):
+                    
+            try:
+                w.set_sensitive(False)
+            except:
+                pass
+            
+            
+            
+            
+            # Making a file chooser
+            
+            widget.set_sensitive(False)
+        
+            addbuttondialog = gtk.FileChooserDialog("Open..",
+                                             None,
+                                             gtk.FILE_CHOOSER_ACTION_OPEN,
+                                            (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                             gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+            addbuttondialog.set_default_response(gtk.RESPONSE_OK)
+            
+            
+            
+            
+            response = addbuttondialog.run()
+            if response == gtk.RESPONSE_OK:
+                
+                get = addbuttondialog.get_filename()
+                global jyset
+                jyset = get
+                jyexchangereload()
+                
+            widget.set_sensitive(True)
+            addbuttondialog.destroy()
+            
+            
+            
+            try:
+                w.set_sensitive(True)
+            except:
+                pass
+        
+        
+        jyexchangereload()    
+        
+        # OPTIONS
+        
+        missing = gtk.CheckButton("Missing")
+        missing.set_active(eval(settings.split("\n")[1]))
+        missing.set_tooltip_text("Get all the missing files from the other computer")
+        syncb.pack_start(missing, False)
+        syncb.pack_start(gtk.HSeparator(), False)
+        
+        modbig = gtk.CheckButton("Larger")
+        modbig.set_active(eval(settings.split("\n")[2]))
+        modbig.set_tooltip_text("Replace modified files that are larger on the other computer (in bites)")
+        syncb.pack_start(modbig, False)
+        syncb.pack_start(gtk.HSeparator(), False)
+        
+        modsm = gtk.CheckButton("Smaller")
+        modsm.set_active(eval(settings.split("\n")[3]))
+        modsm.set_tooltip_text("Replace modified files that are smaller on the other computer (in bites)")
+        syncb.pack_start(modsm, False)
+        syncb.pack_start(gtk.HSeparator(), False)
+        
+        
+        codenamebox = gtk.HBox(False)
+        codenamebox.pack_start(gtk.Label("    Codename: "), False)
+        codename = gtk.Entry()
+        codenamebox.pack_start(codename)
+        codename.set_text(projectname)
+        syncb.pack_start(codenamebox, False)
+        syncb.pack_start(gtk.HSeparator(), False)
+        
+        # ADITIONAL OPTIONS
+        
+        svlog = gtk.CheckButton("Save JYExchange log")
+        svlog.set_active(eval(settings.split("\n")[5]))
+        svlog.set_tooltip_text("Save a log from JYExchange terminal to a file")
+        syncb.pack_start(svlog, False)
+        syncb.pack_start(gtk.HSeparator(), False)
+        
+        closeit = gtk.CheckButton("Close JYExchange")
+        closeit.set_active(eval(settings.split("\n")[6]))
+        closeit.set_tooltip_text("Close JYExchange after finishing the synchronization")
+        syncb.pack_start(closeit, False)
+        syncb.pack_start(gtk.HSeparator(), False)
+        
+        syncstatus = "Waiting for OK"
+        syncpercent = 0.0
+        
+        syncprogress = gtk.ProgressBar()
+        
+        #syncdata evaluation
+        syncprogress.set_text("STATUS:  "+syncstatus+"   "+str(syncpercent))
+        syncprogress.set_fraction(syncpercent)
+        
+        
+        
+        #syncb.pack_end(syncprogress, False)
+        
+        
+        
+        
+        
+        # OKAY
+        
+        
+        def theokaybutton(w=None):
+            
+            passfile = open("py_data/sync.data", "w")
+            
+            
+            passfile.write(jyset+"\n")
+            passfile.write(str(missing.get_active())+"\n")
+            passfile.write(str(modbig.get_active())+"\n")
+            passfile.write(str(modsm.get_active())+"\n")
+            passfile.write(str(codename.get_text())+"\n")
+            passfile.write(str(svlog.get_active())+"\n")
+            passfile.write(str(closeit.get_active()))
+            
+            
+            
+            
+            
+            sysopen("xterm -e python "+os.getcwd()+"/py_data/sync.py")
+            
+            syncwindow.destroy()
+            
+        
+        okay = gtk.Button()
+        okayicon = gtk.Image()
+        okayicon.set_from_file("py_data/icons/sync.png")
+        okaybox = gtk.HBox(False)
+        okaybox.set_size_request(50, 30)
+        okay.add(okaybox)
+        okaybox.pack_start(okayicon, False)
+        okaybox.pack_start(gtk.Label("OK"))
+        okay.connect("clicked", theokaybutton)
+        
+        syncb.pack_end(okay, False)
+        
+        
+        
+        
+        
+        syncwindow.show_all()
+        
+        
+        
+    syncbutton = gtk.Button()
+    syncbutton.connect("clicked", SYNC)
+    syncbbox = gtk.HBox(False)
+    syncbutton.add(syncbbox)
+    syncbicon = gtk.Image()
+    syncbicon.set_from_file("py_data/icons/sync.png")
+    syncbbox.pack_start(syncbicon, False)
+    syncbbox.pack_start(gtk.Label("Syncronize"))
+    syncbutton.set_tooltip_text("Syncronize the files / folders of the project\nwith other computers containing\nthe project")
+    
+    
+    
+    # Projectfol
+    
+    projectfolder = gtk.Button()
+    projectfolbox = gtk.HBox(False)
+    projectfolico = gtk.Image()
+    projectfolico.set_from_file("py_data/icons/folder.png")
+    projectfolbox.pack_start(projectfolico, False)
+    projectfolbox.pack_start(gtk.Label("Project Folder"))
+    projectfolder.add(projectfolbox)
+    projectfolder.set_tooltip_text("Open the "+os.getcwd())
+    
+    def openpf(w=None):
+        os.system("nautilus "+os.getcwd())
+    projectfolder.connect("clicked",openpf)
+    
+    menubox.pack_start(projectfolder)
+    
     menubox.pack_start(char)
     menubox.pack_start(vehi)
     menubox.pack_start(obje)
     menubox.pack_start(loca)
     menubox.pack_start(scen)
+    
+    menubox.pack_start(syncbutton)
+    
     menubox.pack_start(update)
+    
+    # TUTORIALS
     
     def tutorials(w):
         os.system("xdg-open https://www.youtube.com/playlist?list=PLhqk0hUdhXIxo5ThbegJz22od272WoJmc")
@@ -513,11 +857,22 @@ def main_window(widget):
     menubox.pack_start(tutorialbutton)
     
     
+    
+    
+    
+    # CONNECT THE BUTTONS 
+    
     char.connect("clicked", curwid_changer, "char")
     vehi.connect("clicked", curwid_changer, "vehi")
     obje.connect("clicked", curwid_changer, "obje")
     loca.connect("clicked", curwid_changer, "loca")
     scen.connect("clicked", curwid_changer, "scen")
+    
+    
+    
+    
+    
+    
     
     def updater(w):
         try:
@@ -2761,6 +3116,7 @@ def scene_box(widget):
                         os.mkdir(path)
                         os.mkdir(path+"/storyboard")
                         os.mkdir(path+"/opengl")
+                        os.mkdir(path+"/test_rnd")
                         os.mkdir(path+"/rendered")
                         
                         Refresher()
@@ -2927,6 +3283,41 @@ def scene_box(widget):
                     
                     
                     com = "inframefolders"+n+".pack_start(opengl"+n+")"
+                    exec(com) in locals(), globals()
+                    
+                    #testrnd button
+                    
+                    try:
+                        os.mkdir(os.getcwd()+"/rnd/"+scenesinfolist[selectedscene][0]+"/"+i[0]+"/test_rnd")
+                    except:
+                        pass
+                    
+                    com = "testrnd"+n+" = gtk.Button()"
+                    exec(com) in locals(), globals()
+                    
+                    com = "testrndbox"+n+" = gtk.HBox(False)"
+                    exec(com) in locals(), globals()
+                    
+                    com = "testrndicon"+n+" = gtk.Image()"
+                    exec(com) in locals(), globals()
+                    
+                    com = "testrndicon"+n+".set_from_file('py_data/icons/folder.png')"
+                    exec(com) in locals(), globals()
+                    
+                    com = "testrndbox"+n+".pack_start(testrndicon"+n+", False)"
+                    exec(com) in locals(), globals()
+                    
+                    com = "testrndbox"+n+".pack_start(gtk.Label('.../test_rnd'))"
+                    exec(com) in locals(), globals()
+                    
+                    com = "testrnd"+n+".add(testrndbox"+n+")"
+                    exec(com) in locals(), globals()
+                    
+                    com = "testrnd"+n+".connect('clicked', openfolder, '"+i[0]+"/test_rnd' )"
+                    exec(com) in locals(), globals()
+                    
+                    
+                    com = "inframefolders"+n+".pack_start(testrnd"+n+")"
                     exec(com) in locals(), globals()
                     
                     #rendered button

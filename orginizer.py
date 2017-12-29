@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 2.2
+VERSION = 2.3
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
 import threading #so I could start muliple things in the same time
 import datetime #to manage dates and time realed things
 import pango #For text formatting
+import cairo
 import zipfile #For Updates and shit
 
 ### IMAGE FOR LOADING THRUMBNAILS OF RENDERS
@@ -3554,50 +3555,366 @@ def scene_box(widget):
                                 disclaimer = open("py_data/render.data", "r")
                                 
                                 dscroll = gtk.ScrolledWindow()
-                                dscroll.set_size_request(700, 200)
-                                renderbox.pack_start(dscroll, True)
+                                dscroll.set_size_request(300, 100)
+                                #renderbox.pack_start(dscroll, True)
                                 dscroll.add_with_viewport(gtk.Label(disclaimer.read()))
                                 
-                                # render file
                                 
-                                renderfilebox = gtk.HBox(False)
-                                renderbox.pack_start(renderfilebox, False)
+                                # Blender file input
                                 
-                                renderfilebox.pack_start(gtk.Label("Blend File: "), False)
+                                blendfilebox = gtk.HBox(False)
+                                renderbox.pack_start(blendfilebox, False)
                                 
-                                renderfile = gtk.Entry()
-                                renderfilebox.pack_start(renderfile)
+                                scecon = gtk.Image()
+                                scecon.set_from_file("py_data/icons/scn_asset_done.png")
+                                blendfilebox.pack_start(scecon, False)
                                 
-                                renderfile.set_text(path)
                                 
-                                #render blender version
+                                blendfilebox.pack_start(gtk.Label(path[path.rfind("/")+1:]))
                                 
-                                rendverbox = gtk.HBox(False)
-                                renderbox.pack_start(rendverbox, False)
+                                blendfilebox.set_tooltip_text("Blend file for render: "+path)
                                 
-                                rendverbox.pack_start(gtk.Label("Blender command:"), False)
                                 
-                                rendver = gtk.Entry()
-                                rendverbox.pack_start(rendver)                                
+                                renderbox.pack_start(gtk.HSeparator()) # SEPARATOR
                                 
-                                rendver.set_text(custompath)
                                 
-                                # time
                                 
-                                rendertimebox = gtk.HBox(False)
-                                renderbox.pack_start(rendertimebox, False)
+                                # destination of the render
                                 
-                                rendertimebox.pack_start(gtk.Label("Start Frame: "))
+                                renderbox.pack_start(gtk.Label("\nDESTINATION DIRECTORY"))
+                                
+                                destinationbox = gtk.HBox(False)
+                                renderbox.pack_start(destinationbox, False)
+                                
+                                story = gtk.RadioButton(None, ".../storyboard")
+                                destinationbox.pack_start(story)
+                                
+                                opengl = gtk.RadioButton(story, ".../opengl")
+                                destinationbox.pack_start(opengl)
+                                
+                                testrnd = gtk.RadioButton(story, ".../test_rnd", False)
+                                destinationbox.pack_start(testrnd)
+                                
+                                rnd = gtk.RadioButton(story, ".../rendered")
+                                destinationbox.pack_start(rnd)
+                                
+                                #custom folder
+                                
+                                customfolderbox = gtk.HBox(False)
+                                renderbox.pack_start(customfolderbox, False)
+                                
+                                cdestin = gtk.RadioButton(story, "Custom")
+                                customfolderbox.pack_start(cdestin, False)
+                                
+                                cdentry = gtk.Entry()
+                                customfolderbox.pack_start(cdentry, True)
+                                
+                                cdentry.set_text(os.getenv("HOME"))
+                                #cdentry.set_editable(False)
+                                
+                                
+                                
+                                
+                                renderbox.pack_start(gtk.HSeparator()) # SEPARATOR
+                                
+                                # File format
+                                
+                                renderbox.pack_start(gtk.Label("\nIMAGE FILE FORMAT"))
+                                
+                                fileformatbox = gtk.HBox(False)
+                                renderbox.pack_start(fileformatbox, False)
+                                
+                                
+                                
+                                jpeg = gtk.RadioButton(None, "JPEG")
+                                fileformatbox.pack_start(jpeg)
+                                
+                                png = gtk.RadioButton(jpeg, "PNG")
+                                fileformatbox.pack_start(png)
+                                
+                                hdr = gtk.RadioButton(jpeg, "HDR")
+                                fileformatbox.pack_start(hdr)
+                                
+                                exr = gtk.RadioButton(jpeg, "EXR")
+                                fileformatbox.pack_start(exr)
+                                
+                                renderbox.pack_start(gtk.HSeparator()) # SEPARATOR
+                                
+                                # FRAME RANGE
+                                
+                                renderbox.pack_start(gtk.Label("\nFRAME RANGE"))
+                                
+                                framerangebox = gtk.HBox(False)
+                                renderbox.pack_start(framerangebox, False)
+                                
+                                
+                                framerangebox.pack_start(gtk.Label("Start Frame: "), False)
                                 
                                 startframe = gtk.Entry()
-                                startframe.set_text("1")
-                                rendertimebox.pack_start(startframe)
+                                framerangebox.pack_start(startframe, False)
                                 
-                                rendertimebox.pack_start(gtk.Label("End Frame: "))
+                                framerangebox.pack_start(gtk.Label("End Frame: "))
                                 
                                 endframe = gtk.Entry()
-                                endframe.set_text("250")
-                                rendertimebox.pack_start(endframe)
+                                framerangebox.pack_end(endframe, False)
+                                
+                                
+                                #try restoring
+                                
+                                try:
+                                    readsave = open(path[:path.rfind("/")+1]+"renderinfo.data", "r")
+                                    readsave = readsave.read()
+                                    
+                                    for line, value in enumerate(readsave.split("\n")):
+                                        
+                                        
+                                        if line == 2:
+                                            
+                                            checkfolder = value
+                                            
+                                            
+                                            
+                                            print "VALUE SUKA BIZDETZ NAHUY", value
+                                            
+                                            
+                                            
+                                            
+                                            if value == path[:path.rfind("/")+1]+"storyboard/":
+                                                story.set_active(True)
+                                            elif value == path[:path.rfind("/")+1]+"opengl/":
+                                                opengl.set_active(True)
+                                            elif value == path[:path.rfind("/")+1]+"test_rnd/":
+                                                testrnd.set_active(True)
+                                            elif value == path[:path.rfind("/")+1]+"rendered/":
+                                                rnd.set_active(True)
+                                            else:
+                                                cdestin.set_active(True)
+                                                cdentry.set_text(value)
+                                                
+                                                
+                                                print "CUSTOM", cdestin.get_active()
+                                        
+                                        
+                                            
+                                        if line == 3:
+                                            v = value
+                                            
+                                            if v == "JPEG":
+                                                jpeg.set_active(True)
+                                                ff = "JPG"
+                                                
+                                            elif v == "PNG":
+                                                png.set_active(True)
+                                                ff = "PNG"
+                                                
+                                            elif v == "HDR":
+                                                hdr.set_active(True)
+                                                ff = "HDR"
+                                                
+                                            elif v == "EXR":
+                                                exr.set_active(True)
+                                                ff = "EXR"
+                                    
+                                        
+                                        
+                                        if line == 5:
+                                            endframe.set_text(value)
+                                            
+                                            count = 0
+                                            firstframe = int(value)
+                                            
+                                            
+                                            for image in os.listdir(checkfolder):
+                                                
+                                                #print "IMG DATA", image, image[:4], str(image).upper(), ff
+                                                
+                                                if str(image).upper().endswith(ff) and int(image[:4]) > count:
+                                                    count = int(image[:4])
+                                                
+                                                if str(image).upper().endswith(ff) and int(image[:4]) < firstframe:
+                                                    firstframe = int(image[:4])
+                                            
+                                            
+                                            startframe.set_text(str(count+1))
+                                            
+                                            progval = float(count-firstframe) / float(int(value)-firstframe)
+                                            #print "progval", progval, firstframe
+                                            
+                                            doneframes = gtk.ProgressBar()
+                                            doneframes.set_fraction(progval)
+                                            doneframes.set_text(str(int(progval*100))+"%")
+                                            
+                                            renderbox.pack_start(doneframes)
+                                            
+                                            
+                                            # astimation AND graphs ( maybe )
+                                            
+                                            try:
+                                                readspeed = open(path[:path.rfind("/")]+"/renderspeed.data", "r")
+                                                readspeed =  readspeed.read()
+                                                
+                                                avar = 0
+                                                avarc = []
+                                                for l in readspeed.split("\n"):
+                                                    if " " in l:
+                                                        avarc.append(int(l[l.rfind(" "):]))
+                                                
+                                                avar = sum(avarc)/len(avarc)
+                                                
+                                                print avar, avarc
+                                                
+                                                tleft = avar*(int(value)-count)
+                                                
+                                                print "tleft", tleft
+                                                
+                                                valt = "SECONDS"
+                                                
+                                                if tleft > 60 :
+                                                    tleft = tleft / 60
+                                                    valt = "MINUTES"
+                                                
+                                                    if tleft > 60 :
+                                                        tleft = tleft / 60
+                                                        valt = "HOURS"
+                                                
+                                                        if tleft > 24 :
+                                                            tleft = tleft / 24
+                                                            valt = "DAYS"
+                                                
+                                                
+                                                print tleft
+                                                print valt
+                                                
+                                                
+                                                renderbox.pack_start(gtk.Label("ESTIMATED RENDER TIME: "+str(tleft)+" "+valt+"  AVARAGE PER FRAME: "+str(avar)+" SEC"))
+                                                
+                                                
+                                                # little framegraph
+                                                
+                                                def framegraph(widget, event):
+                                                    
+                                                    w, h = widget.window.get_size()
+                                                    xgc = widget.window.new_gc()
+                                                    ctx = widget.window.cairo_create()
+                                                    
+                                                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#949494"))
+                                                    widget.window.draw_rectangle(xgc, True, 0,0,w,h)
+                                                    
+                                                    biggest = 0
+                                                    
+                                                    
+                                                    
+                                                    for box in avarc:
+                                                        if box > biggest:
+                                                            biggest = box
+                                                        
+                                                    smallest = biggest
+                                                    
+                                                    for box in avarc:
+                                                        if box < smallest:
+                                                            smallest = box
+                                                    
+                                                    
+                                                    step = float(w)/(len(avarc)-1)*progval
+                                                        
+                                                    hstep = float(h)/len(range(smallest, biggest))
+                                                    
+                                                    for part, box in enumerate(avarc):
+                                                        
+                                                        
+                                                        thex = int(step * part)
+                                                        they = (int((hstep * (box-smallest))/2)*-1)+h-20
+                                                        
+                                                        print thex, they, step, hstep
+                                                                                     
+                                                        colors = ["#F00","#333","#0A0"]
+                                                        
+                                                        colinx = 1
+                                                        if box == smallest:
+                                                            colinx = 2
+                                                            
+                                                            
+                                                            tleft = box
+                                                
+                                                            print "tleft", tleft
+                                                            
+                                                            valt = "SECONDS"
+                                                            
+                                                            if tleft > 60 :
+                                                                tleft = tleft / 60
+                                                                valt = "MINUTES"
+                                                            
+                                                                if tleft > 60 :
+                                                                    tleft = tleft / 60
+                                                                    valt = "HOURS"
+                                                            
+                                                                    if tleft > 24 :
+                                                                        tleft = tleft / 24
+                                                                        valt = "DAYS"
+                                                            
+                                                            
+                                                            
+                                                            ctx.set_source_rgb(0, 0.4, 0)
+                                                            ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL,
+                                                                cairo.FONT_WEIGHT_NORMAL)
+                                                            ctx.set_font_size(10)
+                                                            ctx.move_to( thex, they-20)
+                                                            ctx.show_text(str(tleft)+" "+valt)
+                                                            
+                                                            
+                                                            
+                                                        elif box == biggest:
+                                                            colinx = 0
+                                                            
+                                                            tleft = box
+                                                
+                                                            print "tleft", tleft
+                                                            
+                                                            valt = "SECONDS"
+                                                            
+                                                            if tleft > 60 :
+                                                                tleft = tleft / 60
+                                                                valt = "MINUTES"
+                                                            
+                                                                if tleft > 60 :
+                                                                    tleft = tleft / 60
+                                                                    valt = "HOURS"
+                                                            
+                                                                    if tleft > 24 :
+                                                                        tleft = tleft / 24
+                                                                        valt = "DAYS"
+                                                            
+                                                            ctx.set_source_rgb(0.4, 0, 0)
+                                                            ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL,
+                                                                cairo.FONT_WEIGHT_NORMAL)
+                                                            ctx.set_font_size(10)
+                                                            ctx.move_to( thex, they)
+                                                            ctx.show_text(str(tleft)+" "+valt)
+                                                                                     
+                                                                                                                
+                                                        xgc.set_rgb_fg_color(gtk.gdk.color_parse(colors[colinx]))
+                                                        widget.window.draw_rectangle(xgc, True, thex, they, int(step), (they)-h)
+                                                        
+                                                        
+                                                        
+                                                
+                                                graph = gtk.DrawingArea()
+                                                graph.set_size_request(100,100)
+                                                
+                                                renderbox.pack_start(graph)
+                                                graph.connect("expose-event", framegraph)    
+                                                
+                                                
+                                                
+                                            except:
+                                                
+                                                print "OMG WHERE IS THE SPEED", path[:path.rfind("/")]+"/renderspeed.data"
+                                                
+                                except:
+                                    
+                                    #testrnd.set_active(True)
+                                    startframe.set_text("1")
+                                    endframe.set_text("250")
                                 
                                 renderbox.show_all()
                                 
@@ -3606,13 +3923,64 @@ def scene_box(widget):
                                 
                                 if ifrender == gtk.RESPONSE_APPLY:
                                     
+                                    #print story.get_active(), "STORY"
+                                    
+                                    
                                     infofile = open("py_data/renderinfo.data", "w")
-                                    infofile.write(renderfile.get_text()+"\n")
-                                    infofile.write(rendver.get_text()+"\n")
+                                    infofile.write(path+"\n")
+                                    infofile.write(custompath+"\n")
+                                    
+                                    if story.get_active():
+                                        infofile.write(path[:path.rfind("/")+1]+"storyboard/"+"\n")
+                                    elif opengl.get_active():
+                                        infofile.write(path[:path.rfind("/")+1]+"opengl/"+"\n")
+                                    elif testrnd.get_active():
+                                        infofile.write(path[:path.rfind("/")+1]+"test_rnd/"+"\n")
+                                    elif rnd.get_active():
+                                        infofile.write(path[:path.rfind("/")+1]+"rendered/"+"\n")
+                                    else:
+                                        
+                                        
+                                        if cdentry.get_text().endswith("/") == False:
+                                            
+                                            tm = cdentry.get_text()
+                                            cdentry.set_text(tm+"/") 
+                                        
+                                        infofile.write(cdentry.get_text()+"\n")
+                                    
+                                    if jpeg.get_active():
+                                        infofile.write("JPEG"+"\n")
+                                    elif png.get_active():
+                                        infofile.write("PNG"+"\n")
+                                    elif hdr.get_active():
+                                        infofile.write("HDR"+"\n")
+                                    else:
+                                        infofile.write("EXR"+"\n")
+                                    
+                                    
+                                    
+                                        
+                                    
                                     infofile.write(startframe.get_text()+"\n")
                                     infofile.write(endframe.get_text())
+                                    
+                                    
+                                    
                                     infofile.close()
                                     
+                                    #SECOND FILE FOR THE SAVE
+                                    
+                                    readagain = open("py_data/renderinfo.data", "r")
+                                    
+                                    saveagain = open(path[:path.rfind("/")+1]+"renderinfo.data", "w")
+                                    saveagain.write(readagain.read())
+                                    saveagain.close()
+                                    
+                                    
+                                    
+                                    
+                                    
+                                    #
                                     sysopen("xterm -e python "+os.getcwd()+"/py_data/renderer.py")
                                     
                                 renderdialog.destroy()

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 2.3
+VERSION = 3.0
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -1165,6 +1165,316 @@ newassetname = None
 
 cfplease = None
 
+def topprogress(widget=None):
+    
+    global organbox1
+    
+    progresbox = gtk.HBox(False, 0)
+    orgabox1.pack_start(progresbox, False)
+    
+    
+    
+    
+    
+    #assetpercent checklistpercent ◀▶
+    
+    welDbutton = gtk.Button()
+    welDbutton.set_tooltip_text("Open Project's Checklist")
+    
+    welDbox = gtk.HBox(False)
+    #welDbox.set_layout(gtk.BUTTONBOX_START)
+    welDbutton.add(welDbox)
+    
+    checklisticon = gtk.Image()
+    checklisticon.set_from_file("py_data/icons/checklist.png")
+    
+    welDbox.pack_start(checklisticon, False)
+    
+    #welD = gtk.ProgressBar()
+    #welD.set_text(("◀ Assets/scenes: "+assetpercent+"% ▶    ◀ Project checklist: "+checklistpercent+"% ▶     ◀ Avarage: "+projectpercent+"% ▶"))
+    #welD.set_fraction((float(projectpercent)/100))
+    
+    
+    
+    ##### HERE IS THE MAIN GRAPH
+    
+    
+    ## CREATING THE DATA FILE
+    try:
+        percenthystory = open("percentage_hystory.data", "r")
+    except:
+        percenthystory = open("percentage_hystory.data", "w")
+        
+        percenthystory.write("### PERCENTTAGE HYSTORY FILE\n")
+        percenthystory.write("### WRITES DOWN THE WHOLE PROJECT\n")
+        percenthystory.write("### PERCENTTAGE HYSTORY FOR STATISTICS\n")
+        percenthystory.write("DATE "+datetime.datetime.now().strftime("%y-%m-%d")+" "+projectpercent+"%\n")
+        
+        percenthystory.close()
+        percenthystory = open("percentage_hystory.data", "r")
+    
+    # CORRECTING THE DATA FILE IF NEEDED
+    
+    percenthystory = percenthystory.read()
+    
+    perhys = percenthystory.split("\n")
+    foundtoday = False
+    for dln, date in enumerate(perhys):
+        if datetime.datetime.now().strftime("%y-%m-%d") in date:
+            foundtoday = True
+            if date.split(" ")[-1] not in  (projectpercent+"%  "):
+                
+                
+                perhys[dln] = "DATE "+datetime.datetime.now().strftime("%y-%m-%d")+" "+projectpercent+"%"
+                
+            
+    
+    if foundtoday == False:
+        perhys.append("DATE "+datetime.datetime.now().strftime("%y-%m-%d")+" "+projectpercent+"%")
+    percenthystory = open("percentage_hystory.data", "w")
+    
+    for date in perhys:
+        if len(date) > 0:
+            percenthystory.write(date+"\n")
+    
+    percenthystory.close()
+    
+    
+    
+    # READING THE DATA FILES INTO A GRAPH
+    
+    welD = gtk.DrawingArea()
+    welD.set_size_request(100,100)
+    
+    
+    def framewelD(widget, event):
+        
+        
+                                                    
+        w, h = widget.window.get_size()
+        xgc = widget.window.new_gc()
+        ctx = widget.window.cairo_create()
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#949494"))
+        widget.window.draw_rectangle(xgc, True, 0,0,w,h)
+        
+        #WiDGETS
+        
+        #MAIN
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#759975"))
+        widget.window.draw_rectangle(xgc, True, 0,0,int(w/2),h/4)
+        
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#007700"))
+        widget.window.draw_rectangle(xgc, True, 0,0,int(w*(float(projectpercent)/100))/2,h/4)
+        
+        ctx.set_source_rgb(0, 0, 0)
+        ctx.select_font_face("Ubuntu Bold", cairo.FONT_SLANT_NORMAL,
+            cairo.FONT_WEIGHT_NORMAL)
+        ctx.set_font_size(20)
+        ctx.move_to( w/4,h/4-5)
+        ctx.show_text(projectpercent+"%")
+        ctx.move_to( 5,h/4-5)
+        ctx.show_text("DONE: ")
+        
+        #TIME
+        
+        
+        #getting time values
+        
+        timefile = open("project.progress", "r")
+        timefile = timefile.read()
+        startdate = "00/00/00"
+        enddate = "00/00/00"
+        for timeline in timefile.split("\n"):
+            if timeline.startswith("STR"):
+                startdate = timeline[4:]
+            if timeline.startswith("FIN"):
+                enddate = timeline[4:]
+        
+        
+        # CALCULATING DAYS
+        deadline = 0.2
+        
+        date_format = "%d/%m/%Y"
+        a = datetime.datetime.strptime(startdate, date_format)
+        b = datetime.datetime.strptime(enddate, date_format)
+        delta = b - a
+        alltime = int(delta.days)
+        
+        a = datetime.datetime.strptime(startdate, date_format)
+        b = datetime.datetime.today()
+        delta =  b - a
+        
+        passed = int(delta.days)
+        
+        print "PASSED", passed, alltime
+        
+        try:
+            deadline = (1.0/alltime)*passed
+        except:
+            deadline = 0
+        
+        deadline = deadline  * 100
+        
+        
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#997575"))
+        widget.window.draw_rectangle(xgc, True, 0,h/4,int(w/2),h/4)
+        
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#994444"))
+        widget.window.draw_rectangle(xgc, True, 0,h/4,int(w*(float(deadline)/100))/2,h/4)
+        
+        ctx.set_source_rgb(0, 0, 0)
+        ctx.select_font_face("Ubuntu Bold", cairo.FONT_SLANT_NORMAL,
+            cairo.FONT_WEIGHT_NORMAL)
+        ctx.set_font_size(15)
+        ctx.move_to( w/4,h/4*2-5)
+        ctx.show_text(str(int(deadline))+"% DAYS LEFT: "+str(alltime-passed))
+        ctx.move_to( 5,h/4*2-5)
+        ctx.show_text("TIME PASSED ( DEADLINE ): ")
+        
+        
+        
+        #Project's Checklist
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#998575"))
+        widget.window.draw_rectangle(xgc, True, 0,h/4*2,int(w/2),h/4)
+        
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#BB6600"))
+        widget.window.draw_rectangle(xgc, True, 0,h/4*2,int(w*(float(checklistpercent)/100))/2,h/4)
+        
+        ctx.set_source_rgb(0, 0, 0)
+        ctx.select_font_face("Ubuntu Bold", cairo.FONT_SLANT_NORMAL,
+            cairo.FONT_WEIGHT_NORMAL)
+        ctx.set_font_size(15)
+        ctx.move_to( w/4,h/4*3-5)
+        ctx.show_text(checklistpercent+"%")
+        ctx.move_to( 5,h/4*3-5)
+        ctx.show_text("CHECKLIST: ")
+        
+        #Assets
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#757599"))
+        widget.window.draw_rectangle(xgc, True, 0,h/4*3,int(w/2),h/4)
+        
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#555599"))
+        widget.window.draw_rectangle(xgc, True, 0,h/4*3,int(w*(float(assetpercent)/100))/2,h/4)
+        
+        ctx.set_source_rgb(0, 0, 0)
+        ctx.select_font_face("Ubuntu Bold", cairo.FONT_SLANT_NORMAL,
+            cairo.FONT_WEIGHT_NORMAL)
+        ctx.set_font_size(15)
+        ctx.move_to( w/4,h/4*4-5)
+        ctx.show_text(assetpercent+"%")
+        ctx.move_to( 5,h/4*4-5)
+        ctx.show_text("ASSESTS / SCENES (FILES): ")
+        
+        
+        
+        
+        
+        #GRAPH
+        
+        prevH = h
+        prevW = w/2
+        prevV = 0
+        
+        thedayW = 0
+        
+        for dln, date in enumerate(perhys):
+            if date.startswith("DATE"):
+                
+                thedate = date.split(" ")[1]
+                thepercent = float( date.split(" ")[2][:-1] )
+                
+                
+                #getting date's position
+                
+                a = datetime.datetime.strptime(startdate, date_format)
+                b = datetime.datetime.strptime(thedate, "%y-%m-%d")
+                delta =  b - a
+                
+                pos = int(delta.days)
+                
+                nowW = int(float(w/2)/alltime*pos)+(w/2)
+                nowH = int( h / 100 * thepercent )*-1+h
+                
+                xgc.line_width = 4
+                if prevV < thepercent:
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#007700"))
+                else:
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#994444"))
+                widget.window.draw_line(xgc,prevW, prevH, nowW, nowH)
+                
+                if datetime.datetime.now().strftime("%y-%m-%d") in date:
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#BB6600"))
+                    widget.window.draw_line(xgc,nowW, 0, nowW, h)
+                    thedayH = nowW
+                
+                prevH = nowH
+                prevW = nowW
+                prevV = thepercent
+        
+        # avarage
+        
+        avrgval = thepercent / passed
+        enddateval = avrgval * ( alltime - passed ) + thepercent
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#555599"))
+        widget.window.draw_line(xgc,prevW+2, prevH, w, int(  h / 100 * enddateval  )*-1+h)
+        
+        
+        # helpers
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#007700"))
+        
+        widget.window.draw_line(xgc,w/2, 10, w/2+50, 10,)
+        ctx.set_font_size(10)
+        ctx.move_to( w/2+55 , 10+3)
+        ctx.show_text("More Done")
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#994444"))
+        
+        widget.window.draw_line(xgc,w/2, 20, w/2+50, 20,)
+        ctx.set_font_size(10)
+        ctx.move_to( w/2+55 , 20+3)
+        ctx.show_text("Less Done")
+        
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#BB6600"))
+        
+        widget.window.draw_line(xgc,w/2, 30, w/2+50, 30,)
+        ctx.set_font_size(10)
+        ctx.move_to( w/2+55 , 30+3)
+        ctx.show_text("Today ( in relation to the deadline )")
+        
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#555599"))
+        
+        widget.window.draw_line(xgc,w/2, 40, w/2+50, 40,)
+        ctx.set_font_size(10)
+        ctx.move_to( w/2+55 , 40+3)
+        ctx.show_text("Estimated Graph path in Future")
+        
+    welD.connect("expose-event", framewelD)
+    
+    
+    
+    
+    
+    welDbox.pack_start(welD)
+    welDbutton.connect("clicked", projectchecklist)
+    
+    progresbox.pack_start(welDbutton)
+    
+    
+    
+    
+
+
 def organ(widget):
     
     global orgabox1
@@ -1211,36 +1521,7 @@ def organ(widget):
     orgabox1 = gtk.VBox(False, 5)
     mainbox.pack_start(orgabox1)
     
-    progresbox = gtk.HBox(False, 0)
-    orgabox1.pack_start(progresbox, False)
-    
-    
-    
-    
-    
-    #assetpercent checklistpercent ◀▶
-    
-    welDbutton = gtk.Button()
-    welDbutton.set_tooltip_text("Open Project's Checklist")
-    
-    welDbox = gtk.HBox(False)
-    #welDbox.set_layout(gtk.BUTTONBOX_START)
-    welDbutton.add(welDbox)
-    
-    checklisticon = gtk.Image()
-    checklisticon.set_from_file("py_data/icons/checklist.png")
-    
-    welDbox.pack_start(checklisticon, False)
-    
-    welD = gtk.ProgressBar()
-    welD.set_text(("◀ Assets/scenes: "+assetpercent+"% ▶    ◀ Project checklist: "+checklistpercent+"% ▶     ◀ Avarage: "+projectpercent+"% ▶"))
-    welD.set_fraction((float(projectpercent)/100))
-    
-    welDbox.pack_start(welD)
-    welDbutton.connect("clicked", projectchecklist)
-    
-    progresbox.pack_start(welDbutton)
-    
+    topprogress()
     
     
     titlesbox = gtk.HBox(True, 10)
@@ -2683,35 +2964,12 @@ def scene_box(widget):
     orgabox1 = gtk.VBox(False, 5)
     mainbox.pack_start(orgabox1)
     
+    topprogress()
+    
     progresbox = gtk.VBox(False)
     orgabox1.pack_start(progresbox)
     
     
-    
-    
-    
-    
-    
-    welDbutton = gtk.Button()
-    welDbutton.set_tooltip_text("Open Project's Checklist")
-    
-    welDbox = gtk.HBox(False)
-    #welDbox.set_layout(gtk.BUTTONBOX_START)
-    welDbutton.add(welDbox)
-    
-    checklisticon = gtk.Image()
-    checklisticon.set_from_file("py_data/icons/checklist.png")
-    
-    welDbox.pack_start(checklisticon, False)
-    
-    welD = gtk.ProgressBar()
-    welD.set_text(("◀ Assets/scenes: "+assetpercent+"% ▶    ◀ Project checklist: "+checklistpercent+"% ▶     ◀ Avarage: "+projectpercent+"% ▶"))
-    welD.set_fraction((float(projectpercent)/100))
-    
-    welDbox.pack_start(welD)
-    welDbutton.connect("clicked", projectchecklist)
-    
-    progresbox.pack_start(welDbutton, False)
     
     SCENEStitle = gtk.Label("Scenes")
     progresbox.pack_start(SCENEStitle, False)
@@ -3767,26 +4025,33 @@ def scene_box(widget):
                                                 
                                                 print "tleft", tleft
                                                 
-                                                valt = "SECONDS"
-                                                
+                                                valt = str(tleft)+" SEC"
+                                                print valt , "VALT HERE1"
                                                 if tleft > 60 :
+                                                    le = tleft
                                                     tleft = tleft / 60
-                                                    valt = "MINUTES"
+                                                    le = le - (tleft * 60)
+                                                    valt = str(tleft)+" MIN AND "+ str(le) + " SEC"
                                                 
                                                     if tleft > 60 :
+                                                        le = tleft
                                                         tleft = tleft / 60
-                                                        valt = "HOURS"
+                                                        le = le - (tleft * 60)
+                                                        valt = str(tleft)+" HRS AND "+ str(le) + " MIN"
                                                 
                                                         if tleft > 24 :
+                                                            le = tleft
                                                             tleft = tleft / 24
-                                                            valt = "DAYS"
+                                                            le = le - (tleft * 24)
+                                                            valt = str(tleft)+" DAYS AND "+ str(le) + " HRS"
+                                                
                                                 
                                                 
                                                 print tleft
-                                                print valt
+                                                print valt , "VALT HERE2"
                                                 
                                                 
-                                                renderbox.pack_start(gtk.Label("ESTIMATED RENDER TIME: "+str(tleft)+" "+valt+"  AVARAGE PER FRAME: "+str(avar)+" SEC"))
+                                                renderbox.pack_start(gtk.Label("Time to wait: "+valt+" | Per Frame: "+str(avar)+" SEC"))
                                                 
                                                 
                                                 # little framegraph
@@ -3819,6 +4084,8 @@ def scene_box(widget):
                                                         
                                                     hstep = float(h)/len(range(smallest, biggest))
                                                     
+                                                    smallerwrite = True
+                                                    biggerwrite = True
                                                     for part, box in enumerate(avarc):
                                                         
                                                         
@@ -3830,10 +4097,10 @@ def scene_box(widget):
                                                         colors = ["#F00","#333","#0A0"]
                                                         
                                                         colinx = 1
-                                                        if box == smallest:
+                                                        if box == smallest and smallerwrite:
                                                             colinx = 2
                                                             
-                                                            
+                                                            smallerwrite = False
                                                             tleft = box
                                                 
                                                             print "tleft", tleft
@@ -3863,8 +4130,10 @@ def scene_box(widget):
                                                             
                                                             
                                                             
-                                                        elif box == biggest:
+                                                        elif box == biggest and biggerwrite:
                                                             colinx = 0
+                                                            
+                                                            biggerwrite = False
                                                             
                                                             tleft = box
                                                 
@@ -3893,7 +4162,7 @@ def scene_box(widget):
                                                                                      
                                                                                                                 
                                                         xgc.set_rgb_fg_color(gtk.gdk.color_parse(colors[colinx]))
-                                                        widget.window.draw_rectangle(xgc, True, thex, they, int(step), (they)-h)
+                                                        widget.window.draw_rectangle(xgc, True, thex, they, int(step)+1, (they)-h)
                                                         
                                                         
                                                         

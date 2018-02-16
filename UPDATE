@@ -1,3 +1,9 @@
+3.0
+
+  Graph system added for analytics. Now it will estimate your project speed
+  and will show you whether you have time to breathe or you have to speed up.
+
+
 2.3
   RENDERING WINDOW HAS CHANGED! NOW IT'S COOL YAY... 
   YOU STILL NEED TO MANUALLY UPDATE /py_data/renderer.py

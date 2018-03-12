@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 3.0
+VERSION = 3.1
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -10,6 +10,26 @@ import datetime #to manage dates and time realed things
 import pango #For text formatting
 import cairo
 import zipfile #For Updates and shit
+
+
+def getnumstr(num):
+    
+    s = ""
+    for i in range(4-len(str(num))):
+        s = s + "0"
+    
+    return s+str(num)
+
+def getfileoutput(num, extention):
+    
+    s = getnumstr(num)
+    
+    if extention == "JPEG":
+        s = s + ".jpg"
+    else:
+        s = s + "." + extention.lower()
+        
+    return s
 
 ### IMAGE FOR LOADING THRUMBNAILS OF RENDERS
 try:
@@ -25,6 +45,37 @@ except:
         print "sudo pip2 install Image"
         print "\n\n"
         exit()
+
+## TIME CALCULATING FUNCTION TO MAKE IT READABLE
+def timetowait(tleft):
+    print "tleft", tleft
+                                                
+    valt = str(tleft)+" SEC"
+    print valt , "VALT HERE1"
+    if tleft > 60 :
+        le = tleft
+        tleft = tleft / 60
+        le = le - (tleft * 60)
+        valt = str(tleft)+":"+ str(le)
+    
+        if tleft > 60 :
+            lele = le
+            le = tleft
+            tleft = tleft / 60
+            le = le - (tleft * 60)
+            lele = (lele - le)
+            if lele < 0:
+                lele = lele * -1
+            
+            valt = str(tleft)+":"+ str(le) + ":" + str(lele) 
+    
+            if tleft > 24 :
+                le = tleft
+                tleft = tleft / 24
+                le = le - (tleft * 24)
+                valt = str(tleft)+" DAYS AND "+ str(le) + " HRS"
+    return valt
+
 
 ### getting data from project.data
 projectname = None
@@ -225,11 +276,11 @@ def readData():
         percentobje = "100.0"
         
     try:
-        percentvehi = ((float(donevehi))/float(projectvehi))*100.0
-        percentvehi = int(percentvehi*100)
-        percentvehi = str(float(percentvehi)/100.0)
+        percentloca = ((float(doneloca))/float(projectloca))*100.0
+        percentloca = int(percentloca*100)
+        percentloca = str(float(percentloca)/100.0)
     except:
-        percentvehi = "100.0"
+        percentloca = "100.0"
     
     
     # project.progress
@@ -1371,9 +1422,15 @@ def topprogress(widget=None):
         ctx.move_to( 5,h/4*4-5)
         ctx.show_text("ASSESTS / SCENES (FILES): ")
         
+        for p in range(w/20):
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#A9A9A9"))
+            widget.window.draw_line(xgc,p*10+w/2, 0, p*10+w/2, h)
         
+        for p in range(h):
+            widget.window.draw_line(xgc,w/2, p*10, w, p*10)
         
-        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#555555"))
+        widget.window.draw_line(xgc,w/2, h, w, 0)
         
         #GRAPH
         
@@ -1382,6 +1439,32 @@ def topprogress(widget=None):
         prevV = 0
         
         thedayW = 0
+        
+        highestpd = 0 
+        lowestpd = 100
+        
+        
+        
+        for dln, date in enumerate(perhys):
+            if date.startswith("DATE"):
+                
+                
+                
+                lastpercent = float( date.split(" ")[2][:-1] )
+                
+                
+                
+                
+                
+                
+                
+                prevV = lastpercent
+                
+                
+                
+                
+        avrgval = lastpercent / passed
+        prevV = 0
         
         for dln, date in enumerate(perhys):
             if date.startswith("DATE"):
@@ -1402,17 +1485,48 @@ def topprogress(widget=None):
                 nowH = int( h / 100 * thepercent )*-1+h
                 
                 xgc.line_width = 4
-                if prevV < thepercent:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#007700"))
+                
+                
+                if ( thepercent - prevV) > avrgval :
+                   xgc.set_rgb_fg_color(gtk.gdk.color_parse("#007700"))
+                
+                elif thepercent > prevV:
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#AA7700"))
+                
                 else:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#994444"))
+                
+                
+                
+                    
+                    
+                    
                 widget.window.draw_line(xgc,prevW, prevH, nowW, nowH)
                 
                 if datetime.datetime.now().strftime("%y-%m-%d") in date:
                     
+                    widget.window.draw_rectangle(xgc, True, nowW,0,10,10)
+                    
+                    ctx.set_source_rgb(0, 0, 0)
+                    ctx.select_font_face("Ubuntu", cairo.FONT_SLANT_NORMAL,
+                        cairo.FONT_WEIGHT_NORMAL)
+                    ctx.set_font_size(10)
+                    ctx.move_to( nowW+12, 10)
+                    ctx.show_text(str( thepercent - prevV)+"%")
+                    ctx.move_to( nowW-3, 20)
+                    ctx.show_text("PD "+str( (100 - thepercent) / (alltime-passed))[:5]+"%")
+                    
+                    xgc.line_width = 1
+                    
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#BB6600"))
                     widget.window.draw_line(xgc,nowW, 0, nowW, h)
                     thedayH = nowW
+                    
+                    
+                    
+                
+                
+                
                 
                 prevH = nowH
                 prevW = nowW
@@ -1420,43 +1534,94 @@ def topprogress(widget=None):
         
         # avarage
         
-        avrgval = thepercent / passed
+        xgc.line_width = 1
+        
+        
         enddateval = avrgval * ( alltime - passed ) + thepercent
         
         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#555599"))
         widget.window.draw_line(xgc,prevW+2, prevH, w, int(  h / 100 * enddateval  )*-1+h)
         
+        if enddateval < 100:
+        
+            warnmes = "WORK FASTER"
+        
+            ctx.set_source_rgb(0.8, 0, 0)
+            
+        elif enddateval > 99 and enddateval < 120:
+            
+            warnmes = "PERFECT"
+        
+            ctx.set_source_rgb(0, 0.2, 0)
+        else:
+            
+            warnmes = "TOO FAST"
+        
+            ctx.set_source_rgb(0.1, 0.1, 0)
+            
+            
+        ctx.select_font_face("Ubuntu", cairo.FONT_SLANT_NORMAL,
+            cairo.FONT_WEIGHT_NORMAL)
+        ctx.set_font_size(10)
+        ctx.move_to( w-100, h/2)
+        ctx.show_text("By Deadline "+str(int(enddateval))+"%")
+        ctx.set_font_size(10)
+        ctx.move_to( w-100, h/2+10)
+        ctx.show_text(warnmes)
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#FF0000"))
+        xgc.line_width = 2
+        widget.window.draw_rectangle(xgc, True, w-5, int(  h / 100 * enddateval  )*-1+h-2, 5, 5)
+            
+        
+        
         
         # helpers
+        
+        
+        ctx.set_source_rgb(0, 0, 0)
+        
+        xgc.line_width = 4
         
         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#007700"))
         
         widget.window.draw_line(xgc,w/2, 10, w/2+50, 10,)
         ctx.set_font_size(10)
         ctx.move_to( w/2+55 , 10+3)
-        ctx.show_text("More Done")
+        ctx.show_text("Very Good")
         
-        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#994444"))
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#AA7700"))
         
         widget.window.draw_line(xgc,w/2, 20, w/2+50, 20,)
         ctx.set_font_size(10)
         ctx.move_to( w/2+55 , 20+3)
-        ctx.show_text("Less Done")
+        ctx.show_text("Not Too Bad")
         
         
-        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#BB6600"))
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#994444"))
         
         widget.window.draw_line(xgc,w/2, 30, w/2+50, 30,)
         ctx.set_font_size(10)
         ctx.move_to( w/2+55 , 30+3)
+        ctx.show_text("Very Bad")
+        
+        
+        xgc.line_width = 1
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#BB6600"))
+        
+        widget.window.draw_line(xgc,w/2, 40, w/2+50, 40,)
+        ctx.set_font_size(10)
+        ctx.move_to( w/2+55 , 40+3)
         ctx.show_text("Today ( in relation to the deadline )")
         
         
         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#555599"))
         
-        widget.window.draw_line(xgc,w/2, 40, w/2+50, 40,)
+        widget.window.draw_line(xgc,w/2, 50, w/2+50, 50,)
         ctx.set_font_size(10)
-        ctx.move_to( w/2+55 , 40+3)
+        ctx.move_to( w/2+55 , 50+3)
         ctx.show_text("Estimated Graph path in Future")
         
     welD.connect("expose-event", framewelD)
@@ -1608,8 +1773,8 @@ def organ(widget):
         abovelistbox.pack_start(charac_progress, False)
     elif curwid == "loca":
         charac_progress = gtk.ProgressBar()
-        charac_progress.set_text(("Locations: "+percentvehi+"%"))
-        charac_progress.set_fraction((float(percentvehi)/100))
+        charac_progress.set_text(("Locations: "+percentloca+"%"))
+        charac_progress.set_fraction((float(percentloca)/100))
         abovelistbox.pack_start(charac_progress, False)
     
     try:
@@ -2469,7 +2634,7 @@ def organ(widget):
                 
                 thrumb = Image.open(os.getcwd()+"/dev/"+cfplease+"/"+curfile+"/renders/Preview.jpg")
                 size = 200, 200
-                thrumb.thumbnail(size, Image.ANTIALIAS)
+                thrumb.thumbnail(size, Image.NEAREST)
                 thrumb.save("py_data/tmp.jpg", "PNG")
                 
                 
@@ -3109,11 +3274,54 @@ def scene_box(widget):
     folderbuttons.pack_start(seqbutton, False)
     
     
+    def infobuttonaction(w):
+        
+        infowindow = gtk.Window()
+        
+        s = ""
+        
+        s = s + "Reduce Light Bounces\n"
+        s = s + "Use Portals\n"
+        s = s + "Switch to GPU\n"
+        s = s + "TILES: CPU 64, GPU 512\n"
+        s = s + "Reduce Samples\n"
+        s = s + "Use Denoising\n"
+        s = s + "Use Latest Blender Build\n"
+        s = s + "Use Linux\n"
+        s = s + "Clamp Light\n"
+        s = s + "No Caustics\n"
+        s = s + "Alt - D instead of Shift - D\n"
+        s = s + "Adaptive SubDiv\n"
+        s = s + "Alpha transparency is BAD\n"
+        s = s + "Less Hair\n"
+        s = s + "No Volumetrics\n"
+        s = s + "No SSS (Subdermal Surface Scattering)\n"
+        s = s + "Multiple importance Your light\n"
+        s = s + "All kinds of little things"
+        
+        infowindow.add(gtk.Label(s))
+        
+        infowindow.show_all()
+    
+    
+    # INF
+    infobutton = gtk.Button()
+    infoicon = gtk.Image()
+    infoicon.set_from_file("py_data/icons/info.png")
+    infobutton.add(infoicon)
+    infobutton.set_tooltip_text("18 ways to speed up you render times")
+    folderbuttons.pack_end(infobutton, False)
+    infobutton.connect("clicked", infobuttonaction )
+    
+    
+    # OPEN RND FOLDRE
     
     def openrndfolder(w):
         os.system("nautilus "+os.getcwd()+"/rnd/")
     
     opendevdictbox = gtk.HBox(False)
+    
+    
     
     
     
@@ -3423,10 +3631,15 @@ def scene_box(widget):
                     com = "shotprogress"+n+" = gtk.ProgressBar()"
                     exec(com) in locals(), globals()
                     
+                    com ="inframebox"+n+".show_now()"
+                    exec(com) in locals(), globals()
+                    
                     
                     
                     com = "shotprogress"+n+".set_fraction("+str(float(i[1])/3)+")"
                     exec(com) in locals(), globals()
+                    
+                    
                     
                     if i[1] == 0:
                         com = "shotprogress"+n+".set_text('Stage: Planning / Scripting')"
@@ -3441,9 +3654,9 @@ def scene_box(widget):
                     
                     com = "inframebox"+n+".pack_start(shotprogress"+n+", False)"
                     exec(com) in locals(), globals()
-            
-            
-            
+                
+                    
+                    
                     com = "inframefolders"+n+" = gtk.HBox(True)"
                     exec(com) in locals(), globals()
                     
@@ -3632,6 +3845,8 @@ def scene_box(widget):
                     
                     filethumb = "No Render"
                     
+                    thvideo = False
+                    
                     for attempt in range(3):
                         
                         if attempt == 0:
@@ -3683,7 +3898,7 @@ def scene_box(widget):
                                     
                                     os.system("totem-video-thumbnailer "+image+ " /tmp/orgthumb.png")
                                     
-                                    
+                                    thvideo = image
                                     
                                     filethumb = "/tmp/orgthumb.png"
                                     break
@@ -3698,13 +3913,47 @@ def scene_box(widget):
                         thrumb.save("py_data/tmp.jpg", "PNG")
                         
                         
+                        com = "filethumbbutton"+n+" = gtk.Button()"
+                        exec(com) in locals(), globals()
+                        
+                        com = "filethumbbutton"+n+".props.relief = gtk.RELIEF_NONE"
+                        exec(com) in locals(), globals()
+                        
                         com = "thelittleicon"+n+" = gtk.Image()"
                         exec(com) in locals(), globals()
                         
                         com = "thelittleicon"+n+".set_from_file('py_data/tmp.jpg')"
                         exec(com) in locals(), globals()
                         
-                        com = "thubnailVBOX"+n+".pack_start(thelittleicon"+n+", False)"
+                        com = "filethumbbutton"+n+".add(thelittleicon"+n+")"
+                        exec(com) in locals(), globals()
+                        
+                        if thvideo:
+                            
+                            com = "fileicon"+n+" = thvideo"
+                            exec(com) in locals(), globals()
+                        
+                        else:
+                               
+                            com = "fileicon"+n+" = filethumb"
+                            exec(com) in locals(), globals()
+                        
+                        
+                        def filebuttoniconload(w=None, n=1):
+                            
+                            com = "print fileicon"+n
+                            exec(com) in locals(), globals()
+                            
+                            com = 'os.system("xdg-open "+fileicon'+n+')'
+                            exec(com) in locals(), globals()
+                        
+                        
+                        
+                        com = "filethumbbutton"+n+".connect('clicked', filebuttoniconload, n)"
+                        exec(com) in locals(), globals()
+                        
+                        
+                        com = "thubnailVBOX"+n+".pack_start(filethumbbutton"+n+", False)"
                         exec(com) in locals(), globals()
                         
                     else:
@@ -3800,8 +4049,17 @@ def scene_box(widget):
                             com = "render"+n+"_"+k+".modify_bg(gtk.STATE_NORMAL, gtk.gdk.color_parse('#A1A1A1'))"
                             exec(com) in locals(), globals()
                             
-                            com = "filebuttonsbox"+n+"_"+k+".pack_end(render"+n+"_"+k+", False)"
+                            com = "renderVbox"+n+"_"+k+" = gtk.VBox(False)"
                             exec(com) in locals(), globals()
+                            
+                            com = "renderVbox"+n+"_"+k+".pack_start(render"+n+"_"+k+", False)"
+                            exec(com) in locals(), globals()
+                            
+                            com = "filebuttonsbox"+n+"_"+k+".pack_end(renderVbox"+n+"_"+k+", False)"
+                            exec(com) in locals(), globals()
+                            
+                            
+                            
                             
                             def rendering(w, path):
                                 
@@ -3930,7 +4188,7 @@ def scene_box(widget):
                                             
                                             checkfolder = value
                                             
-                                            
+                                            renderpathforstuff = value
                                             
                                             print "VALUE SUKA BIZDETZ NAHUY", value
                                             
@@ -4023,27 +4281,7 @@ def scene_box(widget):
                                                 
                                                 tleft = avar*(int(value)-count)
                                                 
-                                                print "tleft", tleft
-                                                
-                                                valt = str(tleft)+" SEC"
-                                                print valt , "VALT HERE1"
-                                                if tleft > 60 :
-                                                    le = tleft
-                                                    tleft = tleft / 60
-                                                    le = le - (tleft * 60)
-                                                    valt = str(tleft)+" MIN AND "+ str(le) + " SEC"
-                                                
-                                                    if tleft > 60 :
-                                                        le = tleft
-                                                        tleft = tleft / 60
-                                                        le = le - (tleft * 60)
-                                                        valt = str(tleft)+" HRS AND "+ str(le) + " MIN"
-                                                
-                                                        if tleft > 24 :
-                                                            le = tleft
-                                                            tleft = tleft / 24
-                                                            le = le - (tleft * 24)
-                                                            valt = str(tleft)+" DAYS AND "+ str(le) + " HRS"
+                                                valt = timetowait(tleft)
                                                 
                                                 
                                                 
@@ -4051,7 +4289,7 @@ def scene_box(widget):
                                                 print valt , "VALT HERE2"
                                                 
                                                 
-                                                renderbox.pack_start(gtk.Label("Time to wait: "+valt+" | Per Frame: "+str(avar)+" SEC"))
+                                                renderbox.pack_start(gtk.Label("Time to wait: "+valt+" | Per Frame: "+timetowait(avar)))
                                                 
                                                 
                                                 # little framegraph
@@ -4060,6 +4298,12 @@ def scene_box(widget):
                                                     
                                                     w, h = widget.window.get_size()
                                                     xgc = widget.window.new_gc()
+                                                    
+                                                    mx, my, fx  = widget.window.get_pointer()
+                                                    
+                                                    
+                                                    
+                                                    
                                                     ctx = widget.window.cairo_create()
                                                     
                                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#949494"))
@@ -4080,19 +4324,30 @@ def scene_box(widget):
                                                             smallest = box
                                                     
                                                     
-                                                    step = float(w)/(len(avarc)-1)*progval
+                                                    step = float(w)/(len(avarc))*progval
                                                         
                                                     hstep = float(h)/len(range(smallest, biggest))
                                                     
                                                     smallerwrite = True
                                                     biggerwrite = True
+                                                    
+                                                    def texty():
+                                                        if my < 10:
+                                                            return 10
+                                                            
+                                                        elif my > they-5:
+                                                            return they-5
+                                                        else:
+                                                            return my
+                                                    
+                                                    
                                                     for part, box in enumerate(avarc):
                                                         
                                                         
                                                         thex = int(step * part)
                                                         they = (int((hstep * (box-smallest))/2)*-1)+h-20
                                                         
-                                                        print thex, they, step, hstep
+                                                        #print thex, they, step, hstep
                                                                                      
                                                         colors = ["#F00","#333","#0A0"]
                                                         
@@ -4103,21 +4358,9 @@ def scene_box(widget):
                                                             smallerwrite = False
                                                             tleft = box
                                                 
-                                                            print "tleft", tleft
+                                                            #print "tleft", tleft
                                                             
-                                                            valt = "SECONDS"
-                                                            
-                                                            if tleft > 60 :
-                                                                tleft = tleft / 60
-                                                                valt = "MINUTES"
-                                                            
-                                                                if tleft > 60 :
-                                                                    tleft = tleft / 60
-                                                                    valt = "HOURS"
-                                                            
-                                                                    if tleft > 24 :
-                                                                        tleft = tleft / 24
-                                                                        valt = "DAYS"
+                                                            valt = timetowait(tleft)
                                                             
                                                             
                                                             
@@ -4125,8 +4368,12 @@ def scene_box(widget):
                                                             ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL,
                                                                 cairo.FONT_WEIGHT_NORMAL)
                                                             ctx.set_font_size(10)
-                                                            ctx.move_to( thex, they-20)
-                                                            ctx.show_text(str(tleft)+" "+valt)
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            ctx.move_to( thex, texty())
+                                                            ctx.show_text(valt)
                                                             
                                                             
                                                             
@@ -4139,33 +4386,98 @@ def scene_box(widget):
                                                 
                                                             print "tleft", tleft
                                                             
-                                                            valt = "SECONDS"
+                                                            valt = timetowait(tleft)
                                                             
-                                                            if tleft > 60 :
-                                                                tleft = tleft / 60
-                                                                valt = "MINUTES"
                                                             
-                                                                if tleft > 60 :
-                                                                    tleft = tleft / 60
-                                                                    valt = "HOURS"
-                                                            
-                                                                    if tleft > 24 :
-                                                                        tleft = tleft / 24
-                                                                        valt = "DAYS"
                                                             
                                                             ctx.set_source_rgb(0.4, 0, 0)
                                                             ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL,
                                                                 cairo.FONT_WEIGHT_NORMAL)
                                                             ctx.set_font_size(10)
-                                                            ctx.move_to( thex, they)
-                                                            ctx.show_text(str(tleft)+" "+valt)
+                                                            ctx.move_to( thex, texty())
+                                                            ctx.show_text(valt)
                                                                                      
-                                                                                                                
+                                                        
+                                                        
+                                                        
+                                                                                                               
                                                         xgc.set_rgb_fg_color(gtk.gdk.color_parse(colors[colinx]))
+                                                        if mx > thex and mx < (thex + int(step))+2:
+                                                            print thex, mx
+                                                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#FF0"))
+                                                        
+                                                            tleft = box
+                                                
+                                                            print "tleft", tleft
+                                                            
+                                                            valt = timetowait(tleft)
+                                                            
+                                                            
+                                                            # LITTLE IMAGE PREVIEW
+                                                            
+                                                            try:
+                                                                thrumb = Image.open(renderpathforstuff+getfileoutput(part+1, "JPEG"))
+                                                                size = 100, 100
+                                                                thrumb.thumbnail(size, Image.ANTIALIAS)
+                                                                thrumb.save("py_data/tmp.png", "PNG")
+                                                            except:
+                                                                raise
+                                                                print "THE IMAGE PROBLEMED"
+                                                                
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            pixbuf = gtk.gdk.pixbuf_new_from_file("py_data/tmp.png") #one way to load a pixbuf
+                                                           
+                                                            px = mx+40
+                                                            
+                                                            if px > w-100:
+                                                                px = mx-140
+                                                            
+                                                           
+                                                            px, py = px, my    
+                                                            
+                                                            
+                                                            
+                                                            
+                                                            ## TEXT STUFF
+                                                            
+                                                            
+                                                            ctx.set_source_rgb(0, 0, 0)
+                                                            ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL,
+                                                                cairo.FONT_WEIGHT_NORMAL)
+                                                            ctx.set_font_size(10)
+                                                            
+                                                            textm = mx
+                                                            
+                                                            if mx > (w-40):
+                                                                textm = w-40
+                                                            
+                                                            
+                                                            ctx.move_to( textm, texty())
+                                                            ctx.show_text(valt)
+                                                            
+                                                            ctx.set_source_rgb(1, 1, 1)
+                                                            ctx.move_to( textm, 15)
+                                                            ctx.show_text(str(part+1))
+                                                            
+                                                            
+                                                            
+                                                        
+                                                        try:
+                                                            widget.window.draw_pixbuf(None, pixbuf, 0, 0, px, py, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                                                        except:
+                                                            pass
+                                                            
                                                         widget.window.draw_rectangle(xgc, True, thex, they, int(step)+1, (they)-h)
                                                         
                                                         
                                                         
+                                                        
+                                                        
+                                                        
+                                                    widget.queue_draw()        
                                                 
                                                 graph = gtk.DrawingArea()
                                                 graph.set_size_request(100,100)
@@ -4258,6 +4570,35 @@ def scene_box(widget):
                             
                             com = "render"+n+"_"+k+".connect('clicked', rendering, '"+path+"')"
                             exec(com) in locals(), globals()
+                            
+                            print "RENDERANIMATION BUTTON BOTTOM PATH: ", path
+                            
+                            try:
+                                rendrinf = open(path[:path.rfind("/")]+"/renderinfo.data", "r")
+                                rendrinf = rendrinf.read()
+                                
+                                if rendrinf.split("\n")[0] == path:
+                                    stfrm = rendrinf.split("\n")[4]
+                                    endfm = rendrinf.split("\n")[5]
+                                    folfm = rendrinf.split("\n")[2]
+                                    
+                                    filesamount = len(os.listdir(folfm))
+                                    
+                                    print filesamount
+                                    
+                                    frac = float(filesamount) / int(endfm)
+                                    
+                                    com = "rendrbuttonprogress"+n+"_"+k+" = gtk.ProgressBar()"
+                                    exec(com) in locals(), globals()
+                                    com = "rendrbuttonprogress"+n+"_"+k+".set_fraction("+str(frac)+")"
+                                    exec(com) in locals(), globals()
+                                    
+                                    com = "renderVbox"+n+"_"+k+".pack_start(rendrbuttonprogress"+n+"_"+k+", False)"
+                                    exec(com) in locals(), globals()
+                                
+                            except:
+                                pass
+                                
                                                                         
                         else:
                             com = "filebutton"+n+"_"+k+" = gtk.Button('Generate: "+scenesinfolist[selectedscene][0]+"_"+i[0]+".blend')"
@@ -4277,7 +4618,7 @@ def scene_box(widget):
                             
                             com = "inframebox"+n+".pack_start(filebutton"+n+"_"+k+")"
                             exec(com) in locals(), globals()
-            
+                    
             
             
             

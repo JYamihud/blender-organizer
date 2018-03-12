@@ -1,3 +1,9 @@
+3.1
+  Added mouse controll for the time graphs in the render animation window.
+  It now previews the time, number and the picture of the frame you hover
+  above with the mouse.
+
+
 3.0
 
   Graph system added for analytics. Now it will estimate your project speed

@@ -1,3 +1,8 @@
+
+3.3
+  New render animation lists for mulple scene to be rendered over long time
+  PLEASE MAKE SURE YOU GET ALL THE NEW PY_DATA FOLDER FROM THE RESPOSITORY
+
 3.1
   Added mouse controll for the time graphs in the render animation window.
   It now previews the time, number and the picture of the frame you hover

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #IMPORTING PYTHON MODULES
 
-VERSION = 3.1
+VERSION = 3.3
 
 import os #to work with folders files and stuff liek this
 import gtk #for graphical interface
@@ -10,6 +10,168 @@ import datetime #to manage dates and time realed things
 import pango #For text formatting
 import cairo
 import zipfile #For Updates and shit
+
+
+#BTW This Class was written way after the initial start of the project
+#I've got more sophisticated so here is a class
+
+
+### simple command to start a software in a new thread
+def sysopen(command):
+    
+    import subprocess
+    
+    tmp = open("py_data/last_command.sh", "w")
+    tmp.write(command)
+    tmp.close()
+    
+    
+    p = subprocess.Popen(['/bin/sh', os.path.expanduser(os.getcwd()+"/py_data/last_command.sh")])
+    
+    #thread = threading.Thread(target=systemcommad, args=(command,))
+    #thread.daemon = True
+    #thread.start()
+
+
+def systemcommad(word):
+    print "trying to start blender"
+    os.system(word)
+    
+
+
+
+class rndseq:
+    
+    def __init__(self, loc=None):
+        
+        self.loc = loc
+        
+        # cheacking that py_data/rnd_seq exists
+        if not os.path.exists("py_data/rnd_seq"):
+        
+            os.mkdir("py_data/rnd_seq")
+            
+        # reading the lists of the files
+        
+        self.files = []
+        
+        for f in os.listdir("py_data/rnd_seq"):
+            self.files.append(f)
+    
+    
+    
+        
+    #creating the list window    
+    def listwin(self, df=None):
+        
+        self.df = df
+        
+        self.lw = gtk.Window()
+        self.lw.set_default_size(400, 400)
+        self.lw.set_position(gtk.WIN_POS_CENTER)
+        
+        self.box = gtk.VBox(False)
+        self.lw.add(self.box)
+        
+        self.lwscroll = gtk.ScrolledWindow()
+        self.box.pack_start(self.lwscroll)
+        
+        self.lwbox = gtk.VBox(False)
+        self.lwscroll.add_with_viewport(self.lwbox)
+        
+       
+        
+        
+        if df != None:
+            
+            self.lw.set_title(df)
+            
+            
+            
+            self.listfile = open("py_data/rnd_seq/"+df)  
+            self.listfile = self.listfile.read()
+            
+            
+            
+            def lineitem(text):
+                self.lwbox.pack_start(gtk.HSeparator(), False)
+                
+                thisitemsbox = gtk.HBox(False)
+                RENDICON = gtk.Image()
+                RENDICON.set_from_file("py_data/icons/render.png")
+                thisitemsbox.pack_start(RENDICON, False )
+                thisitemsbox.pack_start(gtk.Label(text[text.find("/rnd/")+5:]), False)
+                
+                
+                def delb(w, t):
+                    self.listfile = self.listfile.replace(t+"\n", "")
+                    refresh()
+                
+                deletebutton = gtk.Button()
+                deletebuttonicon = gtk.Image()
+                deletebuttonicon.set_from_file("py_data/icons/delete.png")
+                deletebutton.add(deletebuttonicon)
+                deletebutton.connect("clicked", delb, text)
+                deletebutton.props.relief = gtk.RELIEF_NONE
+                thisitemsbox.pack_end(deletebutton, False)
+                
+                self.lwbox.pack_start(thisitemsbox, False )
+                
+                
+            def refresh():
+                
+                try:
+                    
+                    self.lwscroll.destroy()
+                    
+                    self.lwscroll = gtk.ScrolledWindow()
+                    self.box.pack_start(self.lwscroll)
+                    
+                    self.lwbox = gtk.VBox(False)
+                    self.lwscroll.add_with_viewport(self.lwbox)
+                
+                except:
+                    pass
+                
+                for i in self.listfile.split("\n"):
+                    
+                    if os.path.exists(i):
+                        lineitem(i)
+                
+                
+                
+                self.lwscroll.show_all()
+                 
+            
+            refresh()
+            
+            def start(w=None):
+                
+                wtf = open("py_data/rendersequenccer.data", "w")
+                wtf.write(self.listfile)
+                
+                wtf = open("py_data/rnd_seq/"+self.df, "w")
+                wtf.write(self.listfile)
+                
+                
+                
+                self.lw.destroy()
+                
+                sysopen("xterm -geometry 185 -e python "+os.getcwd()+"/py_data/rendersequencer.py")
+                
+                
+            startbutton = gtk.Button("START RENDERS")
+            self.box.pack_end(startbutton, False)
+            startbutton.connect("clicked", start)
+        
+        
+        self.lw.show_all()
+
+#rndseq().listwin("CPU.data")
+#print rndseq().files
+
+
+
 
 
 def getnumstr(num):
@@ -250,9 +412,7 @@ def readData():
     
     
     
-    projectpercent = ((float(donetotal))/float(prototal))*100.0
-    projectpercent = int(projectpercent*100)
-    projectpercent = str(float(projectpercent)/100.0)
+    
     
     try:
         percentchar = ((float(donechar))/float(projectchar))*100.0
@@ -282,6 +442,12 @@ def readData():
     except:
         percentloca = "100.0"
     
+    listofpercents = [float(percentchar), float(percentvehi), float(percentobje), float(percentloca), float(donescen)]
+    
+    #projectpercent = ((float(donetotal))/float(prototal))*100.0 # OLD CODE BAD
+    projectpercent = sum(listofpercents)/len(listofpercents)
+    projectpercent = int(projectpercent*100)
+    projectpercent = str(float(projectpercent)/100.0)
     
     # project.progress
     
@@ -3065,29 +3231,7 @@ def changefile(widget, selectedfile):
     
     
     
-### simple command to start a software in a new thread
-def sysopen(command):
-    
-    import subprocess
-    
-    tmp = open("py_data/last_command.sh", "w")
-    tmp.write(command)
-    tmp.close()
-    
-    
-    p = subprocess.Popen(['/bin/sh', os.path.expanduser(os.getcwd()+"/py_data/last_command.sh")])
-    
-    #thread = threading.Thread(target=systemcommad, args=(command,))
-    #thread.daemon = True
-    #thread.start()
 
-
-def systemcommad(word):
-    print "trying to start blender"
-    os.system(word)
-    
-
-########### ________ SCENE _____ ############
 
 selectedscene = None
 def scene_box(widget):
@@ -3271,7 +3415,13 @@ def scene_box(widget):
     
     
     
+    
     folderbuttons.pack_start(seqbutton, False)
+    
+    
+    
+    
+    
     
     
     def infobuttonaction(w):
@@ -3343,6 +3493,30 @@ def scene_box(widget):
     opendevdict.connect("clicked", openrndfolder)
     
     folderbuttons.pack_end(opendevdict, False)
+    
+    #### MAKING A LIST RENDERS THINGY
+    
+    #  rndseq().listwin("CPU.data")
+    #  print rndseq().files
+    
+    listopennercombobox = gtk.combo_box_new_text()
+    listopennercombobox.append_text("Open Render List")
+    for i in rndseq().files:
+        listopennercombobox.append_text(i)
+    listopennercombobox.set_active(0)
+    def lop(w):
+        
+        if w.get_active_text() != "Open Render List":
+            rndseq().listwin(w.get_active_text())
+            w.set_active(0)
+    
+    listopennercombobox.connect("changed", lop)
+    
+    
+    
+    
+    
+    folderbuttons.pack_end(listopennercombobox , False)
     
     
     ## LIST OF SCENES
@@ -3846,6 +4020,7 @@ def scene_box(widget):
                     filethumb = "No Render"
                     
                     thvideo = False
+                              
                     
                     for attempt in range(3):
                         
@@ -3896,9 +4071,11 @@ def scene_box(widget):
                             
                                 if image.endswith(".mp4") or image.endswith(".avi") or image.endswith(".ogv"):
                                     
-                                    os.system("totem-video-thumbnailer "+image+ " /tmp/orgthumb.png")
+                                    os.system("totem-video-thumbnailer -s 100 "+image+ " /tmp/orgthumb.png")
                                     
                                     thvideo = image
+                                    
+                                    
                                     
                                     filethumb = "/tmp/orgthumb.png"
                                     break
@@ -3906,11 +4083,19 @@ def scene_box(widget):
                                     
                     if filethumb != "No Render":
                         
+                        if not thvideo:
                         
-                        thrumb = Image.open(filethumb)
-                        size = 150, 150
-                        thrumb.thumbnail(size, Image.ANTIALIAS)
-                        thrumb.save("py_data/tmp.jpg", "PNG")
+                            thrumb = Image.open(filethumb)
+                            size = 100, 100
+                            thrumb.thumbnail(size, Image.NEAREST)
+                            thrumb.save("py_data/tmp.png", "PNG")
+                        
+                        else:
+                            
+                            inputvideothubnail = open(filethumb, "r")
+                            thumbfuckingsave = open("py_data/tmp.png", "w")
+                            thumbfuckingsave.write(inputvideothubnail.read())
+                            thumbfuckingsave.close()
                         
                         
                         com = "filethumbbutton"+n+" = gtk.Button()"
@@ -3922,7 +4107,7 @@ def scene_box(widget):
                         com = "thelittleicon"+n+" = gtk.Image()"
                         exec(com) in locals(), globals()
                         
-                        com = "thelittleicon"+n+".set_from_file('py_data/tmp.jpg')"
+                        com = "thelittleicon"+n+".set_from_file('py_data/tmp.png')"
                         exec(com) in locals(), globals()
                         
                         com = "filethumbbutton"+n+".add(thelittleicon"+n+")"
@@ -4260,7 +4445,7 @@ def scene_box(widget):
                                             doneframes.set_fraction(progval)
                                             doneframes.set_text(str(int(progval*100))+"%")
                                             
-                                            renderbox.pack_start(doneframes)
+                                            #renderbox.pack_start(doneframes)
                                             
                                             
                                             # astimation AND graphs ( maybe )
@@ -4326,7 +4511,8 @@ def scene_box(widget):
                                                     
                                                     step = float(w)/(len(avarc))*progval
                                                         
-                                                    hstep = float(h)/len(range(smallest, biggest))
+                                                    hstep = float(h)/biggest #len(range(smallest, biggest))
+                                                    
                                                     
                                                     smallerwrite = True
                                                     biggerwrite = True
@@ -4340,12 +4526,18 @@ def scene_box(widget):
                                                         else:
                                                             return my
                                                     
-                                                    
+                                                    SELECTEDFRAMEWAS = False
                                                     for part, box in enumerate(avarc):
                                                         
                                                         
                                                         thex = int(step * part)
-                                                        they = (int((hstep * (box-smallest))/2)*-1)+h-20
+                                                        they = ((int((hstep * (box))/3)*-1)+h)
+                                                        
+                                                        thisonesx = (int((float(w-250)/biggest) * box))
+                                                        #thispersent = int(100.0/len(range(smallest, biggest)) * (box-smallest))
+                                                        thispersent = int(100.0/biggest * box)
+                                                        
+                                                        
                                                         
                                                         #print thex, they, step, hstep
                                                                                      
@@ -4367,13 +4559,13 @@ def scene_box(widget):
                                                             ctx.set_source_rgb(0, 0.4, 0)
                                                             ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL,
                                                                 cairo.FONT_WEIGHT_NORMAL)
-                                                            ctx.set_font_size(10)
+                                                            ctx.set_font_size(12)
                                                             
                                                             
                                                             
                                                             
-                                                            ctx.move_to( thex, texty())
-                                                            ctx.show_text(valt)
+                                                            ctx.move_to( 260, 80)
+                                                            ctx.show_text("BEST "+valt)
                                                             
                                                             
                                                             
@@ -4393,21 +4585,24 @@ def scene_box(widget):
                                                             ctx.set_source_rgb(0.4, 0, 0)
                                                             ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL,
                                                                 cairo.FONT_WEIGHT_NORMAL)
-                                                            ctx.set_font_size(10)
-                                                            ctx.move_to( thex, texty())
-                                                            ctx.show_text(valt)
+                                                            ctx.set_font_size(12)
+                                                            ctx.move_to( 260+((w-260)/2), 80)
+                                                            ctx.show_text("WORST "+valt)
                                                                                      
                                                         
                                                         
                                                         
                                                                                                                
                                                         xgc.set_rgb_fg_color(gtk.gdk.color_parse(colors[colinx]))
-                                                        if mx > thex and mx < (thex + int(step))+2:
+                                                        
+                                                        
+                                                        if mx > thex-1 and mx < (thex + int(step)+2) and SELECTEDFRAMEWAS == False:
+                                                            SELECTEDFRAMEWAS = True
                                                             print thex, mx
                                                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#FF0"))
                                                         
                                                             tleft = box
-                                                
+                                                            
                                                             print "tleft", tleft
                                                             
                                                             valt = timetowait(tleft)
@@ -4417,8 +4612,8 @@ def scene_box(widget):
                                                             
                                                             try:
                                                                 thrumb = Image.open(renderpathforstuff+getfileoutput(part+1, "JPEG"))
-                                                                size = 100, 100
-                                                                thrumb.thumbnail(size, Image.ANTIALIAS)
+                                                                size = 250, 100
+                                                                thrumb.thumbnail(size, Image.NEAREST)
                                                                 thrumb.save("py_data/tmp.png", "PNG")
                                                             except:
                                                                 raise
@@ -4436,7 +4631,7 @@ def scene_box(widget):
                                                                 px = mx-140
                                                             
                                                            
-                                                            px, py = px, my    
+                                                            px, py = 0, 0   
                                                             
                                                             
                                                             
@@ -4447,7 +4642,7 @@ def scene_box(widget):
                                                             ctx.set_source_rgb(0, 0, 0)
                                                             ctx.select_font_face("Sans", cairo.FONT_SLANT_NORMAL,
                                                                 cairo.FONT_WEIGHT_NORMAL)
-                                                            ctx.set_font_size(10)
+                                                            ctx.set_font_size(20)
                                                             
                                                             textm = mx
                                                             
@@ -4455,35 +4650,59 @@ def scene_box(widget):
                                                                 textm = w-40
                                                             
                                                             
-                                                            ctx.move_to( textm, texty())
-                                                            ctx.show_text(valt)
+                                                            widget.window.draw_rectangle(xgc, True, 250, 25, thisonesx, 25)
+                                                            #thisonesx
                                                             
                                                             ctx.set_source_rgb(1, 1, 1)
-                                                            ctx.move_to( textm, 15)
-                                                            ctx.show_text(str(part+1))
+                                                            ctx.move_to( 260, 20)
+                                                            ctx.show_text("FRAME "+str(part+1))
+                                                            
+                                                            ctx.set_source_rgb(0, 0, 0)
+                                                            
+                                                            ctx.move_to( 260, 45)
+                                                            ctx.show_text("RENDER TIME "+valt)
+                                                            
+                                                            ctx.set_font_size(15)
+                                                            ctx.move_to( 260, 65)
+                                                            ctx.show_text(str(thispersent)+" %")
                                                             
                                                             
                                                             
+                                                            
+                                                            
+                                                            
+                                                            
+                                                        
+                                                        
+                                                            
+                                                        widget.window.draw_rectangle(xgc, True, thex, they, int(step)+1, (they)-h)
                                                         
                                                         try:
                                                             widget.window.draw_pixbuf(None, pixbuf, 0, 0, px, py, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                                                         except:
                                                             pass
-                                                            
-                                                        widget.window.draw_rectangle(xgc, True, thex, they, int(step)+1, (they)-h)
                                                         
                                                         
+                                                    
                                                         
-                                                        
-                                                        
-                                                        
+                                                    ctx.set_source_rgb(1, 1, 1)
+                                                    ctx.set_font_size(12)
+                                                    ctx.move_to( w/2-10, h-1)
+                                                    ctx.show_text(str(int(progval*100))+"%")    
+                                                    
+                                                    
+                                                    
                                                     widget.queue_draw()        
                                                 
                                                 graph = gtk.DrawingArea()
-                                                graph.set_size_request(100,100)
+                                                graph.set_size_request(500,200)
                                                 
                                                 renderbox.pack_start(graph)
                                                 graph.connect("expose-event", framegraph)    
+                                                
+                                                
+                                                
+                                                
                                                 
                                                 
                                                 
@@ -4491,11 +4710,106 @@ def scene_box(widget):
                                                 
                                                 print "OMG WHERE IS THE SPEED", path[:path.rfind("/")]+"/renderspeed.data"
                                                 
+                                            
+                                                
                                 except:
                                     
                                     #testrnd.set_active(True)
                                     startframe.set_text("1")
                                     endframe.set_text("250")
+                                
+                                #### THE PACK INTO COMBOBOX
+                                            
+                                #### MAKING A LIST RENDERS THINGY
+
+                                #  rndseq().listwin("CPU.data")
+                                #  print rndseq().files
+                                
+                                appendbox = gtk.combo_box_new_text()
+                                appendbox.append_text("Add to Render List")
+                                for i in rndseq().files:
+                                    appendbox.append_text(i)
+                                appendbox.set_active(0)
+                                def lop(w):
+                                    
+                                    if w.get_active_text() != "Open Render List":
+                                        
+                                        
+                                        oldfile = open("py_data/rnd_seq/"+w.get_active_text(), "r")
+                                        oldfile = oldfile.read()
+                                        
+                                        newfile = open("py_data/rnd_seq/"+w.get_active_text(), "w")
+                                        newfile.write(oldfile+"\n")
+                                        newfile.write(path[:path.rfind("/")+1])
+                                        newfile.close()
+                                        
+                                        rndseq().listwin(w.get_active_text())
+                                        
+                                        
+                                        
+                                    
+                                       #################################################################     COPY COPY COPY                
+                                        
+                                        infofile = open("py_data/renderinfo.data", "w")
+                                        infofile.write(path+"\n")
+                                        infofile.write(custompath+"\n")
+                                        
+                                        if story.get_active():
+                                            infofile.write(path[:path.rfind("/")+1]+"storyboard/"+"\n")
+                                        elif opengl.get_active():
+                                            infofile.write(path[:path.rfind("/")+1]+"opengl/"+"\n")
+                                        elif testrnd.get_active():
+                                            infofile.write(path[:path.rfind("/")+1]+"test_rnd/"+"\n")
+                                        elif rnd.get_active():
+                                            infofile.write(path[:path.rfind("/")+1]+"rendered/"+"\n")
+                                        else:
+                                            
+                                            
+                                            if cdentry.get_text().endswith("/") == False:
+                                                
+                                                tm = cdentry.get_text()
+                                                cdentry.set_text(tm+"/") 
+                                            
+                                            infofile.write(cdentry.get_text()+"\n")
+                                        
+                                        if jpeg.get_active():
+                                            infofile.write("JPEG"+"\n")
+                                        elif png.get_active():
+                                            infofile.write("PNG"+"\n")
+                                        elif hdr.get_active():
+                                            infofile.write("HDR"+"\n")
+                                        else:
+                                            infofile.write("EXR"+"\n")
+                                        
+                                        
+                                        
+                                            
+                                        
+                                        infofile.write(startframe.get_text()+"\n")
+                                        infofile.write(endframe.get_text())
+                                        
+                                        
+                                        
+                                        infofile.close()
+                                        
+                                        #SECOND FILE FOR THE SAVE
+                                        
+                                        readagain = open("py_data/renderinfo.data", "r")
+                                        
+                                        saveagain = open(path[:path.rfind("/")+1]+"renderinfo.data", "w")
+                                        saveagain.write(readagain.read())
+                                        saveagain.close()
+                                        
+                                        
+                                        #####################################################################    COPY COPY COPY
+                                        
+                                        
+                                        
+                                        
+                                        renderdialog.destroy()
+                                
+                                appendbox.connect("changed", lop)
+                                renderbox.pack_end(appendbox, False)
                                 
                                 renderbox.show_all()
                                 
@@ -4562,7 +4876,7 @@ def scene_box(widget):
                                     
                                     
                                     #
-                                    sysopen("xterm -e python "+os.getcwd()+"/py_data/renderer.py")
+                                    sysopen("xterm -geometry 185 -e python "+os.getcwd()+"/py_data/renderer.py")
                                     
                                 renderdialog.destroy()
                                 

@@ -1,0 +1,35 @@
+#### ONLY 1 INDINTATION (4 SPACES LONG)
+#### STR means Start date of the ASSET
+#### FIN means Finish deadline of the asset
+#### [ ] means that task is on list
+#### [X] means that task is canceled
+#### [V] means that tast is finished
+#### DO NOT USE EMPTY LINES
+STR 25/05/2018
+FIN 25/07/2018
+[ ] Write A Script
+    [V] Scene 1
+    [V] Scene 2
+        [ ] Test motherfucker
+    [V] Scene 3
+[ ] Characters
+    [ ] Low Poly VFX dude
+[ ] Vehicles
+    [ ] Main Character's Car
+    [ ] Pollice Car
+[ ] Objects
+    [ ] The Package
+    [ ] The Watch
+[ ] Locations
+    [ ] The 02, 24th shot location
+[ ] Scenes
+    [ ] Setting up ( openning sequence )
+    [ ] Car Chase
+    [V] Emotional Punchline
+[ ] Fixes
+    [ ] Shooting Scedule System
+    [ ] Footage Storage System
+    [ ] Script Suprevision System
+[ ] Marketing
+    [ ] Teaser
+[ ] Release

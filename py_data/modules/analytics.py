@@ -89,9 +89,7 @@ class draw_analytics:
         projectscen   = prgData[9][11:][:-1]
         
         
-        pathsdata = tuple(open("custompaths.data", "r"))
         
-        custompath    = pathsdata[0][11:][:-1]
         
         astchar = os.walk(os.getcwd()+"/ast/chr").next()[2]
         clearify = []

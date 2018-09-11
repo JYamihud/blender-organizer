@@ -9,7 +9,7 @@
 # BASICALLY IT'S FREE TO USE AND SHARE AND MODIFY
 # BUY MY NAME SHOULD BE CREDITED AS (made by J.Y.Amihud)
 
-VERSION = 4.00
+VERSION = 3.91
 
 
 ### IMPORTING MODULES
@@ -99,7 +99,7 @@ mainbox = gtk.VBox(False)
 mainwin.add(mainbox)
 
 
-gtk.window_set_default_icon_from_file("py_data/icons/icon.png")
+gtk.window_set_default_icon_from_file("py_data/icon.png")
 
 # Let's make a quick functions panel on the top
 

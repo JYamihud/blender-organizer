@@ -23,8 +23,13 @@
 
 * Assets
   * Handeling directories and files for any asset
-* Asset types
+
+* Asset types ( for sorting the assets )
   * Characters
   * Vehicles
   * Locations
   * Objects
+
+* Checklists
+  * Main checklist for the whole project
+  * Checklists for any given asset

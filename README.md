@@ -14,7 +14,7 @@
 * Analytics functionality.
   * Deadline to project's completion comparison
   * Render's time analytics
-  * Competion persantges of any given item.
+  * Competion persantges of any given asset.
 
 * Story editor
   * Writting complex scripts with multiple events happening in the same time.

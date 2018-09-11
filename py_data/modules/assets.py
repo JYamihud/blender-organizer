@@ -231,6 +231,11 @@ class draw_assets:
             if my > 50:
                 inthescreen = True
             
+            
+            
+            
+            mouseoverany = False
+            
             #### SELECTION ITEM SCREEN
             if self.screen == "selection":
                 
@@ -298,13 +303,24 @@ class draw_assets:
                     
                     mouseover = False
                     if mx > nx and mx < nx+200 and my > ny and my < ny+200 and inthescreen:
+                        
+                        
                         mouseover = True
+                        mouseoverany = True
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
                         
                         ## MOUSE PRESSED
                         
                         if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active() and inthescreen:
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
+                            
+                            
+                            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+                            
+                            
+                
+                            while gtk.events_pending():
+                                gtk.main_iteration()
                             
                             self.blends = self.loadBlendFiles(i)
                             self.iteminfo = self.loaditem(i)
@@ -319,8 +335,8 @@ class draw_assets:
                         xgc.line_width = 4
                         widget.window.draw_rectangle(xgc, False, nx, ny, 200, 200)
                         xgc.line_width = 2
-                        
-                        
+                    
+                       
                         
                     
                     # little icon
@@ -387,7 +403,7 @@ class draw_assets:
                     
                         
                 
-                
+                 
                 
                 
                 
@@ -627,7 +643,7 @@ class draw_assets:
                         
                         if mx > mox and mx < mox+100 and my > moy and my < moy+100 and mouseinraw:
                             mouseover = True
-                            
+                            mouseoverany = True
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
                             
                             
@@ -751,6 +767,7 @@ class draw_assets:
                     ### MOUSE OVER
                     if mx > icon_x and mx < icon_x+icon_s and my > icon_y and my < icon_y+icon_s:
                         
+                        mouseoverany = True
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
                         widget.window.draw_rectangle(xgc, True, icon_x, icon_y, icon_s, icon_s)
                         
@@ -837,7 +854,7 @@ class draw_assets:
                     ### MOUSE OVER
                     
                     if mx > mmx + 117+110 and mx > mmx + 117+110 +(num*110)+self.blscroll and mx < mmx + 117+110 +(num*110)+self.blscroll+100 and my > mmy-12 and my < mmy-12+100:
-                        
+                        mouseoverany = True
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
                         widget.window.draw_rectangle(xgc, True, mmx + 115+110 +(num*110)+self.blscroll, mmy-14, 104, 104)
@@ -889,6 +906,8 @@ class draw_assets:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
                     widget.window.draw_rectangle(xgc, True, mmx , mmy-12,217,110)
                     if mx > mmx + 117 and mx < mmx + 117 + 100 and my > mmy-12 and my < mmy-12 + 100:
+                        
+                        mouseoverany = True
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
                         widget.window.draw_rectangle(xgc, True, mmx + 117, mmy-12,100,100)
                     
@@ -987,6 +1006,11 @@ class draw_assets:
                     ctx.set_source_rgb(0,0,0)
                     ctx.move_to( mx+30, my+20)
                     ctx.show_text("ITEM'S CHECKLIST")
+                    ctx.set_source_rgb(1,1,1)
+                    
+                    if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
+                        
+                        checklist.checkwindow(pf=self.pf, title=self.screen.name, FILE=self.screen.path+"/asset.progress")
                     
                     
                 widget.window.draw_pixbuf(None, self.checklisticon, 0, 0, mmx+60, 90, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
@@ -1042,7 +1066,11 @@ class draw_assets:
                 widget.window.draw_rectangle(xgc, True, 0, 0, w, 50)
                      
                 
+                
+                
+                
                 # BIG PERCENTAGE BAR FOR THE ENTIRE CATEGORY
+                ctx.set_source_rgb(1,1,1)
                 ctx.set_font_size(20)
                 ctx.move_to( 20, 30)
                 ctx.show_text(str(int(self.screen.percent*100))+" %")
@@ -1053,7 +1081,7 @@ class draw_assets:
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c"))
                 
                 widget.window.draw_rectangle(xgc, True, 102, 7, int((w-114)*self.screen.percent), 36)
-                ctx.set_source_rgb(1,1,1)
+                
                 ctx.move_to( 150, 30)
                 ctx.show_text(self.screen.name)
                 
@@ -1061,7 +1089,11 @@ class draw_assets:
                         
                     
                         
-                
+            
+            if mouseoverany:
+                widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))     
+            else:  # IF MOUSE NOT IN EDITOR
+                widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW))    
                 
                 
                 

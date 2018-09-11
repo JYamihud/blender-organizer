@@ -9,7 +9,7 @@
   
   
   
-  Current version has:
+## Current version has:
   
 * Analytics functionality.
   * Deadline to project's completion comparison

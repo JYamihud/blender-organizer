@@ -9,7 +9,7 @@
 # BASICALLY IT'S FREE TO USE AND SHARE AND MODIFY
 # BUY MY NAME SHOULD BE CREDITED AS (made by J.Y.Amihud)
 
-VERSION = 3.91
+VERSION = 4.00
 
 
 ### IMPORTING MODULES
@@ -49,8 +49,8 @@ except:
 
 from py_data.modules import analytics
 from py_data.modules import assets
-
-
+from py_data.modules import story_editor
+from py_data.modules import checklist
 
 
 ### FILES FOLDERS MAKE SURE
@@ -152,12 +152,17 @@ CUR = "stats"
 
 def chgCUR(w=None, cur=CUR):
     
+    
+    
+    
     print cur
     global CUR
     CUR = cur
     drawmainbuttons()
     drawmain()
-
+    
+    
+    
 mainbuttonsbox = gtk.HBox()
 toppannelbox.pack_start(mainbuttonsbox, False)
 
@@ -294,6 +299,7 @@ syncibox.pack_start(gtk.Label("  Synchronize"))
 syncider.add(syncibox)
 syncider.set_tooltip_text("Synchronize between multiple machines")
 syncider.connect("clicked",chgCUR, "sync")
+syncider.set_sensitive(False)
 toppannelbox.pack_end(syncider, False)
 
 # Update
@@ -308,6 +314,7 @@ Updateibox.pack_start(gtk.Label("  Update"))
 Updateider.add(Updateibox)
 Updateider.set_tooltip_text("Check for updates")
 Updateider.connect("clicked",chgCUR, "update")
+Updateider.set_sensitive(False)
 toppannelbox.pack_end(Updateider, False)
 
 # checklist
@@ -321,7 +328,7 @@ checklistibox.pack_start(checklistiico, False)
 checklistibox.pack_start(gtk.Label("  Checklist"))
 checklistider.add(checklistibox)
 checklistider.set_tooltip_text("Open Main Checklist")
-#checklistider.connect("clicked"
+checklistider.connect("clicked", checklist.checkwindow, os.getcwd(), "Main Checklist", "project.progress")
 toppannelbox.pack_end(checklistider, False)
 
 
@@ -331,6 +338,9 @@ toppannelbox.pack_end(checklistider, False)
 drawbox = gtk.VBox(False)
 
 def drawmain(w=None):
+    
+    
+    
     
     global drawbox
     drawbox.destroy()
@@ -347,7 +357,11 @@ def drawmain(w=None):
         analytics.draw_analytics(os.getcwd(), drawbox, mainwin)
 
     mainbox.show_all()
-
+    
+    
+    if CUR == "rnd":    
+    
+        story_editor.story(os.getcwd(), drawbox, mainwin)
 drawmain()
 
 

@@ -18,4 +18,13 @@
 
 * Story editor
   * Writting complex scripts with multiple events happening in the same time.
-  * 
+  * Preview of a script connected from individual events in the editor.
+  * Handeling directories and files related to any given shot in the script.
+
+* Assets
+  * Handeling directories and files for any asset
+* Asset types
+  * Characters
+  * Vehicles
+  * Locations
+  * Objects

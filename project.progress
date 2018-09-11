@@ -1,8 +1,8 @@
-#### ONLY 1 INDINTATION (4 SPACES LONG)
+#### Blender orgainizer checklist format
+#### INDINTATION (4 SPACES LONG)
 #### STR means Start date of the ASSET
 #### FIN means Finish deadline of the asset
 #### [ ] means that task is on list
-#### [X] means that task is canceled
 #### [V] means that tast is finished
 #### DO NOT USE EMPTY LINES
 STR 13/12/2016

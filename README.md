@@ -33,3 +33,7 @@
 * Checklists
   * Main checklist for the whole project
   * Checklists for any given asset
+
+## Learning Materials
+
+  [YOUTBE PLAYLIST OF TUTORIALS](https://www.youtube.com/playlist?list=PLhqk0hUdhXIyuPWCzKncDyx2n_uPXWKrg)

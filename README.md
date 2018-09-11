@@ -1,2 +1,6 @@
+![BLENDER-ORGANIZER](py_data/icon.png)
+
 # blender-organizer
-Organization of files ( all project ) done in blender... ( Works in python2 )
+
+
+This software was originally 

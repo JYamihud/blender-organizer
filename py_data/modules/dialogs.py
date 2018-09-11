@@ -1048,7 +1048,7 @@ class event:
         
         des = gtk.Entry()
         des.set_text("INT. SOMEWHERE. SOMEWHEN. IN SOME WHETHER.")
-        box.pack_start(des)
+        #box.pack_start(des)
         
         
         
@@ -1127,7 +1127,7 @@ class event:
             
                 
             
-            scnname = '"'+scnname+'"'+"\n"+des.get_text()+"\n"
+            scnname = '"'+scnname+'"'#+"\n"+des.get_text()+"\n"
             
             
             textbuffer.insert(e, "\n</scene>\n")

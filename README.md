@@ -37,3 +37,7 @@
 ## Learning Materials
 
   [YOUTBE PLAYLIST OF TUTORIALS](https://www.youtube.com/playlist?list=PLhqk0hUdhXIyuPWCzKncDyx2n_uPXWKrg)
+  
+  
+- [x] This is a complete item
+- [ ] This is an incomplete item

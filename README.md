@@ -38,6 +38,10 @@
 
   [YOUTBE PLAYLIST OF TUTORIALS](https://www.youtube.com/playlist?list=PLhqk0hUdhXIyuPWCzKncDyx2n_uPXWKrg)
   
-  
-- [x] This is a complete item
-- [ ] This is an incomplete item
+## FUNCTIONS TO DEVELOP
+- [x] New way to calculate percentages, based on the new system of scenes
+- [ ] The Deadline editor
+- [ ] The Deadline Capability for assests
+- [ ] The Shooting Scedual
+- [ ] The Shot type
+- [ ] The VFX Layers list

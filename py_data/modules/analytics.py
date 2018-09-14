@@ -23,7 +23,7 @@ import datetime
 import thumbnailer
 import checklist
 
-
+import story_editor # to get scene percentage
 
     
 
@@ -75,176 +75,56 @@ class draw_analytics:
         ####### DATA
             
             
+        
+        #NEW STORY EDITOR CODE
+        story = story_editor.bos("pln/main.bos")
+        story.load()
+        scenpercent = story_editor.get_scenes_percentage(story)
+        #NEW CODE FINISHED HERE
+        
+        
+        
+        # TRYING TO WRITE A BETTER CODE
+        
+        
+        # lets dich the idea of reading into a file to get how much needed to be done
+        # fuck it
+        
+        # we are focusing on the actuall folders
+        
+        
+        asstfols = ["chr", "veh", "loc", "obj"]
+        
+        astlist = []
+        
+        for f in asstfols:
             
+            flist = []
             
-        prgData = tuple(open("project.data", "r"))
-        
-        projectname   = prgData[0][11:][:-1]
-        projectstatus = prgData[1][11:][:-1]
-        projectleader = prgData[2][11:][:-1]
-        projectchar   = prgData[5][11:][:-1]
-        projectloca   = prgData[6][11:][:-1]
-        projectobje   = prgData[7][11:][:-1]
-        projectvehi   = prgData[8][11:][:-1]
-        projectscen   = prgData[9][11:][:-1]
-        
-        
-        
-        
-        astchar = os.walk(os.getcwd()+"/ast/chr").next()[2]
-        clearify = []
-        for i in astchar:
-            if i[-6:] == ".blend":
-                clearify.append(i)
-        astchar = clearify
-        
-        astloca = os.walk(os.getcwd()+"/ast/loc").next()[2]
-        clearify = []
-        for i in astloca:
-            if i[-6:] == ".blend":
-                clearify.append(i)
-        astloca = clearify
-        
-        astvehi = os.walk(os.getcwd()+"/ast/veh").next()[2]
-        clearify = []
-        for i in astvehi:
-            if i[-6:] == ".blend":
-                clearify.append(i)
-        astvehi = clearify
-        
-        astobje = os.walk(os.getcwd()+"/ast/obj").next()[2]
-        clearify = []
-        for i in astobje:
-            if i[-6:] == ".blend":
-                clearify.append(i)
-        astobje = clearify
-        
-        donechar = len(astchar)
-        doneloca = len(astloca)
-        doneobje = len(astobje)
-        donevehi = len(astvehi)
-        
-        # renders scenes LOL WTF
-        donescen = len(os.walk(os.getcwd()+"/rnd").next()[1])
-        
-        
-        scenpercent = 0.0 #NOT ACTUALL % BUT A FRACTION FROM 0 to 1
-        
-        
-        sceneslist = []
-        scenesinfolist = []
-        
-        
-        
-        for i in os.walk(os.getcwd()+"/rnd").next()[1]:
+            if len(os.listdir("dev/"+f)) > 0:
             
-            sceneslist.append(i)
-            scenesinfolist.append([i])
-        
-        for x, i in enumerate(sceneslist):
-            
-            scenelist = []
-            scenescore = 0.0
-            
-            
-            
-            for b in os.listdir(os.getcwd()+"/rnd/"+i):
-                if os.path.isdir(os.getcwd()+"/rnd/"+i+"/"+b):
-                   
-                    scenelist.append(b)
+                for asset in os.listdir("dev/"+f):
                     
-                    shotscore = 0
+                    if asset+".blend" in os.listdir("ast/"+f):
+                        
+                        flist.append(1.0)
                     
-                    try:
-                        if len(os.listdir(os.getcwd()+"/rnd/"+i+"/"+b+"/storyboard")) > 0:
-                            shotscore = 1
-                    except:
-                        pass
-                    try:
-                        if len(os.listdir(os.getcwd()+"/rnd/"+i+"/"+b+"/opengl")) > 0:
-                            shotscore = 2
-                    except:
-                        pass
-                    try:
-                        if len(os.listdir(os.getcwd()+"/rnd/"+i+"/"+b+"/rendered")) > 0:
-                            shotscore = 3
-                    except:
-                        pass
-                    
+                    else:
+                        
+                        try:    
+                            
+                            flist.append(checklist.partcalculate(checklist.openckecklist("dev/"+f+"/"+asset+"/asset.progress")))
+                        except:
+                            flist.append(0.0)
                 
-                    scenescore = scenescore + (1.0/3)*shotscore
-                    print b, scenescore
-                    
-                    scenesinfolist[x].append([b, shotscore])
-            try:        
-                scenescore = 1.0/len(scenelist)*scenescore
-            except:
-                scenescore = 0
-            scenpercent = scenpercent + scenescore
+                astlist.append(sum(flist)/len(flist))
             
-            
-            scenesinfolist[x].append(scenescore)
-            
-        print scenesinfolist
+            else:            
+                print f, "EMPTY"
+                astlist.append(1.0)
         
-        try:    
-            scenpercent = 1.0/float(projectscen)*scenpercent 
-        except:
-            scenpercent = 0.0
-        
-        
-        donescen = float(projectscen)*float(scenpercent)
-        
-        
-        
-        
-        donetotal = donechar + doneloca + doneobje + donevehi+donescen
-        prototal = int(projectchar)+int(projectloca)+int(projectobje)+int(projectvehi)+(int(projectscen)*3)
-        
-        
-        
-        
-        
-        
-        
-        try:
-            percentchar = ((float(donechar))/float(projectchar))*100.0
-            percentchar = int(percentchar*100)
-            percentchar = str(float(percentchar)/100.0)
-        except:
-            percentchar = "100.0"
-            
-        try:
-            percentvehi = ((float(donevehi))/float(projectvehi))*100.0
-            percentvehi = int(percentvehi*100)
-            percentvehi = str(float(percentvehi)/100.0)
-        except:
-            percentvehi = "100.0"
-            
-        try:
-            percentobje = ((float(doneobje))/float(projectobje))*100.0
-            percentobje = int(percentobje*100)
-            percentobje = str(float(percentobje)/100.0)
-        except:
-            percentobje = "100.0"
-            
-        try:
-            percentloca = ((float(doneloca))/float(projectloca))*100.0
-            percentloca = int(percentloca*100)
-            percentloca = str(float(percentloca)/100.0)
-        except:
-            percentloca = "100.0"
-        
-        listofpercents = [float(percentchar), float(percentvehi), float(percentobje), float(percentloca), float(donescen)]
-        
-        #projectpercent = ((float(donetotal))/float(prototal))*100.0 # OLD CODE BAD
-        projectpercent = sum(listofpercents)/len(listofpercents)
-        projectpercent = int(projectpercent*100)
-        projectpercent = str(float(projectpercent)/100.0)
-        
-        
-        
-        
+        astlist.append(scenpercent)
+        projectpercent = (sum(astlist)/len(astlist))*100
         
         #TIME
     
@@ -333,7 +213,7 @@ class draw_analytics:
         
         percenthystory.close()
         
-        
+        # THE OLD COE IS UNTILL HERE
         
         
         

@@ -245,6 +245,7 @@ class story:
         
         
         
+        self.scnPERCENT = get_scenes_percentage(self.FILE)
         
         
         
@@ -302,6 +303,7 @@ class story:
                 if found == False:
                     break
             
+            self.FILE.tree = linkchainpath
             
             ctx = widget.window.cairo_create()
             ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
@@ -1557,6 +1559,37 @@ class story:
             
             
             widget.window.draw_pixbuf(None, self.markericon, 0, 0, 160+150+50, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            
+            
+            
+            
+            
+            ##############   >>>>     SCENE PERSENTAGE <<<<<<   #################
+            
+            
+            
+            
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8c8c8c"))
+            widget.window.draw_rectangle(xgc, False, 260+150+50, 5, w-(w)/3-110-(260+150+100), 40)
+            
+            
+            widget.window.draw_rectangle(xgc, True, 260+150+50, 5, int((w-(w)/3-110-(260+150+100))*self.scnPERCENT), 40)
+            
+            ctx.set_source_rgb(1,1,1)
+            ctx.set_font_size(15)
+            ctx.move_to( 260+150+50, 20)
+            ctx.show_text(str(int(self.scnPERCENT*100))+"%")
+            
+            
+            
+            
+            
+            if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.win.is_active() : # IF RELEASED
+            
+                self.scnPERCENT = get_scenes_percentage(self.FILE)
+            
+            
+            
             
             
             
@@ -2867,6 +2900,7 @@ class bos:
         self.events = []
         self.arrows = []
         self.markers = []
+        self.tree = [] # THIS IS THE PLACE WEHRE STORED THE [IND, NAME] of scenes in the connected line from START to END of the movie
         
     def new(self, name):
         
@@ -3281,10 +3315,129 @@ def get_shots(story, scenename):
     
     
     
+def get_scenes_percentage(FILE):
+    
+    
+    arrows = FILE.arrows
+    scnDATA =  FILE.get_scenes_data()
+    
+    #trying to get whether the start actually connects to end
+    linkchained = False
+    
+    linkchainpath = []
+    
+    startlink = False
+    
+    for i in FILE.arrows:
+        
+        if i[0][0] == -1:
+            
+            linkchainpath.append(i)
+            startlink = True
+            
+            
+    while startlink: # dangerous motherfucker
+        
+        found = False
+        
+        for i in FILE.arrows:
+            
+            
+            
+            if linkchainpath[-1][1] == i[0]:
+                
+                
+                
+                found = True
+                linkchainpath.append(i)
+                
+                if i[1][0] == -1:
+                    linkchained = True
+                    break
+            
+        if found == False:
+            break
     
     
     
     
+    persantage = 1.0
+    valueslist = []
+    
+    for event in scnDATA:
+        for scene in event:
+            LIST = []
+            
+            
+            story = scene[3]
+            scenename = scene[1]
+            
+            links = []
+            for n in linkchainpath: 
+                links.append(n[1])
+            
+            if [scene[0], scene[1]] in links:
+            
+                scenevalues = []
+    
+                if "<shot>" in story and "</shot>" in story:
+                    
+                    sa = story.count("<shot>")
+                    
+                    ts = story
+                    
+                    for i in range(sa):
+                        
+                        #LIST.append( [False, ts[:ts.find("<shot>")], False, False] )   #[scenename, "TEXT", pixbuf, blends]
+                
+                
+                        ts = ts[ts.find("<shot>")+6:]
+                        
+                        if ts.count('"') > 1:
+                            shotname = "rnd/"+scenename+"/"+ts[ts.find('"')+1:ts.replace('"', " ", 1).find('"')]
+                            
+                        else:
+                            shotname = "Unnamed"
+                            
+                        LIST.append( [shotname.replace(" ", "_"), ts[:ts.find("</shot>")], False, False] )
+                        ts = ts[ts.find("</shot>")+7:]
+                        
+                
+                    #LIST.append( [False, ts, False, False] )
+        
+                if LIST == []:
+                    
+                    
+                    
+                    print "EMPTY", scenename
+                    scenevalues.append(0)
+                
+                
+                for i in LIST:
+                    
+                    if len(os.listdir(i[0]+"/rendered")) > 0:
+                        scenevalues.append(1.0)
+                    
+                    elif len(os.listdir(i[0]+"/test_rnd")) > 0:
+                        scenevalues.append(0.8) 
+                    
+                    elif len(os.listdir(i[0]+"/opengl")) > 0:
+                        scenevalues.append(0.6) 
+                        
+                    elif len(os.listdir(i[0]+"/storyboard")) > 0:
+                        scenevalues.append(0.4)
+                    
+                    elif len(os.listdir(i[0]+"/extra")) > 0:
+                        scenevalues.append(0.2) 
+                    
+                     
+                
+                scenevalue = float(sum(scenevalues))/len(scenevalues)
+                valueslist.append(scenevalue)
+                     
+    
+    persantage = float(sum(valueslist))/len(valueslist)
+    return persantage
     
     
     
@@ -3302,4 +3455,3 @@ def get_shots(story, scenename):
     
     
     
-

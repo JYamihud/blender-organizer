@@ -685,6 +685,37 @@ def PickName(NN):
     return ret
 
 
+def GetDate(y, m, d):   
+    
+    dialog = gtk.Dialog("Pick A Date...", None, 0, (gtk.STOCK_OK,  gtk.RESPONSE_APPLY, 
+                                               gtk.STOCK_CANCEL, gtk.RESPONSE_CLOSE))
+        
+    
+        
+    
+    
+                                
+    box = dialog.get_child()
+    
+    c = gtk.Calendar()
+    box.pack_start(c)
+    
+    c.select_month(m, y)
+    c.select_day(d)
+    
+    
+    ret = (y, m, d)
+    
+    box.show_all()
+    r = dialog.run()
+    if r == gtk.RESPONSE_APPLY:
+        ret = c.get_date()
+    
+    
+    dialog.destroy()
+    
+    return ret
+
 class AddAsset:
     def __init__(self, pf, CUR):
         

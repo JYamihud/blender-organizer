@@ -22,7 +22,7 @@ import datetime
 
 import thumbnailer
 import checklist
-
+import dialogs
 import story_editor # to get scene percentage
 
     
@@ -133,34 +133,34 @@ class draw_analytics:
         
         timefile = open("project.progress", "r")
         timefile = timefile.read()
-        startdate = "00/00/00"
-        enddate = "00/00/00"
+        self.startdate = "00/00/00"
+        self.enddate = "00/00/00"
         for timeline in timefile.split("\n"):
             if timeline.startswith("STR"):
-                startdate = timeline[4:]
+                self.startdate = timeline[4:]
             if timeline.startswith("FIN"):
-                enddate = timeline[4:]
+                self.enddate = timeline[4:]
         
         
         # CALCULATING DAYS
         deadline = 0.2
         
         date_format = "%d/%m/%Y"
-        a = datetime.datetime.strptime(startdate, date_format)
-        b = datetime.datetime.strptime(enddate, date_format)
+        a = datetime.datetime.strptime(self.startdate, date_format)
+        b = datetime.datetime.strptime(self.enddate, date_format)
         delta = b - a
-        alltime = int(delta.days)
+        self.alltime = int(delta.days)
         
-        a = datetime.datetime.strptime(startdate, date_format)
+        a = datetime.datetime.strptime(self.startdate, date_format)
         b = datetime.datetime.today()
         delta =  b - a
         
         passed = int(delta.days)
         
-        print "PASSED", passed, alltime
+        print "PASSED", passed, self.alltime
         
         try:
-            deadline = (1.0/alltime)*passed
+            deadline = (1.0/self.alltime)*passed
         except:
             deadline = 0
         
@@ -213,7 +213,7 @@ class draw_analytics:
         
         percenthystory.close()
         
-        # THE OLD COE IS UNTILL HERE
+        
         
         
         
@@ -398,13 +398,13 @@ class draw_analytics:
                     
                     #getting date's position
                     
-                    a = datetime.datetime.strptime(startdate, date_format)
+                    a = datetime.datetime.strptime(self.startdate, date_format)
                     b = datetime.datetime.strptime(thedate, "%y-%m-%d")
                     delta =  b - a
                     
                     pos = int(delta.days)
                     
-                    nowW = int(float(w)/alltime*pos)
+                    nowW = int(float(w)/self.alltime*pos)
                     nowH = int( h/2 / 100 * thepercent )*-1+h
                     
                     xgc.line_width = 4
@@ -431,8 +431,8 @@ class draw_analytics:
                         # MOUSE OVER AND INFRO REVEAL
                         if mx > nowW-10 and mx < nowW+10:
                             
-                            pointshouldbe = int(float(h/2)/alltime*pos)*-1+h
-                            shouldbepercent = int(100.0/alltime*pos)
+                            pointshouldbe = int(float(h/2)/self.alltime*pos)*-1+h
+                            shouldbepercent = int(100.0/self.alltime*pos)
                             
                             # VERTICAL LINE
                             widget.window.draw_line(xgc, nowW, pointshouldbe, nowW, nowH)    
@@ -485,28 +485,28 @@ class draw_analytics:
             
             
             
-            enddateval = avrgval * ( alltime - passed ) + thepercent
+            self.enddateval = avrgval * ( self.alltime - passed ) + thepercent
             
             
             xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
             
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
-            widget.window.draw_line(xgc,prevW+2, prevH, w, int(  h /2 / 100 * enddateval  )*-1+h)
+            widget.window.draw_line(xgc,prevW+2, prevH, w, int(  h /2 / 100 * self.enddateval  )*-1+h)
             
             xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
             
             # a little thing to show the estimated percentage by the deadline
             
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
-            widget.window.draw_rectangle(xgc, False, w-260, int(  h /2 / 100 * enddateval  )*-1+h-20, 250, 10)
+            widget.window.draw_rectangle(xgc, False, w-260, int(  h /2 / 100 * self.enddateval  )*-1+h-20, 250, 10)
             
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
-            widget.window.draw_rectangle(xgc, True, w-260+2, int(  h /2 / 100 * enddateval  )*-1+h-20+2, int(250*enddateval/100), 10-4)
+            widget.window.draw_rectangle(xgc, True, w-260+2, int(  h /2 / 100 * self.enddateval  )*-1+h-20+2, int(250*self.enddateval/100), 10-4)
             
             ctx.set_source_rgb(0,0,0)
             ctx.set_font_size(12)
-            ctx.move_to( w-260, int(  h /2 / 100 * enddateval  )*-1+h-20-10)
-            ctx.show_text(str(int(enddateval))+"% by the deadline")
+            ctx.move_to( w-260, int(  h /2 / 100 * self.enddateval  )*-1+h-20-10)
+            ctx.show_text(str(int(self.enddateval))+"% by the deadline")
             
             
             
@@ -539,12 +539,12 @@ class draw_analytics:
             widget.window.draw_rectangle(xgc, False, wstCubes, 30+tintsH, boxendH, tboxsH)
             
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
-            widget.window.draw_rectangle(xgc, True, wstCubes+2, 30+tintsH+2, int((boxendH-2)*(1.0/alltime*passed)), tboxsH-3)
+            widget.window.draw_rectangle(xgc, True, wstCubes+2, 30+tintsH+2, int((boxendH-2)*(1.0/self.alltime*passed)), tboxsH-3)
             
             
             
             ctx.move_to( wfortext, 30+tintsH*2-tintsH/2)
-            ctx.show_text("Time Passed : "+str(int(deadline))+"%  "+str(alltime-passed)+" days left")
+            ctx.show_text("Time Passed : "+str(int(deadline))+"%  "+str(self.alltime-passed)+" days left")
             
             # Checklist
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
@@ -579,15 +579,159 @@ class draw_analytics:
             infostr = infostr.read()
             
             
-            for x,l in enumerate(infostr.split("\n")):
+            ### 3 THINGS ONLY #### NAME, STATUS, DIRECTOR
+            
+            def edit(s, arg):
+                                
+                s = s.split("\n")
+                if s[-1] == "":
+                    s = s[:-1]
                 
-                ctx.set_font_size(20)
-                ctx.move_to( 30, 30+self.pixbuf.get_height()+30+25*x)
-                ctx.show_text(l)         
+                
+                
+                
+                for n, i in enumerate(s):
+                    
+                    if arg in i:
+                        newname = dialogs.PickName(i[i.find(":")+1:])
+                        if newname == "":
+                            newname = i[i.find(":")+1:]
+                            
+                        s[n] = arg+newname
+                
+                
+                save = open("project.data", "w")
+                for i in s:
+                    save.write(i+"\n")
+                save.close()
+                    
+            
+            for l in infostr.split("\n"):
+                
+                for ind, arg in enumerate(["Project  :", "Status   :", "Director :"]):
+                
+                    if arg in l:   
+                        
+                        
+                        if mx in range(30, w-30) and my in range(30+self.pixbuf.get_height()+25*ind+10, 30+self.pixbuf.get_height()+25*ind+25+10):
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6c6c6c"))
+                            widget.window.draw_rectangle(xgc, True, 30, 30+self.pixbuf.get_height()+25*ind+10, w-60, 25 )
+                            
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                                
+                                
+                                    
+                                    
+                                
+                                glib.timeout_add(10, edit, infostr, arg)
+                        
+                        
+                        
+                        prefix = ""
+                        if ind == 2:
+                            prefix = "directed by : "
+                        
+                        ctx.set_font_size(20)
+                        ctx.move_to( 30, 30+self.pixbuf.get_height()+30+25*ind)
+                        ctx.show_text(prefix+l[l.find(":")+1:])         
+                
+            #getting time values
             
             
             
+            timefile = open("project.progress", "r")
+            timefile = timefile.read()
+            self.startdate = "00/00/00"
+            self.enddate = "00/00/00"
+            for timeline in timefile.split("\n"):
+                if timeline.startswith("STR"):
+                    self.startdate = timeline[4:]
+                if timeline.startswith("FIN"):
+                    self.enddate = timeline[4:]             
+                    
             
+            a = datetime.datetime.strptime(self.startdate, date_format)
+            b = datetime.datetime.strptime(self.enddate, date_format)
+            delta = b - a
+            self.alltime = int(delta.days)
+            
+            ### START TIME ###
+            def ee(what, date):
+                        
+                p = date.split("/")
+                
+                y, m, d = int(p[2]), int(p[1])-1, int(p[0])
+                
+                
+                y, m, d = dialogs.GetDate(y, m, d)
+                
+                
+                y, m, d = str(y), str(m+1), str(d)
+                if len(m) < 2:
+                    m = "0"+m
+                if len(d) < 2:
+                    d = "0"+d
+                
+                newdate = d+"/"+m+"/"+y
+                
+                
+                
+                read = open("project.progress", "r")
+                s = read.read().split("\n")
+                if s[-1] == "":
+                    s = s[:-1]
+                
+                for n, i in enumerate(s):
+                    
+                    if i.startswith(what):  
+                        s[n] = what+" "+newdate
+                
+                save = open("project.progress", "w")
+                for i in s:
+                    save.write(i+"\n")
+                save.close()
+                
+            
+            if mx in range(30, 300) and my in range(30+self.pixbuf.get_height()+90, 30+self.pixbuf.get_height()+90+30):
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6c6c6c"))
+                widget.window.draw_rectangle(xgc, True, 30, 30+self.pixbuf.get_height()+110-20, 260, 25 )
+                
+                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                
+                    
+                        
+                        
+                    glib.timeout_add(10, ee, "STR", self.startdate)
+            
+            
+            ctx.set_font_size(20)
+            ctx.move_to( 30, 30+self.pixbuf.get_height()+110)
+            ctx.show_text("From: "+self.startdate) 
+            
+            
+            #### END TIME ###
+                
+            if mx in range(300, 600) and my in range(30+self.pixbuf.get_height()+90, 30+self.pixbuf.get_height()+90+30):
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6c6c6c"))
+                widget.window.draw_rectangle(xgc, True, 300, 30+self.pixbuf.get_height()+110-20, 260, 25 )
+            
+                
+                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                
+                    
+                        
+                        
+                    glib.timeout_add(10, ee, "FIN", self.enddate)
+                
+            ctx.set_font_size(20)
+            ctx.move_to( 300, 30+self.pixbuf.get_height()+110)
+            ctx.show_text("Deadline: "+self.enddate) 
+            
+            
+            #dialogs.GetDate(2018,11,02)
             
             
             

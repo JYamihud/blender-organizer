@@ -675,7 +675,19 @@ class draw_analytics:
                 
                 newdate = d+"/"+m+"/"+y
                 
-                
+                if what == "STR" and newdate == self.enddate:
+                    d = str ( int( d ) - 1 ) 
+                    if len(d) < 2:
+                        d = "0"+d
+                    newdate = d+"/"+m+"/"+y
+                    
+                    
+                if what == "FIN" and newdate == self.startdate:
+                    d = str ( int( d ) + 1 ) 
+                    if len(d) < 2:
+                        d = "0"+d
+                    newdate = d+"/"+m+"/"+y
+                    
                 
                 read = open("project.progress", "r")
                 s = read.read().split("\n")

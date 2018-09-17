@@ -139,6 +139,14 @@ class checkwindow:
         self.ok = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/ok.png")
         self.plus = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
         self.delete = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/delete.png")
+        self.move = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/move.png")
+        
+        
+        # FOR GRAB FEATURE
+        
+        self.tool = "select"
+        self.grab = 0
+        self.grab_text = ""
         
         
         
@@ -215,13 +223,18 @@ class checkwindow:
         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#868686")) ## CHOSE COLOR
         widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME  
         
-        widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW))
+        
+        if self.tool == "select":
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW))
+        elif self.tool == "grab":
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
         #############################################################################
         ############################# DRAW HERE #####################################
         #############################################################################
         
         
-        
+        if "GDK_BUTTON3" in str(fx) and "GDK_BUTTON3" not in str(self.mpf) and self.win.is_active():
+            self.tool = "select"
         
         
         
@@ -238,11 +251,48 @@ class checkwindow:
             if "[ ]" in line or "[V]" in line or "[v]" in line:
                 
                 
-                if my in range(ind*40+self.offset, ind*40+self.offset+35):
+                # IF THIS TASK GRABBED
+                xmove = line.find("[")*20
+                ymove = ind*40+self.offset
+                if self.tool == "grab" and self.grab == ind:
+                    
+                    xmove = mx
+                    ymove = my
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c7c7c")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20, ind*40+self.offset,  w, 39)
                 
+                
+                
+                # IF GRABBING IS ABOVE THIS TASK
+                    
+                if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "grab":
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, int(float(mx)/80)*80, ind*40+self.offset-7,  w, 5)
+                    widget.window.draw_line(xgc, int(float(mx)/80)*80, 0, int(float(mx)/80)*80, h )
+                    
+                    
+                    # IF ACTIVATE BY A CLICK
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                        
+                        self.FILE[self.grab+9] = "!!!DELETE!!!"
+                        self.FILE.insert(ind+9, " "*((int(float(mx)/80)*80)/20)+self.grab_text)
+                        self.FILE.remove("!!!DELETE!!!")
+                        
+                        # refrashing the file
+                        self.save()
+                        self.open()
+                        
+                        self.tool = "select"
+                        
+                    
+                    
+                if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "select":
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c7c7c")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
+                    
                 
                 
                 # IF IT ALREADY WAS CHECK OFF AT EARLIER STAGE
@@ -260,7 +310,10 @@ class checkwindow:
                 if sofar[0]:
                     ctx.set_source_rgb(0.6,1,0.6)
                 ctx.set_font_size(20)
-                ctx.move_to(  line.find("[")*20+30, ind*40+25+self.offset)
+                
+                
+                
+                ctx.move_to(  xmove+30, ymove+25)
                 ctx.show_text(line[line.find("]")+1:])
                 
                 
@@ -272,7 +325,7 @@ class checkwindow:
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
                 # IF MOUSE OVER
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+5, line.find("[")*20+5+20):
+                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+5, line.find("[")*20+5+20) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
                     
@@ -293,29 +346,29 @@ class checkwindow:
                     
                     
                     
-                widget.window.draw_rectangle(xgc, True, line.find("[")*20+5, ind*40+5+self.offset, 20, 20)
+                widget.window.draw_rectangle(xgc, True, xmove+5, ymove+5, 20, 20)
                 
                 
                 if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v"):
                     
-                    widget.window.draw_pixbuf(None, self.ok, 0, 0, line.find("[")*20+7, ind*40+self.offset , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    widget.window.draw_pixbuf(None, self.ok, 0, 0, xmove+7, ymove , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
                 # ADD SUBTASK
                 
                 
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20):
+                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+5+self.offset-2, 22, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30, ind*40+5+self.offset-2, 160, 30)
+                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35, ind*40+5+self.offset-2, 160, 30)
                     
                     
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(20)
-                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+25+self.offset)
+                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+25+self.offset)
                     ctx.show_text("Add Subtask")
                     
                     
@@ -347,9 +400,37 @@ class checkwindow:
                 
                 
                 
-                
-                widget.window.draw_pixbuf(None, self.plus, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                if self.tool == "select":
+                    widget.window.draw_pixbuf(None, self.plus, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
+                    
+                # ACTIVATE MOVE BUTTON
+                
+                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select":
+                    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+5+self.offset-2, 22, 22)
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35, ind*40+5+self.offset-2, 160, 30)
+                    
+                    
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.set_font_size(20)
+                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+25+self.offset)
+                    ctx.show_text("Move Task")
+                    
+                    # IF CLICKED
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                        
+                        self.tool = "grab"
+                        self.grab = ind
+                        self.grab_text = line[line.find("["):]
+                        
+                        
+                        
+                if self.tool == "select":       
+                    widget.window.draw_pixbuf(None, self.move, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
                 
@@ -358,7 +439,7 @@ class checkwindow:
                 
                 
                 # IF MOUSE OVER
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(w-40, w-40+20):
+                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(w-40, w-40+20) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
                     widget.window.draw_rectangle(xgc, True, w-42, ind*40+5+self.offset-2, 22, 22)
@@ -383,8 +464,8 @@ class checkwindow:
                         self.save()
                         self.open()
                         
-                
-                widget.window.draw_pixbuf(None, self.delete, 0, 0, w-40, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                if self.tool == "select":
+                    widget.window.draw_pixbuf(None, self.delete, 0, 0, w-40, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
                 
@@ -401,7 +482,7 @@ class checkwindow:
         # ADD SUBTASK
                 
                 
-        if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20):
+        if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select":
             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
             widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+5+self.offset-2, 22, 22)

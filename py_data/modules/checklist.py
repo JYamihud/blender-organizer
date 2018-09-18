@@ -257,12 +257,12 @@ class checkwindow:
                 xmove = line.find("[")*20
                 ymove = ind*40+self.offset
                 
-                gpos = ((len(self.grab_text)*12)+35+35)
+                gpos = ((len(self.grab_text)*12)+35+35)-35
                 
                 if self.tool == "grab" and self.grab == ind:
                     
                     xmove = mx - gpos
-                    ymove = my
+                    ymove = my - 10
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c7c7c")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20, ind*40+self.offset,  w, 39)

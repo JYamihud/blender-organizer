@@ -3415,21 +3415,24 @@ def get_scenes_percentage(FILE):
                 
                 for i in LIST:
                     
-                    if len(os.listdir(i[0]+"/rendered")) > 0:
-                        scenevalues.append(1.0)
+                    try:
                     
-                    elif len(os.listdir(i[0]+"/test_rnd")) > 0:
-                        scenevalues.append(0.8) 
-                    
-                    elif len(os.listdir(i[0]+"/opengl")) > 0:
-                        scenevalues.append(0.6) 
+                        if len(os.listdir(i[0]+"/rendered")) > 0:
+                            scenevalues.append(1.0)
                         
-                    elif len(os.listdir(i[0]+"/storyboard")) > 0:
-                        scenevalues.append(0.4)
-                    
-                    elif len(os.listdir(i[0]+"/extra")) > 0:
-                        scenevalues.append(0.2) 
-                    
+                        elif len(os.listdir(i[0]+"/test_rnd")) > 0:
+                            scenevalues.append(0.8) 
+                        
+                        elif len(os.listdir(i[0]+"/opengl")) > 0:
+                            scenevalues.append(0.6) 
+                            
+                        elif len(os.listdir(i[0]+"/storyboard")) > 0:
+                            scenevalues.append(0.4)
+                        
+                        elif len(os.listdir(i[0]+"/extra")) > 0:
+                            scenevalues.append(0.2) 
+                    except:
+                        scenevalues.append(0.0) 
                      
                 
                 scenevalue = float(sum(scenevalues))/len(scenevalues)

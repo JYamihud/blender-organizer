@@ -984,6 +984,70 @@ class event:
         namebox.pack_start(nameentry)
         
         
+        # SMALL TOOLBAR 
+        
+        toolbox = gtk.HBox(False)
+        box.pack_start(toolbox, False)
+        
+        
+        def mark_now(w=False, com="None"): 
+            
+            s, e = textbuffer.get_selection_bounds()
+            
+            
+            print s, e
+            
+            scnname = '"'+com+' Name"'
+            
+            s = s.get_offset()
+            
+            textbuffer.insert(e, "</"+com+">")
+            
+            
+            si = textbuffer.get_iter_at_offset(s)
+            
+            textbuffer.insert(si, "<"+com+">"+scnname)
+            
+            
+            si = textbuffer.get_iter_at_offset(s+len(com)+3)
+            ei = textbuffer.get_iter_at_offset(s+len(com)+12)
+            if com == "scene":  
+                ei = textbuffer.get_iter_at_offset(s+len(com)+13)
+            
+            
+            textbuffer.select_range(si, ei)
+            
+            textview.grab_focus()
+            
+        
+        # mark scene
+        
+        markscenebutton = gtk.Button()
+        markscenebutton.props.relief = gtk.RELIEF_NONE
+        markscenebox = gtk.HBox(False)
+        marksceneicon = gtk.Image()
+        marksceneicon.set_from_file("py_data/icons/scene_editor.png")
+        markscenebox.pack_start(marksceneicon, False)
+        markscenebox.pack_start(gtk.Label("Mark Scene"))
+        markscenebutton.add(markscenebox)
+        toolbox.pack_start(markscenebutton, False)
+        markscenebutton.connect("clicked", mark_now, "scene")
+        
+        # mark shot
+        
+        markshotbutton = gtk.Button()
+        markshotbutton.props.relief = gtk.RELIEF_NONE
+        markshotbox = gtk.HBox(False)
+        markshoticon = gtk.Image()
+        markshoticon.set_from_file("py_data/icons/render_big.png")
+        markshotbox.pack_start(markshoticon, False)
+        markshotbox.pack_start(gtk.Label("Mark Shot"))
+        markshotbutton.add(markshotbox)
+        toolbox.pack_start(markshotbutton, False)
+        markshotbutton.connect("clicked", mark_now, "shot")
+        
+        
+        
         # scroller for the text editor
         textscroll = gtk.ScrolledWindow()
         textscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
@@ -994,6 +1058,7 @@ class event:
         textview = gtk.TextView()
         #textcolors
         textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("#5c5c5c"))
+        textview.modify_base(gtk.STATE_SELECTED, gtk.gdk.color_parse("#2c2c2c"))
         textview.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFF"))
         fontdesc = pango.FontDescription("Monospace")
         textview.modify_font(fontdesc)
@@ -1217,6 +1282,9 @@ class event:
         textview.set_editable(False)
         #textcolors
         textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("#5c5c5c"))
+        textview.modify_base(gtk.STATE_SELECTED, gtk.gdk.color_parse("#8888FF"))
+        
+        
         textview.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFF"))
         fontdesc = pango.FontDescription("Monospace")
         textview.modify_font(fontdesc)

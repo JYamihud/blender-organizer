@@ -80,7 +80,15 @@ class main:
         self.mpx = 0
         self.mpy = 0
         self.mpf = 0
-            
+        
+        
+        
+        # GRAB TOOL
+        
+        self.tool = "select" # JUST A TOOL WITH NO PARTICULAR THING
+        self.grab = [0,0] # IND of FILE, IND of BLEND
+        self.grabbed = False
+        
             
         graph = gtk.DrawingArea()
         graph.set_size_request(500,700)
@@ -104,7 +112,7 @@ class main:
         
         for FILE in sorted(os.listdir(self.pf+"/py_data/rnd_seq")):
             
-            print FILE
+            #print FILE
             
             infile = []
             
@@ -114,7 +122,7 @@ class main:
             for blend in readfile:
                 
                 if blend.endswith(".blend") and os.path.exists(self.pf+"/"+blend):
-                    print blend
+                    #print blend
                     infile.append([False, blend])
     
             self.RLISTS.append([FILE, 0, infile]) #NAME OF THE LIST > SCROLL > LIST OF BLENDS IN THIS FILE
@@ -149,6 +157,17 @@ class main:
         #############################################################################
         ############################# DRAW HERE #####################################
         #############################################################################
+        if self.tool == "select":
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW))
+        elif self.tool == "grab":
+            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
+        if self.grabbed:
+            self.tool = "select"
+            self.grabbed = False
+        if "GDK_BUTTON3" in str(fx) and "GDK_BUTTON3" not in str(self.mpf) and self.win.is_active():
+            self.tool = "select"
+        
+        
         
         listY = 200
         
@@ -251,163 +270,372 @@ class main:
             rendrnow = True
             checkedfirstrendnow = False
             
+            
+            if len(LIST[2]) == 0 and self.tool == "grab":
+                
+                if my in range((listY*ind)+self.mainscroll+15, (listY*ind)+self.mainscroll+15 + listY):
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, 5 , (listY*ind)+self.mainscroll+50-2, blendX+4, blendX+4) 
+                
+                    # IF RELESED
+                    if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.win.is_active():
+                        
+                        
+                        # moving line is like copying it first
+                        # and then deleting the previous one
+                        
+                        ### MARK ###
+                        
+                        # marking to delete the line
+                        
+                        print self.RLISTS[self.grab[0]][2][self.grab[1]][1]
+                        
+                        delete_filename = self.RLISTS[self.grab[0]][0]
+                        delete_file = open(self.pf+"/py_data/rnd_seq/"+delete_filename, "r")
+                        delete_file = delete_file.read().split("\n")
+                        
+                        print "\n----- DELETE FILE ------ (before)\n"
+                        for dn,  i in enumerate(delete_file):
+                            print i
+                            if i == self.RLISTS[self.grab[0]][2][self.grab[1]][1]:
+                                delete_file[dn] = "!!!DELETE!!!"
+                        print "\n----- DELETE FILE ------ (after)\n"
+                        for dn,  i in enumerate(delete_file):
+                            print i
+                            
+                        if delete_file[-1] == "":
+                            delete_file = delete_file[:-1]
+                        
+                        
+                        
+                        
+                        save = open(self.pf+"/py_data/rnd_seq/"+delete_filename, "w")
+                        
+                        for i in delete_file:   
+                            save.write(i+"\n")
+                        
+                        save.close()
+                        
+                        
+                        
+                        ### INSERT ####
+                        
+                        insert_filename = self.RLISTS[ind][0]
+                        save = open(self.pf+"/py_data/rnd_seq/"+insert_filename, "w")
+                        
+                        save.write(self.RLISTS[self.grab[0]][2][self.grab[1]][1]+"\n")
+                        save.close()
+                        
+                        ### REMOVE ####
+                        
+                        delete_filename = self.RLISTS[self.grab[0]][0]
+                        delete_file = open(self.pf+"/py_data/rnd_seq/"+delete_filename, "r")
+                        delete_file = delete_file.read().split("\n")
+                        delete_file.remove("!!!DELETE!!!")
+                        if delete_file[-1] == "":
+                            delete_file = delete_file[:-1]
+                        
+                        
+                        
+                        
+                        save = open(self.pf+"/py_data/rnd_seq/"+delete_filename, "w")
+                        
+                        for i in delete_file:   
+                            save.write(i+"\n")
+                        save.close()
+                        
+                        
+                        self.load()
+                        self.grabbed =True
+            
+            
+            ## IF THERE ARE BLENDS
             for n, BLEND in enumerate(LIST[2]):
                 
                 
-                # GETTING FILE PERCENTAGE #
                 
-                
-                START = 1
-                END = 1
-                FOLDER = "storyboard"
-                FORMAT = "PNG"
-                
-                try:
-                    rndfile = open(self.pf+"/"+BLEND[1][:BLEND[1].rfind("/")]+"/extra/"+BLEND[1][BLEND[1].rfind("/")+1:]+".rnd", "r")
-                    for line in rndfile.read().split("\n"):
-                        
-                        if line.startswith("START = "):
+                if self.tool == "grab" and self.grab[0] == ind and self.grab[1] == n:
                     
-                            START = int(line[line.find("= ")+1:])
-                        
-                        if line.startswith("END = "):
-                            
-                            END = int(line[line.find("= ")+1:])
-                    
-                        if line.startswith("FORMAT = "):
-                            
-                            FORMAT = str(line[line.find("= ")+1:]).strip()
-                        
-                        if line.startswith("FOLDER = "):
-                            
-                            FOLDER = str(line[line.find("= ")+1:]).strip()
-                    
-                    framnames = []
-                    
-                    for frame in range(START, END+1):
-                        framnames.append(quick.getfileoutput(frame, FORMAT))
-                    
-                    count = 0
-                    
-                    for i in os.listdir(self.pf+FOLDER):
-                        if i in framnames:
-                            
-                            count = count + 1
-                    
-                    BLEND_COMP  = float(count)/float(END+1-START)
-                except:
-                    pass
-                    
-                print BLEND_COMP
-                    
-                
-                    
-                ctx.set_source_rgb(1,1,1)
-                ctx.set_font_size(10)
-                ctx.move_to( ((blendX+40)*n)+list_scroll+10, (listY*ind)+self.mainscroll+listY-25)
-                ctx.show_text(str(int(BLEND_COMP*100))+" %")
-                
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll, (listY*ind)+self.mainscroll+listY-10,  blendX, 2)
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll, (listY*ind)+self.mainscroll+listY-10,  int(blendX*BLEND_COMP), 2)
-                
-                
-                
-                
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll , (listY*ind)+self.mainscroll+50, blendX, blendX)
-                
-                
-                ## TITLE ##
-                ctx.set_source_rgb(1,1,1)
-                ctx.set_font_size(10)
-                ctx.move_to( ((blendX+40)*n)+list_scroll+10, (listY*ind)+self.mainscroll+listY-40)
-                ctx.show_text(BLEND[1][BLEND[1].rfind("/")+1:])
-        
-                
-                ### REMOVE BUTTON ####
-                
-                # MOUSE OVER
-                if mx in range(((blendX+40)*n)+list_scroll+blendX, ((blendX+40)*n)+list_scroll+blendX+16) and my in range((listY*ind)+self.mainscroll+40, (listY*ind)+self.mainscroll+40+16):
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll+blendX-1, (listY*ind)+self.mainscroll+39, 18, 18)
-                    
-                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
-                    
-                        widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-                        
-                        try:
-                            DF = open(self.pf+"/py_data/rnd_seq/"+LIST[0], "r")
-                            DF = DF.read().split("\n")
-                            
-                            NF = ""
-                            
-                            for d in DF:
-                                
-                                if BLEND[1] not in d:
-                                    NF = NF + d+"\n"
-                                    
-                            
-                            SF = open(self.pf+"/py_data/rnd_seq/"+LIST[0], "w")
-                            SF.write(NF)
-                            SF.close()
-                                     
-                            
-                            
-                            
-                        except:
-                            pass
-                        self.load()
-                    
-                
-                
-                widget.window.draw_pixbuf(None, self.delete, 0, 0, ((blendX+40)*n)+list_scroll+blendX, (listY*ind)+self.mainscroll+40 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-                
-                # IF IT'S RENDERING CURRENTLY
-                
-                if int(BLEND_COMP) == 1:
-                    
-                    rendrnow = False
-                
-                if rendrnow:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649")) ## CHOSE COLOR
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll-2 , (listY*ind)+self.mainscroll+50-2, blendX+4, blendX+4)
-                    rendrnow= False
-                    checkedfirstrendnow = True
-                
-                if int(BLEND_COMP) == 1 and checkedfirstrendnow == False:
                     
-                    rendrnow = True
-                
-                
-                ### IMAGE ###
-                
-                if BLEND[0] and BLEND[0] != "None":
                     
-                    widget.window.draw_pixbuf(None, BLEND[0], 0, 0, ((blendX+40)*n)+list_scroll, (listY*ind)+self.mainscroll+50 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-                
-                elif BLEND[0] != "None" and self.FRAMES > n and ((blendX+40)*n)+list_scroll in range(0, w):
+                      
+                    
+                else:
+                        
+                    
+                    # GETTING FILE PERCENTAGE #
+                    
+                    
+                    START = 1
+                    END = 1
+                    FOLDER = "storyboard"
+                    FORMAT = "PNG"
                     
                     try:
+                        rndfile = open(self.pf+"/"+BLEND[1][:BLEND[1].rfind("/")]+"/extra/"+BLEND[1][BLEND[1].rfind("/")+1:]+".rnd", "r")
+                        for line in rndfile.read().split("\n"):
+                            
+                            if line.startswith("START = "):
                         
-                        print self.pf+BLEND[1]
-                        BPic = gtk.gdk.pixbuf_new_from_file(thumbnailer.blenderthumb(self.pf+"/"+BLEND[1], 100,100))
+                                START = int(line[line.find("= ")+1:])
+                            
+                            if line.startswith("END = "):
+                                
+                                END = int(line[line.find("= ")+1:])
+                        
+                            if line.startswith("FORMAT = "):
+                                
+                                FORMAT = str(line[line.find("= ")+1:]).strip()
+                            
+                            if line.startswith("FOLDER = "):
+                                
+                                FOLDER = str(line[line.find("= ")+1:]).strip()
+                        
+                        framnames = []
+                        
+                        for frame in range(START, END+1):
+                            framnames.append(quick.getfileoutput(frame, FORMAT))
+                        
+                        count = 0
+                        
+                        for i in os.listdir(self.pf+FOLDER):
+                            if i in framnames:
+                                
+                                count = count + 1
+                        
+                        BLEND_COMP  = float(count)/float(END+1-START)
                     except:
+                        pass
                         
-                         
-                        raise
-                        BPic = "None"
+                    #print BLEND_COMP
+                        
+                    
+                        
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.set_font_size(10)
+                    ctx.move_to( ((blendX+40)*n)+list_scroll+10, (listY*ind)+self.mainscroll+listY-25)
+                    ctx.show_text(str(int(BLEND_COMP*100))+" %")
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll, (listY*ind)+self.mainscroll+listY-10,  blendX, 2)
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll, (listY*ind)+self.mainscroll+listY-10,  int(blendX*BLEND_COMP), 2)
                     
                     
-                    self.RLISTS[ind][2][n][0] = BPic
+                    
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll , (listY*ind)+self.mainscroll+50, blendX, blendX)
+                    
+                    
+                    ## TITLE ##
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.set_font_size(10)
+                    ctx.move_to( ((blendX+40)*n)+list_scroll+10, (listY*ind)+self.mainscroll+listY-40)
+                    ctx.show_text(BLEND[1][BLEND[1].rfind("/")+1:])
+            
+                    
+                    ### REMOVE BUTTON ####
+                    
+                    # MOUSE OVER
+                    if mx in range(((blendX+40)*n)+list_scroll+blendX, ((blendX+40)*n)+list_scroll+blendX+16) and my in range((listY*ind)+self.mainscroll+40, (listY*ind)+self.mainscroll+40+16):
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll+blendX-1, (listY*ind)+self.mainscroll+39, 18, 18)
+                        
+                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                        
+                            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+                            
+                            try:
+                                DF = open(self.pf+"/py_data/rnd_seq/"+LIST[0], "r")
+                                DF = DF.read().split("\n")
+                                
+                                NF = ""
+                                
+                                for d in DF:
+                                    
+                                    if BLEND[1] not in d:
+                                        NF = NF + d+"\n"
+                                        
+                                
+                                SF = open(self.pf+"/py_data/rnd_seq/"+LIST[0], "w")
+                                SF.write(NF)
+                                SF.close()
+                                         
+                                
+                                
+                                
+                            except:
+                                pass
+                            self.load()
+                        
+                    
+                    
+                    widget.window.draw_pixbuf(None, self.delete, 0, 0, ((blendX+40)*n)+list_scroll+blendX, (listY*ind)+self.mainscroll+40 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                    
+                    # IF IT'S RENDERING CURRENTLY
+                    
+                    if int(BLEND_COMP) == 1:
+                        
+                        rendrnow = False
+                    
+                    if rendrnow:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll-2 , (listY*ind)+self.mainscroll+50-2, blendX+4, blendX+4)
+                        rendrnow= False
+                        checkedfirstrendnow = True
+                    
+                    if int(BLEND_COMP) == 1 and checkedfirstrendnow == False:
+                        
+                        rendrnow = True
+                    
+                    
+                    
+                            
+                    ### IMAGE ###
+                    
+                    if BLEND[0] and BLEND[0] != "None":
+                        
+                        widget.window.draw_pixbuf(None, BLEND[0], 0, 0, ((blendX+40)*n)+list_scroll, (listY*ind)+self.mainscroll+50 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                    
+                    elif BLEND[0] != "None" and self.FRAMES > n and ((blendX+40)*n)+list_scroll in range(0, w):
+                        
+                        try:
+                            
+                            print self.pf+BLEND[1]
+                            BPic = gtk.gdk.pixbuf_new_from_file(thumbnailer.blenderthumb(self.pf+"/"+BLEND[1], 100,100))
+                        except:
+                            
+                             
+                            raise
+                            BPic = "None"
+                        
+                        
+                        self.RLISTS[ind][2][n][0] = BPic
+            
+            
+            
+            ## MOUSE OVER let's say fot the grab tool ###
+                    
+                    
+                if mx in range( ((blendX+40)*n)+list_scroll-2,  ((blendX+40)*n)+list_scroll-2+blendX+4):
+                    
+                    if my in range((listY*ind)+self.mainscroll+50-2, (listY*ind)+self.mainscroll+50-2+blendX+4):
+                        
+                        widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
+                        
+                        
+                        
+                        if self.tool == "grab":
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c")) ## CHOSE COLOR
+                            widget.window.draw_rectangle(xgc, True, ((blendX+40)*n)+list_scroll-15, (listY*ind)+self.mainscroll+40,  2, blendX+80)
+                            
+                            
+                            # IF RELESED
+                            if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.win.is_active():
+                                
+                                
+                                # moving line is like copying it first
+                                # and then deleting the previous one
+                                
+                                ### MARK ###
+                                
+                                # marking to delete the line
+                                
+                                print self.RLISTS[self.grab[0]][2][self.grab[1]][1]
+                                
+                                delete_filename = self.RLISTS[self.grab[0]][0]
+                                delete_file = open(self.pf+"/py_data/rnd_seq/"+delete_filename, "r")
+                                delete_file = delete_file.read().split("\n")
+                                
+                                print "\n----- DELETE FILE ------ (before)\n"
+                                for dn,  i in enumerate(delete_file):
+                                    print i
+                                    if i == self.RLISTS[self.grab[0]][2][self.grab[1]][1]:
+                                        delete_file[dn] = "!!!DELETE!!!"
+                                print "\n----- DELETE FILE ------ (after)\n"
+                                for dn,  i in enumerate(delete_file):
+                                    print i
+                                    
+                                if delete_file[-1] == "":
+                                    delete_file = delete_file[:-1]
+                                
+                                
+                                
+                                
+                                save = open(self.pf+"/py_data/rnd_seq/"+delete_filename, "w")
+                                
+                                for i in delete_file:   
+                                    save.write(i+"\n")
+                                
+                                save.close()
+                                
+                                
+                                
+                                ### INSERT ####
+                                
+                                # opening the file
+                                insert_filename = self.RLISTS[ind][0]
+                                insert_file = open(self.pf+"/py_data/rnd_seq/"+insert_filename, "r")
+                                insert_file = insert_file.read().split("\n")
+                                
+                                print "\n----- INSERT FILE ------(before)\n"
+                                for i in insert_file:
+                                    print i
+                                
+                                insert_file.insert(n, self.RLISTS[self.grab[0]][2][self.grab[1]][1])
+                                
+                                print "\n----- INSERT FILE ------(after)\n"
+                                for i in insert_file:
+                                    print i
+                                
+                                if insert_file[-1] == "":
+                                    insert_file = insert_file[:-1]
+                                
+                                
+                                
+                                
+                                save = open(self.pf+"/py_data/rnd_seq/"+insert_filename, "w")
+                                
+                                for i in insert_file:   
+                                    save.write(i+"\n")
+                                save.close()
+                                
+                                ### REMOVE ####
+                                
+                                delete_filename = self.RLISTS[self.grab[0]][0]
+                                delete_file = open(self.pf+"/py_data/rnd_seq/"+delete_filename, "r")
+                                delete_file = delete_file.read().split("\n")
+                                delete_file.remove("!!!DELETE!!!")
+                                if delete_file[-1] == "":
+                                    delete_file = delete_file[:-1]
+                                
+                                
+                                
+                                
+                                save = open(self.pf+"/py_data/rnd_seq/"+delete_filename, "w")
+                                
+                                for i in delete_file:   
+                                    save.write(i+"\n")
+                                save.close()
+                                
+                                
+                                self.load()
+                                self.grabbed =True
+                            
+                        elif "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                        
+                            self.tool = "grab"
+                            self.grab = [ind, n]
         
         
-        
-        
-        
-        
-        
+                            
+                            
+                            
         
         
         
@@ -451,7 +679,29 @@ class main:
            
             widget.window.draw_pixbuf(None, self.render_big, 0, 0, w-200, (listY*ind)+self.mainscroll+20+listY-48 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
         
-        
+        if self.tool == "grab": #WRITTING IT HERE SO IT WILL OVERWTITE ONTO PREVIOUSLY WRITTEN THINGS
+            
+            
+            ind = self.grab[0]
+            n = self.grab[1]
+            try:
+                BLEND = self.RLISTS[ind][2][n]
+            
+                
+                if BLEND[0] and BLEND[0] != "None":
+                    
+                    widget.window.draw_pixbuf(None, BLEND[0], 0, 0, mx, my , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                else:
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, mx , my, blendX+4, blendX+4)
+                
+                ## TITLE ##
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(10)
+                ctx.move_to( mx+10, my+listY-80)
+                ctx.show_text(BLEND[1][BLEND[1].rfind("/")+1:])
+            except:
+                pass
         
         #############################################################################
         ############################# UNTIL HERE ####################################

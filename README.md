@@ -40,7 +40,7 @@
   
 ## FUNCTIONS TO DEVELOP
 - [x] New way to calculate percentages, based on the new system of scenes
-- [ ] The Deadline editor
+- [x] The Deadline editor
 - [ ] The Deadline Capability for assests
 - [ ] The Shooting Scedual
 - [ ] The Shot type

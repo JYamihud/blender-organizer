@@ -1159,6 +1159,7 @@ class event:
         textview.set_editable(False)
         #textcolors
         textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("#5c5c5c"))
+        textview.modify_base(gtk.STATE_SELECTED, gtk.gdk.color_parse("#db3c16"))
         textview.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFF"))
         fontdesc = pango.FontDescription("Monospace")
         textview.modify_font(fontdesc)

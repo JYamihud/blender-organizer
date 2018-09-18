@@ -140,14 +140,14 @@ class checkwindow:
         self.plus = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
         self.delete = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/delete.png")
         self.move = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/move.png")
-        
+        self.edit = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/edit.png")
         
         # FOR GRAB FEATURE
         
         self.tool = "select"
         self.grab = 0
         self.grab_text = ""
-        
+        self.grabbed = False
         
         
         graph = gtk.DrawingArea()
@@ -224,15 +224,17 @@ class checkwindow:
         widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME  
         
         
+        
+        #############################################################################
+        ############################# DRAW HERE #####################################
+        #############################################################################
         if self.tool == "select":
             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW))
         elif self.tool == "grab":
             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
-        #############################################################################
-        ############################# DRAW HERE #####################################
-        #############################################################################
-        
-        
+        if self.grabbed:
+            self.tool = "select"
+            self.grabbed = False
         if "GDK_BUTTON3" in str(fx) and "GDK_BUTTON3" not in str(self.mpf) and self.win.is_active():
             self.tool = "select"
         
@@ -254,14 +256,19 @@ class checkwindow:
                 # IF THIS TASK GRABBED
                 xmove = line.find("[")*20
                 ymove = ind*40+self.offset
+                
+                gpos = ((len(self.grab_text)*12)+35+35)
+                
                 if self.tool == "grab" and self.grab == ind:
                     
-                    xmove = mx
+                    xmove = mx - gpos
                     ymove = my
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c7c7c")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20, ind*40+self.offset,  w, 39)
-                
+                    
+                    widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
+                    
                 
                 
                 # IF GRABBING IS ABOVE THIS TASK
@@ -269,22 +276,22 @@ class checkwindow:
                 if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "grab":
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, int(float(mx)/80)*80, ind*40+self.offset-7,  w, 5)
-                    widget.window.draw_line(xgc, int(float(mx)/80)*80, 0, int(float(mx)/80)*80, h )
+                    widget.window.draw_rectangle(xgc, True, int(float(mx - gpos)/80)*80, ind*40+self.offset-7,  w, 5)
+                    widget.window.draw_line(xgc, int(float(mx - gpos)/80)*80, 0, int(float(mx - gpos)/80)*80, h )
                     
                     
-                    # IF ACTIVATE BY A CLICK
-                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                    # IF RELESED
+                    if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.win.is_active():
                         
                         self.FILE[self.grab+9] = "!!!DELETE!!!"
-                        self.FILE.insert(ind+9, " "*((int(float(mx)/80)*80)/20)+self.grab_text)
+                        self.FILE.insert(ind+9, " "*((int(float(mx - gpos)/80)*80)/20)+self.grab_text)
                         self.FILE.remove("!!!DELETE!!!")
                         
                         # refrashing the file
                         self.save()
                         self.open()
                         
-                        self.tool = "select"
+                        self.grabbed = True
                         
                     
                     
@@ -404,7 +411,7 @@ class checkwindow:
                     widget.window.draw_pixbuf(None, self.plus, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
-                # ACTIVATE MOVE BUTTON
+                # ACTIVATE GRAB BUTTON
                 
                 if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
@@ -432,6 +439,33 @@ class checkwindow:
                 if self.tool == "select":       
                     widget.window.draw_pixbuf(None, self.move, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
+                # EDIT TASK'S STRING
+                
+                
+                if mx in range(line.find("[")*20+25,  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35) and my in range(ind*40+self.offset+5, ind*40+self.offset+5+25):
+                    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.display_get_default(), self.edit, 1,20))
+                    
+                    #widget.window.draw_pixbuf(None, self.edit, 0, 0, mx-1, my-20 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                    
+                    # IF CLICKED
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                        
+                        def ee(ind, line):
+                            newtext = dialogs.PickName(line[line.find("]")+1:])
+                            
+                            if newtext != "": # if returned something (if pressed ok and has text)
+                                
+                                
+                                self.FILE[ind+9] = line[:line.find("]")+1]+newtext
+                                
+                                # refrashing the file
+                                self.save()
+                                self.open()
+                                
+                                
+                            
+                        glib.timeout_add(10, ee, ind, line)
                 
                 
                 # DELETE TASK
@@ -530,6 +564,7 @@ class checkwindow:
         
         
         
+    
         
         
         #SCROLL

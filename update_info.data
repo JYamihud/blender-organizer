@@ -1,6 +1,6 @@
 VERSION 4.0
-FILE blender-organizer.py
-FILE py_data/modules/assets.py
+ADDED blender-organizer.py
+ADDED py_data/modules/assets.py
 UPDATE PAGE https://blenderartists.org/t/new-blender-organizer-forget-about-making-folders-work-faster/1126110/12
 
 

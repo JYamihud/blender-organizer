@@ -24,7 +24,7 @@ import thumbnailer
 import checklist
 import dialogs
 import story_editor # to get scene percentage
-
+import schedule
     
 
 
@@ -71,6 +71,7 @@ class draw_analytics:
         self.mpf = ""
         
         self.editicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/edit.png")
+        self.scheduleicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/schedule.png")
         
         ####### DATA
             
@@ -169,6 +170,64 @@ class draw_analytics:
         assetpercent = projectpercent
         projectpercent = str((float(assetpercent)+self.mainchecklist*100)/2)
         projectpercent = projectpercent[:projectpercent.find(".")+3]
+        
+        #### GETTING ALL CURRENT TASKS ###
+        self.schedule = []
+        self.schedulesize = 0
+        def get_schedule():
+            schedulefile = open(self.pf+"/schedule.data","r")
+            schedulefile = schedulefile.read().split("\n")
+            self.schedulesize = os.path.getsize(self.pf+"/schedule.data")
+            self.schedule = []
+            schedule_date_format = "%Y/%m/%d"
+            
+            psdate = "0000/00/00"
+            ypos = 0
+            for task in schedulefile:   
+                
+                
+                today = False
+                xpos = 0
+                done = False
+                taskstring = "Task"
+                taskfile = "progect.progress"
+                
+                try:
+                    sdate = task[:task.find(" ")]
+                    if psdate == sdate:
+                        ypos = ypos + 1
+                    else:
+                        ypos = 0
+                        psdate = sdate
+                    
+                    print ypos    
+                    print sdate
+                    
+                    if sdate == datetime.datetime.today().strftime(schedule_date_format):
+                        today = True
+                    
+                    a = datetime.datetime.strptime(self.startdate, date_format)
+                    b = datetime.datetime.strptime(sdate, schedule_date_format)
+                    delta = b - a
+                    
+                    xpos = float(delta.days)/self.alltime
+                    
+                    print xpos, sdate
+                    
+                    taskfile = task[task.find(" ")+1:task.replace(" ", ".", 1).find(" ")]
+                    print taskfile
+                    taskstring = task[task.replace(" ", ".", 2).find(" "):].replace("=:>", "/")
+                    print taskstring
+                    
+                    self.schedule.append([today, xpos, ypos, done, taskstring, taskfile, task])
+                    
+                except Exception as exception:
+                    print exception
+            
+            
+            
+        
+        get_schedule()
         
         
         ##### MAIN BOTTOM GRAPH #####
@@ -675,6 +734,9 @@ class draw_analytics:
                 
                 newdate = d+"/"+m+"/"+y
                 
+                
+                # MAKING SURE STR NOT THE SAME DATE AS FIN ( it might crash the software )
+                
                 if what == "STR" and newdate == self.enddate:
                     d = str ( int( d ) - 1 ) 
                     if len(d) < 2:
@@ -743,13 +805,84 @@ class draw_analytics:
             ctx.show_text("Deadline: "+self.enddate) 
             
             
-            #dialogs.GetDate(2018,11,02)
+            
+            ### DRAWING TASKS TO THE WINDOW
             
             
+            #makingsuretodrawlasttasks
+            if self.schedulesize != os.path.getsize(self.pf+"/schedule.data"):
+                get_schedule()
+                
             
             
+            # self.schedule  [today, xpos, ypos, done, taskstring, taskfile]
+            showtooltip = True
+            for task in self.schedule:  
             
+                today, xpos, ypos, done, taskstring, taskfile, rawline = task
             
+                xpos = int(w*xpos)-5
+                
+                ypos = h - (ypos*12) - 20 -h/5
+                
+                
+                
+                if today:
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
+                    widget.window.draw_rectangle(xgc, True, xpos-1, ypos, 10, 10 )
+                    
+                else:
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
+                    widget.window.draw_rectangle(xgc, True, xpos, ypos, 5, 5 )
+            
+                
+                ctx.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+                
+                
+                
+                if mx in range(xpos-1, xpos+10) and my in range(ypos, ypos+10):
+                    
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                        
+                        if taskfile == "project.progress":
+                            checklist.checkwindow(pf=self.pf, title="[ "+taskstring[taskstring.rfind("/")+1:]+" ] in ", FILE=taskfile, highlight=rawline)
+                        else:
+                            checklist.checkwindow(pf=self.pf, title="[ "+taskstring[taskstring.rfind("/")+1:]+" ] in ", FILE=self.pf+taskfile, highlight=rawline)
+                    
+                    istx = xpos
+                    isty = len(taskstring)*9+5
+                    if len(taskfile)*6+2 > isty:
+                        isty = len(taskfile)*6+2
+                    
+                    if istx + len(taskstring)*9+5 > w:
+                        istx = w-(len(taskstring)*9+5)
+                    if istx + len(taskfile)*6 > w:
+                        istx = w-len(taskfile)*6
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                    widget.window.draw_rectangle(xgc, True, xpos-1, ypos, 10, 10 )
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                    widget.window.draw_rectangle(xgc, True, istx, ypos-80, isty, 40 )
+                    
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.set_font_size(15)
+                    ctx.move_to( istx+1, ypos-80+16)
+                    ctx.show_text(taskstring)
+                    
+                    ctx.set_font_size(10)
+                    ctx.move_to( istx+1, ypos-80+35)
+                    
+                    if taskfile == "project.progress":
+                        ctx.show_text("Main")
+                    else:
+                        ctx.show_text(taskfile)
+                    
+                    widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, istx-11, ypos-80-7 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                    
+                    showtooltip = False
+                    
+                    
             
             # TESTING SOMETHING
             ctx.set_font_size(20)

@@ -3521,8 +3521,10 @@ def get_scenes_percentage(FILE):
                 scenevalue = float(sum(scenevalues))/len(scenevalues)
                 valueslist.append(scenevalue)
                      
-    
-    persantage = float(sum(valueslist))/len(valueslist)
+    try:
+        persantage = float(sum(valueslist))/len(valueslist)
+    except:
+        persantage = 0.0
     return persantage
     
     

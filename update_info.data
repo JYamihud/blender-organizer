@@ -1,6 +1,9 @@
 VERSION 4.0
 MAIN_FILE
 FILE py_data/modules/assets.py
+FILE py_data/modules/story_editor.py
+FILE py_data/modules/checklist.py
+FILE py_data/modules/dialogs.py
 UPDATE PAGE https://blenderartists.org/t/new-blender-organizer-forget-about-making-folders-work-faster/1126110/12
 
 

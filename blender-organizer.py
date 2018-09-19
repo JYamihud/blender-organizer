@@ -51,7 +51,7 @@ from py_data.modules import analytics
 from py_data.modules import assets
 from py_data.modules import story_editor
 from py_data.modules import checklist
-
+from py_data.modules import schedule
 
 ### FILES FOLDERS MAKE SURE
 
@@ -304,6 +304,9 @@ toppannelbox.pack_end(syncider, False)
 
 # Update
 
+def start_schedule(w):
+    schedule.draw(os.getcwd())
+
 Updateider = gtk.Button()
 Updateider.props.relief = gtk.RELIEF_NONE
 Updateibox = gtk.HBox(False)
@@ -313,9 +316,30 @@ Updateibox.pack_start(Updateiico, False)
 Updateibox.pack_start(gtk.Label("  Update"))
 Updateider.add(Updateibox)
 Updateider.set_tooltip_text("Check for updates")
-Updateider.connect("clicked",chgCUR, "update")
 Updateider.set_sensitive(False)
 toppannelbox.pack_end(Updateider, False)
+
+# Schedule
+
+#make sure schedule.data exists
+if os.path.exists(os.getcwd()+"/schedule.data") == False:
+    
+    s = open(os.getcwd()+"/schedule.data", "w")
+    s.close()
+
+Scheduleider = gtk.Button()
+Scheduleider.props.relief = gtk.RELIEF_NONE
+Scheduleibox = gtk.HBox(False)
+Scheduleiico = gtk.Image()
+Scheduleiico.set_from_file("py_data/icons/schedule.png")
+Scheduleibox.pack_start(Scheduleiico, False)
+Scheduleibox.pack_start(gtk.Label("  Schedule"))
+Scheduleider.add(Scheduleibox)
+Scheduleider.set_tooltip_text("Edit Scheduling")
+Scheduleider.connect("clicked",start_schedule)
+
+#toppannelbox.pack_end(Scheduleider, False)
+
 
 # checklist
 

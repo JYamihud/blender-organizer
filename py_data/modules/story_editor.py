@@ -235,6 +235,8 @@ class story:
         self.paste = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/paste.png")
         self.plus = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
         self.render = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/render.png")
+        self.checklist = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/checklist.png")
+        
         
         
         self.fade_01 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_01.png")
@@ -2237,7 +2239,7 @@ class story:
                         
                         
                         # MOUSE OVER
-                        if mx in range(Pstart, w) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w-Ppart/2) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
                             
                             
@@ -2245,7 +2247,7 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart-Ppart/2, 23)
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 
@@ -2257,14 +2259,95 @@ class story:
                         
                         widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
+                        
+                        
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(15)
                         ctx.move_to( Pstart+50, 15+shotlistlength+220+self.shotsSCROLL+2)
                         ctx.show_text("extra")
                         
                         
+                        
+                        
+                        
+                        
+                        # checklist
+                        
+                        
+                        #trying to get the list
+                        checkexist = False
+                        checkpath = self.pf+"/"+shotname+"/shot.progress"
+                        if os.path.exists(checkpath):
+                            
+                            checkexist = True
+                            checkfloat = checklist.partcalculate(checklist.openckecklist(checkpath))
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL+35, Ppart-Ppart/2-100, 5)
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL+35, int((Ppart-Ppart/2-100)*checkfloat), 5)
+                            
+                            ctx.set_source_rgb(1,1,1)
+                            ctx.set_font_size(15)
+                            ctx.move_to( Pstart+Ppart/2+(Ppart-Ppart/2-95), 15+shotlistlength+220+self.shotsSCROLL+25)
+                            ctx.show_text(str(int(checkfloat*100))+"%")
+                        
+                        
+                        
+                        # MOUSE OVER
+                        if mx in range(Pstart+Ppart/2, w) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                            
+                            
+                            
+                            # get mouse to show the hand
+                            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8c8c8c"))
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                            
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                                if checkexist:
+                                    checklist.checkwindow(pf=self.pf, title="SHOT", FILE=checkpath)
+                                else:
+                                    
+                                    def ee(shotname, checkpath):   
+                                        name = dialogs.choose_shot_type()
+                                        
+                                    
+                                        
+                                        refpath = self.pf+"/py_data/new_file/"+name+".progress"
+                                        
+                                        print refpath
+                                        if os.path.exists(refpath):
+                                            
+                                                o = open(refpath, "r")
+                                                w = open(checkpath, "w")
+                                                w.write(o.read())
+                                                w.close()
+                                        
+                                    glib.timeout_add(10, ee, shotname, checkpath)
+                        
+                        # DRAW BUTTON
+                        
+                        widget.window.draw_pixbuf(None, self.checklist, 0, 0, Pstart+10+Ppart/2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        
+                        
+                        
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(15)
+                        ctx.move_to( Pstart+50+Ppart/2, 15+shotlistlength+220+self.shotsSCROLL+2)
+                        if checkexist:
+                            ctx.show_text("Checklist")
+                        else:
+                            ctx.show_text("Create Checklist")
+                        
+                        
                         # SPACE
                         shotlistlength = shotlistlength + 40
+                        
+                        
                         
                         
                         ###### BLEND FILES ######

@@ -54,7 +54,11 @@ class asset:
         
         # asset.progress
         if os.path.exists(path+"/asset.progress") == False:
-            o = open("py_data/new_file/asset.progress", "r")
+            
+            try:
+                o = open("py_data/new_file/"+CUR+".progress", "r")
+            except:
+                o = open("py_data/new_file/asset.progress", "r")
             w = open(path+"/asset.progress", "w")
             w.write(o.read())
             w.close()

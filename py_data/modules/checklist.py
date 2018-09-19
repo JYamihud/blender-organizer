@@ -523,8 +523,12 @@ class checkwindow:
                 
                 for task in o:
                     
-                    if task.endswith(self.get_line_path(ind, line)):
+                    
+                    
+                    if task.endswith(self.get_line_path(ind, line)) and self.FILENAME.replace(self.pf, "") in task:
                         
+                        
+                        self.FILENAME.replace(self.pf, "") in task
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
                         widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
@@ -642,9 +646,9 @@ class checkwindow:
                 
                 
                 if mx in range(line.find("[")*20+25,  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35) and my in range(ind*40+self.offset+5, ind*40+self.offset+5+25):
-                    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.display_get_default(), self.edit, 1,20))
+                    #widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.display_get_default(), self.edit, 1,20))
                     
-                    #widget.window.draw_pixbuf(None, self.edit, 0, 0, mx-1, my-20 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    widget.window.draw_pixbuf(None, self.edit, 0, 0, mx+2, my-24 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                     
                     # IF CLICKED

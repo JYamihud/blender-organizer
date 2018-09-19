@@ -6,20 +6,11 @@
 #### [V] means that tast is finished
 #### DO NOT USE EMPTY LINES
 STR 00/00/0000
-FIN 00/00/0000
+FIN 01/00/0000
 [ ] Concept Art
-    [ ] Concept Drawing
-    [ ] Strait Angle Reference
 [ ] Modeling
-    [ ] Base Modeling
-    [ ] Sculpting
-    [ ] Retopology
 [ ] Materials
 [ ] Rigging
-    [ ] Shape Keys Creating
-    [ ] Rig Modelign
-    [ ] Rig Assinging
-    [ ] Rig Drivers and Constrains
 [ ] Testing
     [ ] Preview.jpg & Wired.jpg
     [ ] Tuntable render for web

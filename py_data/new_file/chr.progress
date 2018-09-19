@@ -1,0 +1,27 @@
+#### Blender-Organizer checklist file. ( do not remove 1rst 9 lines )
+#### INDINTATION (4 SPACES LONG)
+#### STR means Start date of the ASSET
+#### FIN means Finish deadline of the asset
+#### [ ] means that task is on list
+#### [V] means that tast is finished
+#### DO NOT USE EMPTY LINES
+STR 00/00/0000
+FIN 01/00/0000
+[ ] Concept Art
+    [ ] Concept Drawing
+    [ ] Strait Angle Reference
+[ ] Modeling
+    [ ] Base Modeling
+    [ ] Sculpting
+    [ ] Retopology
+[ ] Materials
+[ ] Rigging
+    [ ] Shape Keys Creating
+    [ ] Rig Modelign
+    [ ] Rig Assinging
+    [ ] Rig Drivers and Constrains
+[ ] Testing
+    [ ] Preview.jpg & Wired.jpg
+    [ ] Tuntable render for web
+    [ ] Upload Privew to Forums
+[ ] Creating ASSET in /ast Folder

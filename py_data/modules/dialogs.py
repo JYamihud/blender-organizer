@@ -673,6 +673,7 @@ def PickName(NN):
     
     
     
+    
     ret = ""
     
     box.show_all()
@@ -710,6 +711,53 @@ def GetDate(y, m, d):
     r = dialog.run()
     if r == gtk.RESPONSE_APPLY:
         ret = c.get_date()
+    
+    
+    dialog.destroy()
+    
+    return ret
+
+
+def choose_shot_type():
+    
+    dialog = gtk.Dialog("Type of Shot?", None, 0, (gtk.STOCK_OK,  gtk.RESPONSE_APPLY, 
+                                               gtk.STOCK_CANCEL, gtk.RESPONSE_CLOSE))
+        
+    
+        
+    
+    
+                                
+    box = dialog.get_child()
+    
+    types = ["shot", "shot_anim", "shot_vfx"]
+    words = ["Normal", "Animated", "Visual FX"]
+    
+    buttons = []
+    
+    for i in words: 
+        if i == "Normal":
+            buttons.append(gtk.RadioButton(None, i))
+        else:
+            buttons.append(gtk.RadioButton(buttons[0], i))
+    
+    for i in buttons:   
+        
+        box.pack_start(i, False)
+    
+    
+    ret = ""
+    
+    box.show_all()
+    r = dialog.run()
+    if r == gtk.RESPONSE_APPLY:
+        
+        for n, i in enumerate(buttons):
+                
+            if i.get_active():
+                print types[n]
+                ret = types[n]
+                
     
     
     dialog.destroy()

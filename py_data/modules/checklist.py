@@ -24,6 +24,7 @@ import gtk
 import pango
 import cairo
 import glib
+import datetime
 
 # self made modules
 import dialogs
@@ -97,13 +98,15 @@ def partcalculate(part):
 # and finally we need a window editor for those graphs
 
 class checkwindow:
-    def __init__(self, w=False, pf="/", title="Checklist", FILE=None):
+    def __init__(self, w=False, pf="/", title="Checklist", FILE=None, highlight=None):
         
         #saving all the input to SELF
         self.widget = w
         self.title = title
         self.FILE = FILE
         self.FILENAME = FILE
+        
+        self.highlight = highlight
         
         self.LIST = openckecklist(self.FILE)
         self.mainpercent = partcalculate(self.LIST)
@@ -141,6 +144,7 @@ class checkwindow:
         self.delete = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/delete.png")
         self.move = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/move.png")
         self.edit = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/edit.png")
+        self.schedule = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/schedule.png")
         
         # FOR GRAB FEATURE
         
@@ -148,7 +152,7 @@ class checkwindow:
         self.grab = 0
         self.grab_text = ""
         self.grabbed = False
-        
+        self.initframe = True
         
         graph = gtk.DrawingArea()
         graph.set_size_request(500,700)
@@ -198,6 +202,41 @@ class checkwindow:
         
         save.close()
     
+    def get_line_path(self, ind, line):
+        
+        sep = "=:>"
+        
+        p = ""
+        if line.startswith("["):
+            p = line[line.find("]")+1:]
+        else:
+            
+            parts = []
+            
+            now = ind+9
+            nowline = line
+            curindent = len(nowline[:nowline.find("[")])
+            for i in range(len(self.FILE)):
+                
+                try:
+                    len(self.FILE[now-1][:self.FILE[now-1].find("[")])
+                    
+                except:
+                    break    
+                if len(self.FILE[now-1][:self.FILE[now-1].find("[")]) < curindent:
+                    
+                    
+                    nowline = self.FILE[now-1][self.FILE[now-1].find("]")+1:]
+                    parts.append(nowline)
+                    curindent = curindent - 4
+                now = now - 1
+                
+                
+                
+            for i in parts[::-1]:
+                p = p+i+sep
+            p = p + line[line.find("]")+1:]
+        return p
     
     #### THIS FUNCTION DRAWS THE PIXELS IN THE WINDOW ####
     def framegraph(self, widget, event):
@@ -228,6 +267,10 @@ class checkwindow:
         #############################################################################
         ############################# DRAW HERE #####################################
         #############################################################################
+        
+        removestring = None
+        
+        
         if self.tool == "select":
             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW))
         elif self.tool == "grab":
@@ -243,6 +286,8 @@ class checkwindow:
         
         prevline = "[ ]"
         sofar = [False, 0]
+        foundhightlight = False
+        
         for ind, line in enumerate(self.FILE[9:]):
             
             
@@ -253,11 +298,33 @@ class checkwindow:
             if "[ ]" in line or "[V]" in line or "[v]" in line:
                 
                 
+                
+                
+                
                 # IF THIS TASK GRABBED
                 xmove = line.find("[")*20
                 ymove = ind*40+self.offset
                 
+                
+                
                 gpos = ((len(self.grab_text)*12)+35+35)-35
+                
+                
+                ## HIGLIGHT
+                if self.highlight:
+                    if self.highlight.endswith(self.get_line_path(ind, line)):
+                        
+                        foundhightlight = True
+                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9c9c9c")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
+                        
+                        if self.initframe:
+                            self.offset = 0-ymove+100
+                    
+                    
+                    
+                
                 
                 if self.tool == "grab" and self.grab == ind:
                     
@@ -370,12 +437,12 @@ class checkwindow:
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+5+self.offset-2, 22, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35, ind*40+5+self.offset-2, 160, 30)
+                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 160, 30)
                     
                     
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(20)
-                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+25+self.offset)
+                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
                     ctx.show_text("Add Subtask")
                     
                     
@@ -419,12 +486,12 @@ class checkwindow:
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+5+self.offset-2, 22, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35, ind*40+5+self.offset-2, 160, 30)
+                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 160, 30)
                     
                     
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(20)
-                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+25+self.offset)
+                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
                     ctx.show_text("Move Task")
                     
                     # IF CLICKED
@@ -439,7 +506,139 @@ class checkwindow:
                 if self.tool == "select":       
                     widget.window.draw_pixbuf(None, self.move, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
+                
+                ## ADD TO SCHEDULE
+                
+                
+                
                 # EDIT TASK'S STRING
+                
+                # removestring
+                
+                #checking is task has a scheduling already
+                o = open(self.pf+"/schedule.data","r")
+                o = o.read().split("\n")
+                
+                alreadyexist = False
+                
+                for task in o:
+                    
+                    if task.endswith(self.get_line_path(ind, line)):
+                        
+                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                        widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(20)
+                        ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
+                        ctx.show_text(task[:task.find(" ")])
+                        
+                        alreadyexist = True
+                        
+                        
+                        if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select":
+                            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                            widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                            widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
+                            
+                            
+                            ctx.set_source_rgb(1,1,1)
+                            ctx.set_font_size(20)
+                            ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
+                            ctx.show_text("Remove Schedule")
+                            
+                            # IF CLICKED
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                                
+                                removestring = self.get_line_path(ind, line)
+                                print removestring
+                
+                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist:
+                    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
+                    
+                    
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.set_font_size(20)
+                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
+                    ctx.show_text("Add To Schedule")
+                    
+                    # IF CLICKED
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                        
+                        
+                        def ee(ind, line):
+                        
+                            #MAKING A STRING TO WRITE TO THE SCHEDULE.DATA FILE
+                            #IT CONTAINS 3 PARTS
+                            # date
+                            #spacebar
+                            # path to the .progress (checklist) file
+                            # spacebar
+                            # path to the task with in the file
+                            # EXAMPLE: 2018/12/31 /dev/chr/character/asset.progress Modeling=:>BaseModeling
+                            
+                            # GETTING DATE
+                            y, m, d = int(datetime.datetime.now().year), int(datetime.datetime.now().month)-1, int(datetime.datetime.now().day)
+                    
+                    
+                            y, m, d = dialogs.GetDate(y, m, d)
+                            
+                            
+                            y, m, d = str(y), str(m+1), str(d)
+                            if len(m) < 2:
+                                m = "0"+m
+                            if len(d) < 2:
+                                d = "0"+d
+                            
+                            newdate = y+"/"+m+"/"+d
+                            
+                            
+                            ### ADDING THE FILENAME TO THE STRING
+                            
+                            schstr = newdate+" "+self.FILENAME.replace(self.pf, "")
+                            
+                            # GETTING THE PATH WITH IN 
+                            
+                            
+                            p = self.get_line_path(ind, line)
+                            
+                            schstr = schstr+" "+p
+                            
+                            print schstr
+                            
+                            
+                            # OPENING EXISTANT FILE
+                            o = open(self.pf+"/schedule.data","r")
+                            o = o.read().split("\n")
+                            if o [-1] == "":
+                                o = o[:-1]
+                            
+                            o.append(schstr)
+                            
+                            o = sorted(o)
+                            
+                            
+                            s = open(self.pf+"/schedule.data","w")
+                            for i in o:
+                                s.write(i+"\n")
+                            
+                            s.close()
+                        
+                        
+                        glib.timeout_add(10, ee, ind, line)
+                    
+                    
+                if self.tool == "select":       
+                    widget.window.draw_pixbuf(None, self.schedule, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
                 if mx in range(line.find("[")*20+25,  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35) and my in range(ind*40+self.offset+5, ind*40+self.offset+5+25):
@@ -564,7 +763,36 @@ class checkwindow:
         
         
         
-    
+        
+        if not foundhightlight and self.highlight:
+            #print "PROBLEMATIC", self.highlight
+            removestring = self.highlight
+        if removestring:
+            
+            o = open(self.pf+"/schedule.data","r")
+            o = o.read().split("\n")
+            
+            if o[-1] == "":
+                o = o[:-1]
+            
+            try:
+                print removestring
+                
+                for i in o:
+                    if i.endswith(removestring):
+                        o.remove(i)
+                
+                
+                
+                s = open(self.pf+"/schedule.data","w")
+                for i in o:
+                    print i
+                    s.write(i+"\n")
+                s.close()
+                self.highlight = None
+            except Exception as e:
+                print e
+            
         
         
         #SCROLL
@@ -607,7 +835,7 @@ class checkwindow:
         self.mpf = fx
         
         
-        
+        self.initframe = False
         def callback():
             if self.allowed == True:
                 widget.queue_draw()

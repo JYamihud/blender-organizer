@@ -445,7 +445,10 @@ class draw_analytics:
             
             prevW = 0
             prevH = h
-            avrgval = lastpercent / passed
+            try:
+                avrgval = lastpercent / passed
+            except:
+                avrgval = 0.0
             prevLB = 0
             
             for dln, date in enumerate(perhys):

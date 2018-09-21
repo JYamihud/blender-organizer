@@ -9,7 +9,16 @@
 # BASICALLY IT'S FREE TO USE AND SHARE AND MODIFY
 # BUY MY NAME SHOULD BE CREDITED AS (made by J.Y.Amihud)
 
-VERSION = 4.0
+VERSION = 3.95
+
+
+savename = open("MAIN_FILE", "w")
+savename.write(str(__file__))
+savename.close()
+
+
+
+
 
 
 ### IMPORTING MODULES

@@ -1,5 +1,6 @@
 VERSION 4.0
 MAIN_FILE
+FILE update_info.data
 FILE py_data/modules/assets.py
 FILE py_data/modules/story_editor.py
 FILE py_data/modules/checklist.py

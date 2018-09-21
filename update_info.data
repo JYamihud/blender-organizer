@@ -10,4 +10,12 @@ UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/bl
 VERSION 3.99
 MAIN_FILE
 FILE py_data/modules/story_editor.py
-UPDATE PAGE https://blenderartists.org/t/new-blender-organizer-forget-about-making-folders-work-faster/1126110/12
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.0
+
+
+VERSION 3.95
+MAIN_FILE
+FILE py_data/modules/story_editor.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.0
+
+

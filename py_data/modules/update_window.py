@@ -3,6 +3,7 @@
 # system
 import os
 import socket
+import sys
 
 # graphics interface
 import gtk
@@ -73,6 +74,10 @@ class main:
         
         self.process = Popen(['stdbuf', '-o0', "python", self.pf+"/py_data/modules/update_network.py"], stdout=PIPE, universal_newlines=True)
         
+        self.update_update = False
+        self.update_progress = 1.0
+        
+        
         def destroyevent(w=False):
              self.process.process_kill()
         self.win.connect("destroy", destroyevent)
@@ -115,6 +120,8 @@ class main:
         #############################################################################
         #############################   POPEN   #####################################
         #############################################################################
+        
+        
         
         try:
             # BASIC READING
@@ -164,6 +171,16 @@ class main:
         ############################# DRAW HERE #####################################
         #############################################################################
         
+        
+        
+        self.end = self.end + 60
+        
+        
+        
+        
+        
+        
+        
         if len(self.MAINLIST) == 0 and len(self.FILES) == 0: 
             
             ctx.set_source_rgb(1,1,1)
@@ -174,7 +191,7 @@ class main:
         else:
             ctx.set_source_rgb(1,1,1)
             ctx.set_font_size(25)
-            ctx.move_to(  50, 50+self.offset)
+            ctx.move_to(  50, 50+self.offset+self.end)
             ctx.show_text("UPDATE TO : "+self.VER)
             
             self.end = self.end + 30
@@ -222,7 +239,7 @@ class main:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, 0, 50+self.end+self.offset, w, 50)
                     
-                    if mx in range(0, w) and my in range(50+self.end+self.offset, 50+self.end+self.offset+50):
+                    if mx in range(0, w) and my in range(50+self.end+self.offset, 50+self.end+self.offset+50) and my > 50:
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c7c7c")) ## CHOSE COLOR
                         widget.window.draw_rectangle(xgc, True, 0, 50+self.end+self.offset, w, 50)
@@ -250,7 +267,74 @@ class main:
                     
                     self.end = self.end + 60
                     
-                     
+        
+        
+        #### UPDATE LOUNCH BUTTON #####
+        
+        ctx.select_font_face("Ubuntu Mono", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+        widget.window.draw_rectangle(xgc, True, 0, 0, w, 50)
+        
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
+        if mx in range(0,w) and my in range(50):
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649")) ## CHOSE COLOR
+            
+            # IF CLICKED AND NOT LAUNCHED
+            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and not self.update_update:
+                
+                print __file__, "<<<<<<<<<<<<<<<< THE FILE NAME"
+                
+                self.update_update = Popen(['stdbuf', '-o0', "python", self.pf+"/py_data/modules/update_update.py"], stdout=PIPE, universal_newlines=True)
+                
+                
+                
+                
+            
+        
+        if self.update_update:
+            try:
+                # BASIC READING
+                line = self.update_update.stdout.readline()[:-1]
+            except:
+                line = ""
+            if line:
+                print line
+            
+            try:
+                
+                self.update_progress = float(line)
+               
+            except:
+                self.update_progress = 1.0
+        
+            if self.update_update.poll() or line.startswith("DONE"):
+                self.update_progress = 1.1
+                self.update_update = False
+                
+        
+        widget.window.draw_rectangle(xgc, True, 0, 0, int(w*self.update_progress), 50)
+        
+        
+        ctx.set_source_rgb(1,1,1)
+        ctx.set_font_size(40)
+        ctx.move_to(  80, 40)
+        
+        if self.update_update and self.update_progress < 1.1:
+            ctx.show_text(str(int(self.update_progress*100))+"% Updating ...")
+        
+        elif self.update_progress == 1.1:
+        
+            ctx.show_text("DONE! Restarting...")
+            
+            def restart():
+                os.execl(sys.executable, sys.executable, *sys.argv)
+            
+            glib.timeout_add(500, restart)
+                
+        
+        else:
+            ctx.show_text("Launch Update")
         
         #############################################################################
         ############################# UNTIL HERE ####################################
@@ -260,20 +344,20 @@ class main:
         
         #SCROLL
         
-        if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
+        if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active()  and my > 50:
                     
             self.offset = self.offset + (my-self.mpy)
         
-        if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
+        if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active() and my > 50:
                     
             self.offset = self.offset - (self.mpy-my)
         
         
-        #if self.offset < 0-(self.end-h):
-        #    self.offset = 0-(self.end-h)
+        if self.offset < 0-(self.end-h)-60:
+            self.offset = 0-(self.end-h)-60
             
-        #if self.offset > 0:
-        #    self.offset = 0
+        if self.offset > 0:
+            self.offset = 0
         
         
         # TESTING SOMETHING

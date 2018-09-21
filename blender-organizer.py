@@ -9,7 +9,7 @@
 # BASICALLY IT'S FREE TO USE AND SHARE AND MODIFY
 # BUY MY NAME SHOULD BE CREDITED AS (made by J.Y.Amihud)
 
-VERSION = 3.91
+VERSION = 4.0
 
 
 ### IMPORTING MODULES
@@ -18,28 +18,83 @@ try:            # GIVING THE USER ALL NEEDED INFORMATION IF MODULES ARE MISSING
     # system
     import os
     import socket
+    # calculational help
+    import datetime
+    import urllib2
     
+    #1.0/0   # TESTER
+    
+except:
+    
+    print '''
+ERROR !!! SOME OF THE PYTHON'S
+MAIN MODULES ARE MISSING
+
+os
+socket
+datetime
+urllib2
+
+to install those better to reinstall
+python it self
+
+use:
+sudo apt-get remove python2
+sudo apt-get install python2'''
+    
+    raw_input()
+    exit()
+    
+try:  
+  
     # graphics interface
     import gtk
     import pango
     import cairo
+    import glib
+    
+    #1.0/0
+    
+except:
+    print '''
+
+ERROR !!! Py-GTK MODULES ARE MISSING
+
+To install Py-GTK module do next commands
+
+
+sudo apt-get install python-pip
+sudo pip install PyGTK
+
+
+
+'''
+    
+    raw_input()
+    exit()
+    
+try:    
     try: 
         import Image
     except:
         from PIL import Image
 
-    # calculational help
-    import datetime
+    #1.0/0
 except:
-    print "ERROR!!! MISSING PYTHON MODULES..."
-    print "Has to be installed:"
-    print "os"
-    print "socket"
-    print "gtk (PY-gtk2)"
-    print "pango"
-    print "cairo"
-    print "PIL or Image"
-    print "datetime"
+    print '''
+
+ERROR !!! PIL MODULE IS MISSING
+
+To install PIL module do next commands
+
+
+sudo apt-get install python-pip
+sudo pip install PIL
+
+
+
+'''
+
     
     raw_input() #IN CASE THE TERMINAL IS LIKE CMD AND WILL CLOSE AUTOMATICALLY
     
@@ -52,6 +107,7 @@ from py_data.modules import assets
 from py_data.modules import story_editor
 from py_data.modules import checklist
 from py_data.modules import schedule
+from py_data.modules import update_window
 
 ### FILES FOLDERS MAKE SURE
 
@@ -316,7 +372,10 @@ Updateibox.pack_start(Updateiico, False)
 Updateibox.pack_start(gtk.Label("  Update"))
 Updateider.add(Updateibox)
 Updateider.set_tooltip_text("Check for updates")
-Updateider.set_sensitive(False)
+#Updateider.set_sensitive(False)
+Updateider.connect("clicked", update_window.main, os.getcwd())
+
+
 toppannelbox.pack_end(Updateider, False)
 
 # Schedule

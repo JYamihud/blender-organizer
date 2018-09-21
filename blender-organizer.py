@@ -9,7 +9,17 @@
 # BASICALLY IT'S FREE TO USE AND SHARE AND MODIFY
 # BUY MY NAME SHOULD BE CREDITED AS (made by J.Y.Amihud)
 
-VERSION = 3.95
+
+
+# TRYING TO GET VERSION FROM UPDATE FILE
+
+
+
+try:
+    up = open("update_info.data", "r")
+    VERSION = float(up.read().split("\n")[0][len("VERSION "):])
+except:
+    VERSION = 0.0
 
 
 savename = open("MAIN_FILE", "w")
@@ -465,4 +475,3 @@ mainwin.show_all()
 
 #run GTK
 gtk.main()
-

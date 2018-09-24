@@ -1,3 +1,7 @@
+VERSION 4.02
+MAIN_FILE
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.02
+
 VERSION 4.01
 MAIN_FILE
 FILE update_info.data

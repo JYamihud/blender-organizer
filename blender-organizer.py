@@ -82,8 +82,7 @@ ERROR !!! Py-GTK MODULES ARE MISSING
 To install Py-GTK module do next commands
 
 
-sudo apt-get install python-pip
-sudo pip install PyGTK
+sudo apt-get install python-gtk2-dev
 
 
 
@@ -108,7 +107,7 @@ To install PIL module do next commands
 
 
 sudo apt-get install python-pip
-sudo pip install PIL
+pip install pillow
 
 
 

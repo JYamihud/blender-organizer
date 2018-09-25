@@ -232,7 +232,7 @@ class draw_analytics:
                         print exception
                     
                     
-            1.0/0        
+                  
                 
         except:
             

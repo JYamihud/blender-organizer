@@ -127,105 +127,133 @@ class draw_analytics:
         astlist.append(scenpercent)
         projectpercent = (sum(astlist)/len(astlist))*100
         
-        #TIME
-    
-    
-        #getting time values
-        
-        timefile = open("project.progress", "r")
-        timefile = timefile.read()
-        self.startdate = "00/00/00"
-        self.enddate = "00/00/00"
-        for timeline in timefile.split("\n"):
-            if timeline.startswith("STR"):
-                self.startdate = timeline[4:]
-            if timeline.startswith("FIN"):
-                self.enddate = timeline[4:]
         
         
-        # CALCULATING DAYS
-        deadline = 0.2
+        #### SPANISH LANGUAGE EXCEPTION #####
         
-        date_format = "%d/%m/%Y"
-        a = datetime.datetime.strptime(self.startdate, date_format)
-        b = datetime.datetime.strptime(self.enddate, date_format)
-        delta = b - a
-        self.alltime = int(delta.days)
-        
-        a = datetime.datetime.strptime(self.startdate, date_format)
-        b = datetime.datetime.today()
-        delta =  b - a
-        
-        passed = int(delta.days)
-        
-        print "PASSED", passed, self.alltime
         
         try:
-            deadline = (1.0/self.alltime)*passed
-        except:
-            deadline = 0
+            
+            #TIME
         
-        deadline = deadline  * 100
         
-        assetpercent = projectpercent
-        projectpercent = str((float(assetpercent)+self.mainchecklist*100)/2)
-        projectpercent = projectpercent[:projectpercent.find(".")+3]
-        
-        #### GETTING ALL CURRENT TASKS ###
-        self.schedule = []
-        self.schedulesize = 0
-        def get_schedule():
-            schedulefile = open(self.pf+"/schedule.data","r")
-            schedulefile = schedulefile.read().split("\n")
-            self.schedulesize = os.path.getsize(self.pf+"/schedule.data")
+            #getting time values
+            
+            timefile = open("project.progress", "r")
+            timefile = timefile.read()
+            self.startdate = "00/00/00"
+            self.enddate = "00/00/00"
+            for timeline in timefile.split("\n"):
+                if timeline.startswith("STR"):
+                    self.startdate = timeline[4:]
+                if timeline.startswith("FIN"):
+                    self.enddate = timeline[4:]
+            
+            
+            # CALCULATING DAYS
+            deadline = 0.2
+            
+            date_format = "%d/%m/%Y"
+            a = datetime.datetime.strptime(self.startdate, date_format)
+            b = datetime.datetime.strptime(self.enddate, date_format)
+            delta = b - a
+            self.alltime = int(delta.days)
+            
+            a = datetime.datetime.strptime(self.startdate, date_format)
+            b = datetime.datetime.today()
+            delta =  b - a
+            
+            passed = int(delta.days)
+            
+            print "PASSED", passed, self.alltime
+            
+            try:
+                deadline = (1.0/self.alltime)*passed
+            except:
+                deadline = 0
+            
+            deadline = deadline  * 100
+            
+            assetpercent = projectpercent
+            projectpercent = str((float(assetpercent)+self.mainchecklist*100)/2)
+            projectpercent = projectpercent[:projectpercent.find(".")+3]
+            
+            #### GETTING ALL CURRENT TASKS ###
             self.schedule = []
-            schedule_date_format = "%Y/%m/%d"
-            
-            psdate = "0000/00/00"
-            ypos = 0
-            for task in schedulefile:   
+            self.schedulesize = 0
+            def get_schedule():
+                schedulefile = open(self.pf+"/schedule.data","r")
+                schedulefile = schedulefile.read().split("\n")
+                self.schedulesize = os.path.getsize(self.pf+"/schedule.data")
+                self.schedule = []
+                schedule_date_format = "%Y/%m/%d"
                 
+                psdate = "0000/00/00"
+                ypos = 0
+                for task in schedulefile:   
+                    
+                    
+                    today = False
+                    xpos = 0
+                    done = False
+                    taskstring = "Task"
+                    taskfile = "progect.progress"
+                    
+                    try:
+                        sdate = task[:task.find(" ")]
+                        if psdate == sdate:
+                            ypos = ypos + 1
+                        else:
+                            ypos = 0
+                            psdate = sdate
+                        
+                        print ypos    
+                        print sdate
+                        
+                        if sdate == datetime.datetime.today().strftime(schedule_date_format):
+                            today = True
+                        
+                        a = datetime.datetime.strptime(self.startdate, date_format)
+                        b = datetime.datetime.strptime(sdate, schedule_date_format)
+                        delta = b - a
+                        
+                        xpos = float(delta.days)/self.alltime
+                        
+                        print xpos, sdate
+                        
+                        taskfile = task[task.find(" ")+1:task.replace(" ", ".", 1).find(" ")]
+                        print taskfile
+                        taskstring = task[task.replace(" ", ".", 2).find(" "):].replace("=:>", "/")
+                        print taskstring
+                        
+                        self.schedule.append([today, xpos, ypos, done, taskstring, taskfile, task])
+                        
+                    except Exception as exception:
+                        print exception
+                    
+                    
+            1.0/0        
                 
-                today = False
-                xpos = 0
-                done = False
-                taskstring = "Task"
-                taskfile = "progect.progress"
-                
-                try:
-                    sdate = task[:task.find(" ")]
-                    if psdate == sdate:
-                        ypos = ypos + 1
-                    else:
-                        ypos = 0
-                        psdate = sdate
-                    
-                    print ypos    
-                    print sdate
-                    
-                    if sdate == datetime.datetime.today().strftime(schedule_date_format):
-                        today = True
-                    
-                    a = datetime.datetime.strptime(self.startdate, date_format)
-                    b = datetime.datetime.strptime(sdate, schedule_date_format)
-                    delta = b - a
-                    
-                    xpos = float(delta.days)/self.alltime
-                    
-                    print xpos, sdate
-                    
-                    taskfile = task[task.find(" ")+1:task.replace(" ", ".", 1).find(" ")]
-                    print taskfile
-                    taskstring = task[task.replace(" ", ".", 2).find(" "):].replace("=:>", "/")
-                    print taskstring
-                    
-                    self.schedule.append([today, xpos, ypos, done, taskstring, taskfile, task])
-                    
-                except Exception as exception:
-                    print exception
+        except:
             
+            print """
+
+IF YOU SEE THIS ERROR MESSAGE IT'S Probably
+because of your language system settings.
+
+Reference: https://blenderartists.org/t/new-blender-organizer-forget-about-making-folders-work-faster/1126110/40
+
+Change you Region & Language setting to English.
+
+thx to c17vfx ( member of blenderartists.org ) for this workarround
+
+
+"""         
             
-            
+            raw_input()
+            exit()
+
+        
         
         get_schedule()
         

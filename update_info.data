@@ -1,3 +1,8 @@
+VERSION 4.03
+FILE py_data/modules/analytics.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.03
+
+
 VERSION 4.02
 MAIN_FILE
 UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.02

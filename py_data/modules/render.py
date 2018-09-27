@@ -114,78 +114,129 @@ class draw:
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#868686")) ## CHOSE COLOR
             widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME    
             
+            # MAIN TRY BECAUSE SOMETIMES UNEXPECTED STUFF HAPPENS
             
             try:
-                # BASIC READING
-                line = self.process.stdout.readline()[:-1]
-            except:
-                line = ""
-            
-            
-            ctx.set_font_size(12)
-            ctx.move_to( 20,20)
-            
-            ctx.show_text( line )
-            
-            ctx.move_to( 20,40)
-            
-            
-            PS = 0.0
-            SS = 0.0
-            DN = 0.0
-            
-            donetile, tiles, intile = 0,1,1
-            denoised = 0
-            
-            ### PARSING THE STRING
-            
-            if "Path Tracing Tile" in line:
-                
-                donetile, tiles =  line[line.find("Path Tracing Tile")+18:][:line[line.find("Path Tracing Tile")+18:].find(",")].split("/")
-                
-                PS = (float(donetile)+1)/float(tiles)
-            
-            if "Sample" in line:
-                
-                donesample, intile =  line[line.find("Sample")+7:][:line[line.find("Sample")+7:].find(",")].split("/")
-                
-                SS = float(donesample)/float(intile)
-            
-            if "Denoised" in line:
-                
-                denoised = line[line.find("Denoised")+9:][:line[line.find("Denoised")+9:].find("tiles")]
-                DN = float(denoised)/float(tiles)
-            
-            if "Compositing" in line:
                 
                 try:
-                    donetile, tiles =  line[line.find("Compositing | Tile")+19:].split("-")
-                
-                    PS = float(donetile)/float(tiles)
+                    # BASIC READING
+                    line = self.process.stdout.readline()[:-1]
                 except:
-                    pass
+                    line = ""
                 
-            
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9F9F9F")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, False, 0, 30, int(w*PS), 20)  ## FILL FRAME  
-            
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9F9F9F")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 0, 30, int(float(intile)*SS)+int(w*PS)-int(float(w)/float(tiles)), 20)  ## FILL FRAME  
-            
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 0, 30, int(w*DN), 20)  ## FILL FRAME
-            
-            
-            if self.process.poll() != None:
-            
-                endframetime = datetime.datetime.now()
-                DELTA = endframetime - self.starttime
-                seconds = DELTA.seconds   
                 
-                # OUTPUTTING RENDER SPEED INTO IT'S FILE
+                ctx.set_font_size(12)
+                ctx.move_to( 20,20)
+                
+                ctx.show_text( line )
+                
+                ctx.move_to( 20,40)
+                
+                
+                PS = 0.0
+                SS = 0.0
+                DN = 0.0
+                
+                donetile, tiles, intile = 0,1,1
+                denoised = 0
+                
+                ### PARSING THE STRING
+                
+                if "Path Tracing Tile" in line:
+                    
+                    donetile, tiles =  line[line.find("Path Tracing Tile")+18:][:line[line.find("Path Tracing Tile")+18:].find(",")].split("/")
+                    
+                    PS = (float(donetile)+1)/float(tiles)
+                
+                if "Sample" in line:
+                    
+                    donesample, intile =  line[line.find("Sample")+7:][:line[line.find("Sample")+7:].find(",")].split("/")
+                    
+                    SS = float(donesample)/float(intile)
+                
+                if "Denoised" in line:
+                    
+                    denoised = line[line.find("Denoised")+9:][:line[line.find("Denoised")+9:].find("tiles")]
+                    DN = float(denoised)/float(tiles)
+                
+                if "Compositing" in line:
+                    
+                    try:
+                        donetile, tiles =  line[line.find("Compositing | Tile")+19:].split("-")
+                    
+                        PS = float(donetile)/float(tiles)
+                    except:
+                        pass
+                    
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9F9F9F")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, False, 0, 30, int(w*PS), 20)  ## FILL FRAME  
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9F9F9F")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, True, 0, 30, int(float(intile)*SS)+int(w*PS)-int(float(w)/float(tiles)), 20)  ## FILL FRAME  
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, True, 0, 30, int(w*DN), 20)  ## FILL FRAME
+                
+                
+                if self.process.poll() != None:
+                
+                    endframetime = datetime.datetime.now()
+                    DELTA = endframetime - self.starttime
+                    seconds = DELTA.seconds   
+                    
+                    # OUTPUTTING RENDER SPEED INTO IT'S FILE
+                    
+                    FILE = rlist[self.nowfile]
+                    
+                    readfirst = open(self.pf+"/"+FILE[:FILE.rfind("/")+1]+"extra/"+FILE[FILE.rfind("/")+1:]+".rnd", "r")
+                    readfirst = readfirst.read()
+                    
+                    read = []
+                    for i in readfirst.split("\n"):
+                        read.append(i)
+                    
+                    found = False
+                    for n, i in enumerate(read):
+                        if i.startswith(str(self.nowframe)+" "):
+                            
+                            found = True
+                            read[n] = str(self.nowframe)+" "+str(seconds)
+                    if found == False:
+                        
+                        read.append(str(self.nowframe)+" "+str(seconds))
+                    
+                    writeback = open(self.pf+"/"+FILE[:FILE.rfind("/")+1]+"extra/"+FILE[FILE.rfind("/")+1:]+".rnd", "w")
+                    for i in read:
+                        writeback.write(i+"\n")
+                    writeback.close()
+                    
+                    
+                    
+                    print seconds, "SECONDS WAS RENDERING"
+                    
+                    self.process = self.process_get()
+                
+                
+                    
+                    
+                # PREVIEW IMAGE SPACE #
+                
+                PWX = 220
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, True, 20-5, 60, PWX-20, 110)  ## FILL FRAME    
+                
+               
+                
+                
+                
+                
+                
+                
+                ### GETTING ALL THE FRAMES IN THE FOLDER DRAWN
                 
                 FILE = rlist[self.nowfile]
-                
                 readfirst = open(self.pf+"/"+FILE[:FILE.rfind("/")+1]+"extra/"+FILE[FILE.rfind("/")+1:]+".rnd", "r")
                 readfirst = readfirst.read()
                 
@@ -193,198 +244,151 @@ class draw:
                 for i in readfirst.split("\n"):
                     read.append(i)
                 
-                found = False
-                for n, i in enumerate(read):
-                    if i.startswith(str(self.nowframe)+" "):
-                        
-                        found = True
-                        read[n] = str(self.nowframe)+" "+str(seconds)
-                if found == False:
-                    
-                    read.append(str(self.nowframe)+" "+str(seconds))
                 
-                writeback = open(self.pf+"/"+FILE[:FILE.rfind("/")+1]+"extra/"+FILE[FILE.rfind("/")+1:]+".rnd", "w")
-                for i in read:
-                    writeback.write(i+"\n")
-                writeback.close()
-                
-                
-                
-                print seconds, "SECONDS WAS RENDERING"
-                
-                self.process = self.process_get()
-            
-            
-                
-                
-            # PREVIEW IMAGE SPACE #
-            
-            PWX = 220
-            
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 20-5, 60, PWX-20, 110)  ## FILL FRAME    
-            
-           
-            
-            
-            
-            
-            
-            
-            ### GETTING ALL THE FRAMES IN THE FOLDER DRAWN
-            
-            FILE = rlist[self.nowfile]
-            readfirst = open(self.pf+"/"+FILE[:FILE.rfind("/")+1]+"extra/"+FILE[FILE.rfind("/")+1:]+".rnd", "r")
-            readfirst = readfirst.read()
-            
-            read = []
-            for i in readfirst.split("\n"):
-                read.append(i)
-            
-            
-            LARGEST = 1
-            AVARAGE = 0
-            
-            for i in read:
-                
-                try:
-                    
-                    if int(i.split(" ")[1]) > LARGEST:
-                        
-                        LARGEST = int(i.split(" ")[1])
-                
-                    if AVARAGE == 0:    
-                        AVARAGE = int(i.split(" ")[1])
-                    else:
-                        
-                        AVARAGE = (AVARAGE + int(i.split(" ")[1])) / 2
-                        
-                        
-                        
-                except:
-                    pass
-            
-            
-            DONEFRAMS = 0
-            endframetime = datetime.datetime.now()
-            DELTA = endframetime - self.starttime
-            seconds = DELTA.seconds
-            
-            frameselectstill = True
-            
-            
-            if LARGEST < seconds:
-                LARGEST = seconds
-                
-            divided = float(w-20-PWX-20)/int(self.END-self.START+1)
-            
-            print divided, "divided"
-            
-            
-            for frame in range(self.START, self.END+1):   
-                
-                if divided > 5: 
-                    
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8f8f8f")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, False, int(divided*(frame-self.START))+PWX, 60, int(divided)+1, 100)
-                
-                
-                if frame == self.nowframe:
-                    
-                    
-                    
-                    
-                    
-                    TY = int(100* (float(seconds) / float(LARGEST)) )
-                    
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START))+PWX, 60+100-TY, int(divided), TY)
-                
-                
-                
-                THIS = LARGEST
+                LARGEST = 1
+                AVARAGE = 0
                 
                 for i in read:
                     
                     try:
-                        if i.startswith(str(frame)+" "):
+                        
+                        if int(i.split(" ")[1]) > LARGEST:
                             
-                            THIS = int(i.split(" ")[1])
+                            LARGEST = int(i.split(" ")[1])
+                    
+                        if AVARAGE == 0:    
+                            AVARAGE = int(i.split(" ")[1])
+                        else:
+                            
+                            AVARAGE = (AVARAGE + int(i.split(" ")[1])) / 2
+                            
+                            
+                            
                     except:
                         pass
                 
-                TY = int(100* (float(THIS) / float(LARGEST)) )
-                #print TY, THIS
                 
-                if quick.getfileoutput(frame, self.FORMAT) in os.listdir(pf+"/"+self.FOLDER):
+                DONEFRAMS = 0
+                endframetime = datetime.datetime.now()
+                DELTA = endframetime - self.starttime
+                seconds = DELTA.seconds
+                
+                frameselectstill = True
+                
+                
+                if LARGEST < seconds:
+                    LARGEST = seconds
                     
-                    DONEFRAMS = DONEFRAMS + 1
+                divided = float(w-20-PWX-20)/int(self.END-self.START+1)
+                
+                print divided, "divided"
+                
+                
+                for frame in range(self.START, self.END+1):   
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START))+PWX, 60+100-TY, int(divided)+1, TY)
+                    if divided > 5: 
+                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8f8f8f")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, False, int(divided*(frame-self.START))+PWX, 60, int(divided)+1, 100)
                     
                     
-                    
-                    if mx in range(int(divided*(frame-self.START)+PWX), int(divided*(frame-self.START)+PWX) + int(divided)+1 ) and my in range(60, 160) and frameselectstill:  
-                        frameselectstill = False
+                    if frame == self.nowframe:
+                        
+                        
+                        
+                        
+                        
+                        TY = int(100* (float(seconds) / float(LARGEST)) )
+                        
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16")) ## CHOSE COLOR
-                        widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START)+PWX), 60+100-TY, int(divided)+1, TY)
-                        
-                        
-                        # FRAME TIME OUTPUT
-                        thistime = quick.timestring(THIS)
-                        
-                        
-                        ctx.set_font_size(12)
-                        ctx.move_to( 20,h-50)
-                        
-                        ctx.show_text( "Frame: [ "+ quick.getfileoutput(frame, self.FORMAT)+" ] Took time: "+thistime)
-                        
-                        
-                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active(): # IF CLICKED
-                            
-                            
-                            os.system("xdg-open "+pf+"/"+self.FOLDER+"/"+quick.getfileoutput(frame, self.FORMAT))
-                        
-                        
-                        
+                        widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START))+PWX, 60+100-TY, int(divided), TY)
+                    
+                    
+                    
+                    THIS = LARGEST
+                    
+                    for i in read:
                         
                         try:
-                            
-                            if self.preview[1] != frame:
-                            
-                                self.preview = [gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(pf+"/"+self.FOLDER+"/"+quick.getfileoutput(frame, self.FORMAT), pf=pf)), frame]
-                            
-                            widget.window.draw_pixbuf(None, self.preview[0], 0, 0, 20-5, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                            if i.startswith(str(frame)+" "):
+                                
+                                THIS = int(i.split(" ")[1])
                         except:
                             pass
-            
+                    
+                    TY = int(100* (float(THIS) / float(LARGEST)) )
+                    #print TY, THIS
+                    
+                    if quick.getfileoutput(frame, self.FORMAT) in os.listdir(pf+"/"+self.FOLDER):
+                        
+                        DONEFRAMS = DONEFRAMS + 1
+                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START))+PWX, 60+100-TY, int(divided)+1, TY)
+                        
+                        
+                        
+                        if mx in range(int(divided*(frame-self.START)+PWX), int(divided*(frame-self.START)+PWX) + int(divided)+1 ) and my in range(60, 160) and frameselectstill:  
+                            frameselectstill = False
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16")) ## CHOSE COLOR
+                            widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START)+PWX), 60+100-TY, int(divided)+1, TY)
+                            
+                            
+                            # FRAME TIME OUTPUT
+                            thistime = quick.timestring(THIS)
+                            
+                            
+                            ctx.set_font_size(12)
+                            ctx.move_to( 20,h-50)
+                            
+                            ctx.show_text( "Frame: [ "+ quick.getfileoutput(frame, self.FORMAT)+" ] Took time: "+thistime)
+                            
+                            
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active(): # IF CLICKED
+                                
+                                
+                                os.system("xdg-open "+pf+"/"+self.FOLDER+"/"+quick.getfileoutput(frame, self.FORMAT))
+                            
+                            
+                            
+                            
+                            try:
+                                
+                                if self.preview[1] != frame:
+                                
+                                    self.preview = [gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(pf+"/"+self.FOLDER+"/"+quick.getfileoutput(frame, self.FORMAT), pf=pf)), frame]
+                                
+                                widget.window.draw_pixbuf(None, self.preview[0], 0, 0, 20-5, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                            except:
+                                pass
                 
-            
-            
-            print seconds
-            REMSECS = ((self.END - DONEFRAMS) * AVARAGE) - seconds
-            REMAINING = quick.timestring(REMSECS)
-            ctx.set_font_size(12)
-            ctx.move_to( 20,h-20)
-            
-            starttime = datetime.datetime.now()
-            DELTA = starttime + datetime.timedelta(seconds= REMSECS )
-            
-            
-            
-            
-            DONEAT = DELTA.strftime("%Y/%m/%d %H:%M:%S")
-            print DONEAT
-            
-            ctx.show_text("Time Remaining (For Whole Shot) : "+REMAINING+" With Avarage Time Per Frame : "+quick.timestring(AVARAGE)+"  ESTIMATED END TIME : "+DONEAT)
-            
-            
-            
-            
-            
-            
-            
+                    
+                
+                
+                print seconds
+                REMSECS = ((self.END - DONEFRAMS) * AVARAGE) - seconds
+                REMAINING = quick.timestring(REMSECS)
+                ctx.set_font_size(12)
+                ctx.move_to( 20,h-20)
+                
+                starttime = datetime.datetime.now()
+                DELTA = starttime + datetime.timedelta(seconds= REMSECS )
+                
+                
+                
+                
+                DONEAT = DELTA.strftime("%Y/%m/%d %H:%M:%S")
+                print DONEAT
+                
+                ctx.show_text("Time Remaining (For Whole Shot) : "+REMAINING+" With Avarage Time Per Frame : "+quick.timestring(AVARAGE)+"  ESTIMATED END TIME : "+DONEAT)
+                
+                
+                
+                
+                
+                
+            except:
+                pass # MAIN EXCEPTION
             
             
             # TESTING SOMETHING

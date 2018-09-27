@@ -265,7 +265,7 @@ class main:
                     ctx.show_text(i[1][1])
                     
                     
-                    self.end = self.end + 60
+                    self.end = self.end + 120
                     
         
         

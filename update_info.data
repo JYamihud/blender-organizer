@@ -1,4 +1,5 @@
 VERSION 4.04
+FILE update_info.data
 FILE py_data/modules/update_window.py
 FILE py_data/modules/render.py
 UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.04
@@ -6,6 +7,7 @@ UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/bl
 
 
 VERSION 4.03
+FILE update_info.data
 FILE py_data/modules/analytics.py
 UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.03
 

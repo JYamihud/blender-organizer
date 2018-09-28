@@ -266,7 +266,7 @@ class draw_assets:
                 try:
                     avarage = self.assets[0].percent
                 except:
-                    avarage = 0.0
+                    avarage = 1.0
                 
                 
                 ### CELLS

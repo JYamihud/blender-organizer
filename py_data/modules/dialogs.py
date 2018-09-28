@@ -837,6 +837,9 @@ class AddAsset:
         r = dialog.run()
         
         if r == gtk.RESPONSE_APPLY:
+        
+            ne.set_text(ne.get_text().replace("/","_").replace(" ", "_").replace('"',"_").replace("(","_").replace(")","_").replace("'","_").replace("[","_").replace("]","_").replace("{","_").replace("}","_")   )
+        
             os.mkdir(self.pf+"/dev/"+fldr.get_active_text()+"/"+ne.get_text())
         
         self.name = ne.get_text()

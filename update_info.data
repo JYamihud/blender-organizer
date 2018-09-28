@@ -1,3 +1,9 @@
+VERSION 4.05
+FILE update_info.data
+FILE py_data/modules/assets.py
+FILE py_data/modules/dialogs.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.05
+
 VERSION 4.04
 FILE update_info.data
 FILE py_data/modules/update_window.py

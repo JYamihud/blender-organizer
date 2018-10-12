@@ -478,7 +478,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             except:
                 avrgval = 0.0
             prevLB = 0
-            
+            toshowwidget = True
             for dln, date in enumerate(perhys):
                 if date.startswith("DATE"):
                 
@@ -516,11 +516,11 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     
                     
-                    if nowW - prevLB > 20:
+                    if True:#nowW - prevLB > 20:
                         
                         # MOUSE OVER AND INFRO REVEAL
-                        if mx > nowW-10 and mx < nowW+10:
-                            
+                        if mx > nowW-10 and mx < nowW+10 and toshowwidget:
+                            toshowwidget = False
                             pointshouldbe = int(float(h/2)/self.alltime*pos)*-1+h
                             shouldbepercent = int(100.0/self.alltime*pos)
                             

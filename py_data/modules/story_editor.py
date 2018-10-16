@@ -1838,6 +1838,12 @@ class story:
             
             widget.window.draw_rectangle(xgc, True, w-50, h-50, 200, 50)
             
+            
+            
+            
+            
+            
+            
             anyscenedata = False
             
             for ind, i in enumerate(self.shotsDATA):
@@ -2721,15 +2727,13 @@ class story:
                     
                     self.shotsSCROLL = self.shotsSCROLL + (my-self.mpy)
                     
-                    if mx in range(w-50, w):
-                        self.shotsSCROLL = self.shotsSCROLL + (my-self.mpy)*2
+                    
                 
                 if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
                     
                     self.shotsSCROLL = self.shotsSCROLL - (self.mpy-my)
                     
-                    if mx in range(w-50, w):
-                        self.shotsSCROLL = self.shotsSCROLL - (self.mpy-my)*2
+                    
             
             
             if self.shotsSCROLL < 0-shotlistlength+(h-220):
@@ -2738,15 +2742,32 @@ class story:
             if self.shotsSCROLL > 0:
                 self.shotsSCROLL = 0
             
+            Pofruler = h-220-100
+            Ponruler = my-220-50
+            
+            
+            
+            RulerY = int(Pofruler*(float(self.shotsSCROLL*-1)/shotlistlength))+220+50
+            
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+            widget.window.draw_rectangle(xgc, True, w-50, RulerY, 50, 50)
+            
             
             if mx in range(w-50, w):
                 if "GDK_BUTTON2" in str(fx):
+                    
+                    
+                    
+                    PerRuler = float(Ponruler)/Pofruler
+                    self.shotsSCROLL  = int(shotlistlength*PerRuler)*-1
+                    
+                    
                     if my in range(220, 220+50):
                     
-                        self.shotsSCROLL = 0-shotlistlength+(h-220)
+                        self.shotsSCROLL = 0
                     if my in range(h-50, h):
                          
-                        self.shotsSCROLL = 0
+                        self.shotsSCROLL = 0-shotlistlength+(h-220)
             
             
             

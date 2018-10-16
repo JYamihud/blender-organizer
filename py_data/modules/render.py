@@ -251,16 +251,16 @@ class draw:
                 for i in read:
                     
                     try:
+                        if  os.path.exists(pf+"/"+self.FOLDER+"/"+quick.getfileoutput(i.split(" ")[0], self.FORMAT) ):
+                            if int(i.split(" ")[1]) > LARGEST:
+                                
+                                LARGEST = int(i.split(" ")[1])
                         
-                        if int(i.split(" ")[1]) > LARGEST:
-                            
-                            LARGEST = int(i.split(" ")[1])
-                    
-                        if AVARAGE == 0:    
-                            AVARAGE = int(i.split(" ")[1])
-                        else:
-                            
-                            AVARAGE = (AVARAGE + int(i.split(" ")[1])) / 2
+                            if AVARAGE == 0:    
+                                AVARAGE = int(i.split(" ")[1])
+                            else:
+                                
+                                AVARAGE = (AVARAGE + int(i.split(" ")[1])) / 2
                             
                             
                             
@@ -286,10 +286,41 @@ class draw:
                 
                 for frame in range(self.START, self.END+1):   
                     
+                    
+                    
+                    
                     if divided > 5: 
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8f8f8f")) ## CHOSE COLOR
                         widget.window.draw_rectangle(xgc, False, int(divided*(frame-self.START))+PWX, 60, int(divided)+1, 100)
+                    
+                    THIS = LARGEST
+                    
+                    for i in read:
+                        
+                        try:
+                            if i.startswith(str(frame)+" "):
+                                
+                                THIS = int(i.split(" ")[1])
+                            
+                                # compare old frames
+                                TY = int(100* (float(THIS) / float(LARGEST)) )
+                                #print TY, THIS
+                                
+                            
+                                
+                                #DONEFRAMS = DONEFRAMS + 1
+                                
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6f6f6f")) ## CHOSE COLOR
+                                widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START))+PWX, 60+100-TY, int(divided)+1, TY)
+                    
+                        
+                        except:
+                            pass
+                    
+                    
+                    
+                    
                     
                     
                     if frame == self.nowframe:
@@ -305,16 +336,7 @@ class draw:
                     
                     
                     
-                    THIS = LARGEST
                     
-                    for i in read:
-                        
-                        try:
-                            if i.startswith(str(frame)+" "):
-                                
-                                THIS = int(i.split(" ")[1])
-                        except:
-                            pass
                     
                     TY = int(100* (float(THIS) / float(LARGEST)) )
                     #print TY, THIS

@@ -2754,7 +2754,7 @@ class story:
             
             
             if mx in range(w-50, w):
-                if "GDK_BUTTON2" in str(fx):
+                if "GDK_BUTTON2" in str(fx) or "GDK_BUTTON3" in str(fx):
                     
                     
                     
@@ -3538,8 +3538,10 @@ def get_scenes_percentage(FILE):
                     except:
                         scenevalues.append(0.0) 
                      
-                
-                scenevalue = float(sum(scenevalues))/len(scenevalues)
+                try:
+                    scenevalue = float(sum(scenevalues))/len(scenevalues)
+                except:
+                    scenevalue = 0.0
                 valueslist.append(scenevalue)
                      
     try:

@@ -358,6 +358,49 @@ def rendersettings(pf, blend):
     box.pack_start(direntry, False)
     
     
+    ## NEW AUTOMATIC SWITCH SYSTEM FOR GPU/CPU AT RENDERING
+    def useCPUGPUFUNC(w=False):
+        scalebox.set_sensitive(w.get_active())
+        uselist.set_sensitive(not w.get_active())
+        uselist.set_active(False)
+        
+    useCPUGPU = gtk.CheckButton("CPU/GPU Split")
+    useCPUGPU.connect("clicked", useCPUGPUFUNC)
+    box.pack_start(useCPUGPU, False)
+    
+    scalebox = gtk.HBox(False)
+    box.pack_start(scalebox, False)    
+    
+    def scalevaluechange(w):
+        v = w.get_value()
+        scalenum.set_value(v)
+        scale.set_value(v)
+       
+        
+        
+    scaleadj = gtk.Adjustment(1.0, 0.0, 100.0, 1.0, 5.0, 0.0)
+    scalenum = gtk.SpinButton(scaleadj, 0, 0)
+    scalenum.set_value(50)
+    scalenum.set_wrap(True)
+    scalenum.connect("value-changed", scalevaluechange)
+    scalebox.pack_start(scalenum, False)
+    
+    
+    scale = gtk.HScale()
+    scale.set_draw_value(False	)
+    scale.set_range(0, 100)
+    scale.set_increments(1, 10)
+    scale.set_digits(0)
+    scale.set_value(50)
+    scale.set_size_request(160, 35)
+    scale.connect("value-changed", scalevaluechange)
+    scalebox.pack_start(scale)
+    scalebox.set_sensitive(False)
+    
+    
+    
+    
+    
     clearfolder = gtk.CheckButton("Delete Frames Before Rendering")
     clearfolder.set_tooltip_text("""
 If enabled this will delete all
@@ -389,6 +432,9 @@ in the folder.
     
     
     def rlist_sensitive(w):
+        
+        useCPUGPU.set_sensitive(not w.get_active())
+        useCPUGPU.set_active(False)
         
         if w.get_active():
             
@@ -587,16 +633,105 @@ in the folder.
         
         for i in getold[4:]:
             setting.write(i+"\n")
-        
-        
-        
-        
-        
-        
-        
+    
+    
+    
+    
+    
+    
+    
         setting.close()
         
+        #IF SPLIT CPU / GPU
         
+        if useCPUGPU.get_active():
+            dialog.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+            while gtk.events_pending():
+                gtk.main_iteration()
+            
+            ref = open(pf+"/"+blend, "r")
+            ref = ref.read()
+            cpuF = open(pf+"/"+blend[:blend.rfind(".")]+"_CPU.blend", "w")
+            gpuF = open(pf+"/"+blend[:blend.rfind(".")]+"_GPU.blend", "w")
+            cpuF.write(ref)
+            cpuF.close()
+            gpuF.write(ref)
+            gpuF.close()
+            
+            CPUchange = Popen(["blender", "-b", pf+"/"+blend[:blend.rfind(".")]+"_CPU.blend" , "-P", pf+"/py_data/modules/setfilecpu.py"],stdout=PIPE, universal_newlines=True)
+            GPUchange = Popen(["blender", "-b", pf+"/"+blend[:blend.rfind(".")]+"_GPU.blend" , "-P", pf+"/py_data/modules/setfilegpu.py"],stdout=PIPE, universal_newlines=True)
+            CPUchange.wait()
+            GPUchange.wait()
+            
+            
+            cpu_list = open(pf+"/py_data/rnd_seq/CPU_auto_generated", "ab")
+            cpu_list.write(blend[:blend.rfind(".")]+"_CPU.blend\n")
+            cpu_list.close()
+            
+            gpu_list = open(pf+"/py_data/rnd_seq/GPU_auto_generated", "ab")
+            gpu_list.write(blend[:blend.rfind(".")]+"_GPU.blend\n")
+            gpu_list.close()
+            
+            
+            # FOR CPU
+            
+            SV = scale.get_value()
+            
+            between = endframe.get_value() - startframe.get_value()
+            
+            v = float(SV) / 100
+            df = int(between*v + startframe.get_value())
+            
+            
+           
+            
+            cpufn = blend[:blend.rfind(".")]+"_CPU.blend"
+            gpufn = blend[:blend.rfind(".")]+"_GPU.blend"
+            
+            
+            try:
+                getold = open(pf+"/"+cpufn[:cpufn.rfind("/")+1]+"extra/"+cpufn[cpufn.rfind("/")+1:]+".rnd", "r")
+                getold = getold.read().split("\n")
+            except:
+                
+                getold = ""
+                    
+            setting = open(pf+"/"+cpufn[:cpufn.rfind("/")+1]+"extra/"+cpufn[cpufn.rfind("/")+1:]+".rnd", "w")
+            
+            setting.write("START = "+str(int(startframe.get_value())))
+            setting.write("\nEND = "+str(df))
+            setting.write("\nFORMAT = "+str(formats[formats_selector.get_active()]))
+            setting.write("\nFOLDER = "+str(direntry.get_text())+"\n")
+            
+            for i in getold[4:]:
+                setting.write(i+"\n")
+        
+            setting.close()
+            
+            #GPU FILE SETTINGS
+            
+            try:
+                getold = open(pf+"/"+gpufn[:gpufn.rfind("/")+1]+"extra/"+gpufn[gpufn.rfind("/")+1:]+".rnd", "r")
+                getold = getold.read().split("\n")
+            except:
+                
+                getold = ""
+                    
+            setting = open(pf+"/"+gpufn[:gpufn.rfind("/")+1]+"extra/"+gpufn[gpufn.rfind("/")+1:]+".rnd", "w")
+            
+            setting.write("START = "+str(df+1))
+            setting.write("\nEND = "+str(int(endframe.get_value())))
+            setting.write("\nFORMAT = "+str(formats[formats_selector.get_active()]))
+            setting.write("\nFOLDER = "+str(direntry.get_text())+"\n")
+            
+            for i in getold[4:]:
+                setting.write(i+"\n")
+        
+            setting.close()
+            
+            P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+cpufn], universal_newlines=True)
+            P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+gpufn], universal_newlines=True)
+            
         # IF CLEAR RENDERS
         if clearfolder.get_active():
             
@@ -614,30 +749,30 @@ in the folder.
         
         
         
-        
-        ### IF NOT USING RENDER LISTS
-        if uselist.get_active():
-            
-            print"SAVING DETECTED USING A LITS"
-            
-            for i in rdbuttons:
+        if not useCPUGPU.get_active():
+            ### IF NOT USING RENDER LISTS
+            if uselist.get_active():
                 
-                if i[0].get_active():
+                print"SAVING DETECTED USING A LITS"
+                
+                for i in rdbuttons:
                     
-                    rlistIS = i[0].get_label() #GETTING THE NAME OF THE RLIST FILE
-                    
-                    
-                    addtofile = open(pf+"/py_data/rnd_seq/"+rlistIS, "ab")
-                    addtofile.write(blend+"\n")
-                    addtofile.close()
-                    
-            
-            P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/py_data/rnd_seq/"+rlistIS], universal_newlines=True)    
-        
-        else:
-            
-            P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+blend], universal_newlines=True)              
+                    if i[0].get_active():
                         
+                        rlistIS = i[0].get_label() #GETTING THE NAME OF THE RLIST FILE
+                        
+                        
+                        addtofile = open(pf+"/py_data/rnd_seq/"+rlistIS, "ab")
+                        addtofile.write(blend+"\n")
+                        addtofile.close()
+                        
+                
+                P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/py_data/rnd_seq/"+rlistIS], universal_newlines=True)    
+            
+            else:
+                
+                P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+blend], universal_newlines=True)              
+                            
         
         
         
@@ -942,7 +1077,7 @@ class event:
         # scroller for the text editor
         textscroll = gtk.ScrolledWindow()
         textscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
-        textscroll.set_size_request(800, 800)
+        textscroll.set_size_request(500, 500)
         textscroll.set_shadow_type(gtk.SHADOW_NONE)
         
         # text editor
@@ -1102,7 +1237,7 @@ class event:
         # scroller for the text editor
         textscroll = gtk.ScrolledWindow()
         textscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
-        textscroll.set_size_request(800, 800)
+        textscroll.set_size_request(500, 500)
         textscroll.set_shadow_type(gtk.SHADOW_NONE)
         
         # text editor
@@ -1202,7 +1337,7 @@ class event:
         # scroller for the text editor
         textscroll = gtk.ScrolledWindow()
         textscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
-        textscroll.set_size_request(800, 800)
+        textscroll.set_size_request(500, 500)
         textscroll.set_shadow_type(gtk.SHADOW_NONE)
         
         # text editor
@@ -1326,7 +1461,7 @@ class event:
         # scroller for the text editor
         textscroll = gtk.ScrolledWindow()
         textscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
-        textscroll.set_size_request(800, 800)
+        textscroll.set_size_request(500, 500)
         textscroll.set_shadow_type(gtk.SHADOW_NONE)
         
         # text editor

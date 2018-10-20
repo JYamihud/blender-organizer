@@ -385,6 +385,7 @@ def rendersettings(pf, blend):
     scalenum.connect("value-changed", scalevaluechange)
     scalebox.pack_start(scalenum, False)
     
+    scalebox.pack_start(gtk.Label("% : CPU"), False)
     
     scale = gtk.HScale()
     scale.set_draw_value(False	)
@@ -397,6 +398,7 @@ def rendersettings(pf, blend):
     scalebox.pack_start(scale)
     scalebox.set_sensitive(False)
     
+    scalebox.pack_end(gtk.Label(" GPU"), False)
     
     
     
@@ -567,7 +569,7 @@ in the folder.
     newrlist = gtk.HBox(False)
     newrlist.set_sensitive(False)
     
-    box.pack_end(newrlist, False)
+    box.pack_start(newrlist, False)
     
     
     newrlistname = gtk.Entry()
@@ -586,9 +588,11 @@ in the folder.
     
     newrlist.pack_end(newrlistbutton, False)
     
+    ### ONLY MAKE THE FILE ###
     
-    
-    
+    onlyset = gtk.CheckButton("Only settings (No Render)")
+    onlyset.set_tooltip_text("Do not start rendering. Only edit the settings data.")
+    box.pack_start(onlyset, False)
     
     
     
@@ -664,14 +668,29 @@ in the folder.
             GPUchange.wait()
             
             
-            cpu_list = open(pf+"/py_data/rnd_seq/CPU_auto_generated", "ab")
-            cpu_list.write(blend[:blend.rfind(".")]+"_CPU.blend\n")
-            cpu_list.close()
-            
-            gpu_list = open(pf+"/py_data/rnd_seq/GPU_auto_generated", "ab")
-            gpu_list.write(blend[:blend.rfind(".")]+"_GPU.blend\n")
-            gpu_list.close()
-            
+            cpuexists = False
+            try:
+                cpu_test = open(pf+"/py_data/rnd_seq/CPU_auto_generated", "r")
+                if blend[:blend.rfind(".")]+"_CPU.blend" in cpu_test.read().split("\n"):
+                    cpuexists = True
+            except:
+                pass
+            if not cpuexists:
+                cpu_list = open(pf+"/py_data/rnd_seq/CPU_auto_generated", "ab")
+                cpu_list.write(blend[:blend.rfind(".")]+"_CPU.blend\n")
+                cpu_list.close()
+            gpuexists = False
+            try:
+                gpu_test = open(pf+"/py_data/rnd_seq/GPU_auto_generated", "r")
+                if blend[:blend.rfind(".")]+"_GPU.blend" in gpu_test.read().split("\n"):
+                    gpuexists = True
+            except:
+                pass
+            if not gpuexists:
+                gpu_list = open(pf+"/py_data/rnd_seq/GPU_auto_generated", "ab")
+                gpu_list.write(blend[:blend.rfind(".")]+"_GPU.blend\n")
+                gpu_list.close()
+                
             
             # FOR CPU
             
@@ -728,9 +747,9 @@ in the folder.
                 setting.write(i+"\n")
         
             setting.close()
-            
-            P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+cpufn], universal_newlines=True)
-            P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+gpufn], universal_newlines=True)
+            if not onlyset.get_active():
+                P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+cpufn], universal_newlines=True)
+                P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+gpufn], universal_newlines=True)
             
         # IF CLEAR RENDERS
         if clearfolder.get_active():
@@ -766,12 +785,12 @@ in the folder.
                         addtofile.write(blend+"\n")
                         addtofile.close()
                         
-                
-                P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/py_data/rnd_seq/"+rlistIS], universal_newlines=True)    
+                if not onlyset.get_active():
+                    P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/py_data/rnd_seq/"+rlistIS], universal_newlines=True)    
             
             else:
-                
-                P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+blend], universal_newlines=True)              
+                if not onlyset.get_active():
+                    P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+blend], universal_newlines=True)              
                             
         
         

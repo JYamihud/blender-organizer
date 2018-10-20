@@ -236,7 +236,7 @@ class story:
         self.plus = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
         self.render = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/render.png")
         self.checklist = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/checklist.png")
-        
+        self.ok = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/ok.png")
         
         
         self.fade_01 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_01.png")
@@ -2105,7 +2105,9 @@ class story:
                         
                         
                         
-                        
+                        if len(os.listdir(self.pf+"/"+shotname+"/storyboard")) > 0:
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c6a5b"))
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                         # MOUSE OVER
                         if mx in range(Pstart, w-Ppart/2) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
@@ -2120,7 +2122,7 @@ class story:
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 
                                 os.system("nautilus "+self.pf+"/"+shotname+"/storyboard")
-                            
+                                
                             
                         
                         # DRAW BUTTON
@@ -2132,12 +2134,15 @@ class story:
                         ctx.move_to( Pstart+50, 15+shotlistlength+220+self.shotsSCROLL+2)
                         ctx.show_text("storyboard")
                         
+                          
                         
                         
                         
                         # opengl
                         
-                        
+                        if len(os.listdir(self.pf+"/"+shotname+"/opengl")) > 0:
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c6a5b"))
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
                         
                         
                         # MOUSE OVER
@@ -2173,8 +2178,9 @@ class story:
                         # test_rnd
                         
                         
-                        
-                        
+                        if len(os.listdir(self.pf+"/"+shotname+"/test_rnd")) > 0:
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c6a5b"))
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                         # MOUSE OVER
                         if mx in range(Pstart, w-Ppart/2) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
@@ -2206,7 +2212,10 @@ class story:
                         
                         # rendered
                         
-                        
+                        if len(os.listdir(self.pf+"/"+shotname+"/rendered")) > 0:
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c6a5b"))
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                            
                         
                         
                         # MOUSE OVER
@@ -2234,6 +2243,7 @@ class story:
                         ctx.set_font_size(15)
                         ctx.move_to( Pstart+50+Ppart/2, 15+shotlistlength+220+self.shotsSCROLL+2)
                         ctx.show_text("rendered")
+                        
                         
                         
                         # SPACE
@@ -2594,7 +2604,7 @@ class story:
                             ctx.move_to( Pstart+50, 15+shotlistlength+220+self.shotsSCROLL-2)
                             ctx.show_text(self.BLboard[self.BLboard.rfind("/")+1:])
                             
-                            shotlistlength = shotlistlength + 23
+                        shotlistlength = shotlistlength + 23
                         
                         
                         

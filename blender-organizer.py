@@ -376,10 +376,29 @@ syncider.connect("clicked",chgCUR, "sync")
 syncider.set_sensitive(False)
 toppannelbox.pack_end(syncider, False)
 
+
+# REPORT BUG
+def Reportbug(w=False):
+    
+    os.system("xdg-open https://github.com/JYamihud/blender-organizer/issues")
+Reportbugider = gtk.Button()
+Reportbugider.props.relief = gtk.RELIEF_NONE
+Reportbugibox = gtk.HBox(False)
+Reportbugiico = gtk.Image()
+Reportbugiico.set_from_file("py_data/icons/report_bug.png")
+Reportbugibox.pack_start(Reportbugiico, False)
+Reportbugibox.pack_start(gtk.Label("  Report BUG!"))
+Reportbugider.add(Reportbugibox)
+Reportbugider.set_tooltip_text("Go to report bug page.")
+#Reportbugider.set_sensitive(False)
+Reportbugider.connect("clicked", Reportbug)
+
+
+toppannelbox.pack_end(Reportbugider, False)
+
 # Update
 
-def start_schedule(w):
-    schedule.draw(os.getcwd())
+
 
 Updateider = gtk.Button()
 Updateider.props.relief = gtk.RELIEF_NONE
@@ -397,7 +416,10 @@ Updateider.connect("clicked", update_window.main, os.getcwd())
 toppannelbox.pack_end(Updateider, False)
 
 # Schedule
-
+def start_schedule(w):
+    schedule.draw(os.getcwd())
+    
+    
 #make sure schedule.data exists
 if os.path.exists(os.getcwd()+"/schedule.data") == False:
     

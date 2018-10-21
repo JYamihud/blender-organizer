@@ -371,8 +371,39 @@ class story:
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999")) ## CHOSE COLOR
             
             xgc.line_width = 1
-            widget.window.draw_line(xgc, nw, 0, nw, h) 
-            widget.window.draw_line(xgc, 0, h/2, w, h/2) 
+            #widget.window.draw_line(xgc, nw, 0, nw, h) 
+            #widget.window.draw_line(xgc, 0, h/2, w, h/2)
+            
+            #mouse lines
+            widget.window.draw_line(xgc, mx, 0, mx, h) 
+            widget.window.draw_line(xgc, 0, my, w, my)
+            
+            ctx2.set_source_rgb(1,1,1)
+            ctx2.set_font_size(10)
+            ctx2.move_to( mx, 65)
+            tmpx = str(float(mx - self.px) / self.sx )
+            ctx2.show_text(tmpx[:tmpx.find(".")+3])
+            
+            ctx2.set_source_rgb(1,1,1)
+            ctx2.set_font_size(10)
+            ctx2.move_to( 5, my)
+            tmpy = str(int(float(my - self.py) / self.sy ))
+            ctx2.show_text(tmpy[:tmpy.find(".")+3])
+            
+            
+            # grid
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#777"))
+            for y,  i in enumerate(range(int(float(0 - self.py) / self.sy ), int(float(h - self.py) / self.sy ))):
+                
+                widget.window.draw_line(xgc, 0, int(i*self.sy+self.py), w, int(i*self.sy+self.py))
+            p = 0
+            for x,  i in enumerate(range(int(float(0 - self.px) / self.sx ), int(float(w - self.px) / self.sx )/100)):
+                if int(i*100*self.sx+self.px) > p+20:
+                    p = int(i*100*self.sx+self.px)
+                    widget.window.draw_line(xgc, p,0, p, h)
+                    
+            
+            
             xgc.line_width = 2
             
             

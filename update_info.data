@@ -1,3 +1,11 @@
+VERSION 4.09
+FILE update_info.data
+FILE py_data/modules/story_editor.py
+FILE py_data/icons/report_bug.png
+MAIN_FILE
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.09
+
+
 VERSION 4.08
 FILE update_info.data
 FILE py_data/modules/story_editor.py
@@ -67,5 +75,4 @@ VERSION 3.95
 MAIN_FILE
 FILE py_data/modules/story_editor.py
 UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.0
-
 

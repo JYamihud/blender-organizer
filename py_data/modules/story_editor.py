@@ -172,11 +172,13 @@ class story:
                                                        # [ [ IND OF THE DELETABLE ARROW ],
                                                        # [ COORDINATES FOR THE RENDERER ] ]
         
-        self.marker_select = False
+        self.marker_select = -1
         self.deletelastframe = False 
         self.renamelastframe = False
         self.move_marker = False
         
+        
+        self.imageselected = 0
         
         
         
@@ -647,6 +649,7 @@ class story:
                             self.move_marker = False
                 
             
+            
             ################# EVENT TOOL ##################
             
             
@@ -986,6 +989,142 @@ class story:
                 widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW)) 
             
             
+            
+            
+            
+            
+            ######## SHOWING DRAGGED IMAGES ######
+            
+            
+            for count, image in enumerate(self.FILE.images):
+                
+                print image
+                
+                imX, imY, mode, url, thumb, pixthumb = image
+                
+                print "\n\nIMAGE \n", image
+                
+                
+                imX = int(imX*self.sx+self.px)
+                imY = int(imY*self.sy+self.py)
+                piX = 70
+                piY = 70
+                
+                if pixthumb == "NO PIXBUF" and imX in range(-70, w/3*2) and imY in range(0, h):
+                    try:
+                        self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
+                    except:
+                        
+                        # If the thumbnail isn't there try to recover it
+                        try:
+                            if mode == "ABSOLUTE":
+                                u = url
+                            if mode == "RELATIVE":
+                                u = self.pf+url
+                            
+                            
+                            if not os.path.exists(self.pf+"/pln/thumbs/"):
+                                os.makedirs(self.pf+"/pln/thumbs/")
+                        
+                        
+                            #chosing a random name for the thumb
+                            rndname = ""
+                            rndchar = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+                            while os.path.exists(self.pf+"/pln/thumbs/"+rndname+".png") or rndname == "":
+                                rndname = ""
+                                for l in range(20):
+                                    rndname = rndname + random.choice(rndchar)
+                                
+                            
+                            thumbnailer.thumbnail
+                            
+                            fromr  = open(thumbnailer.thumbnail(u, x=70, y=70), "r")
+                            saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
+                            saveto.write(fromr.read())
+                            saveto.close()
+                            
+                            self.FILE.images[count][-2] = rndname
+                            thumb = rndname
+                            self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
+                        
+                        except:
+                            pass
+                    
+                try:
+                    piX = pixthumb.get_width()
+                    piY = pixthumb.get_height()
+                except:
+                    pass    
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
+                
+                if mode == "ABSOLUTE":
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("red"))
+                
+                if mx in range(imX, imX+piX) and my in range(imY, imY+piY):
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
+                    
+                    
+                    
+                    
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                        
+                        if mode == "ABSOLUTE":
+                            os.system("xdg-open "+url)
+                        elif mode == "RELATIVE":
+                            os.system("xdg-open "+self.pf+url)
+                elif mx in range(imX, imX+piX) and my in range(imY-22, imY):
+                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
+                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                        self.imageselected = count
+                               
+                            
+                if "GDK_BUTTON1" in str(fx) and self.win.is_active() and self.imageselected == count:
+                    
+                    self.FILE.images[count][0] = self.FILE.images[count][0] + ((mx-self.mpx ) / sx)
+                    self.FILE.images[count][1] = self.FILE.images[count][1] + ((my-self.mpy ) / sy)
+                    
+                if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf):
+                    self.imageselected = -1
+                    
+                
+                
+                
+                
+                
+                if mx in range(imX, imX+piX) and my in range(imY-22, imY+piY):
+                     
+                    # DELETE EVENT SHOR KEY #
+                    
+                    allowdelete = False
+                    if not self.deletelastframe:
+                        allowdelete = True
+                    
+                    
+                    if 65535 in self.keys: #and allowdelete
+                        
+                        
+                        
+                        if self.event_select < len(self.FILE.events)  and allowdelete  and self.tool == "select":
+                            
+                            del self.FILE.images[count]
+                            try:
+                                os.remove(self.pf+"/pln/thumbs/"+thumb+".png")
+                            except:
+                                print "WASN'T ABLE TO REMOVE"
+                            
+                            self.event_select = False
+                            self.deletelastframe = True
+                            
+                    else:
+                        self.deletelastframe = False      
+                
+                widget.window.draw_rectangle(xgc, True, imX-2, imY-22, piX+4, piY+24)
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#F0F"))
+                widget.window.draw_rectangle(xgc, True, imX, imY, piX, piY)
+                try:
+                    widget.window.draw_pixbuf(None, pixthumb, 0, 0, imX, imY , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                except:
+                    pass
             
             
             
@@ -2999,6 +3138,92 @@ class story:
         graph.connect("expose-event", framegraph) 
         
         
+        def motion_cb(wid, context, x, y, time):
+    
+            context.drag_status(gtk.gdk.ACTION_COPY, time)
+            return True
+        def drop_cb(wid, context, x, y, time):
+            wid.drag_get_data(context, context.targets[-1], time)
+            return True
+        def got_data_cb(wid, context, x, y, data, info, time):
+            
+            import urllib
+            data.get_text()
+            urllib.unquote(data.get_text())[7:]
+            x, y
+            u = urllib.unquote(data.get_text())[7:].split("\n")[0]
+            
+            imageNOT = True
+            for i in fileformats.images:
+                print u.lower(), i, u[-3:]
+                if u.lower().endswith(i):
+                    imageNOT = False
+                    
+                    # FOUND THE IMAGE
+                    
+                    #making athumb and saving it using a random name
+                    
+                    #making sure that thumb directory exists
+                    if not os.path.exists(self.pf+"/pln/thumbs/"):
+                        os.makedirs(self.pf+"/pln/thumbs/")
+                    
+                    
+                    #chosing a random name for the thumb
+                    rndname = ""
+                    rndchar = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+                    while os.path.exists(self.pf+"/pln/thumbs/"+rndname+".png") or rndname == "":
+                        rndname = ""
+                        for l in range(20):
+                            rndname = rndname + random.choice(rndchar)
+                        
+                    
+                    thumbnailer.thumbnail
+                    
+                    fromr  = open(thumbnailer.thumbnail(u, x=70, y=70), "r")
+                    saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
+                    saveto.write(fromr.read())
+                    saveto.close()
+                    pureX = (x -   self.px)/self.sx  - 1
+                    pureY = int((y    - self.py   )/self.sy)
+                    
+                    if u.startswith(self.pf):
+                        self.FILE.images.append([pureX, pureY, "RELATIVE", u.replace(self.pf, ""), rndname, gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+rndname+".png")])
+                    else:
+                        self.FILE.images.append([pureX, pureY, "ABSOLUTE", u, rndname, gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+rndname+".png")])
+                    
+                    
+                    
+                    
+            if imageNOT:
+                try:
+                    MT = open(urllib.unquote(data.get_text().split("\n")[0])[7:], "r")
+                    lets = "    qwertyuiop[]asdfghjkl;'\\zxcvbnm,./`1234567890-=\nQWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?~!@#$%^&*()_+"
+                    MT = MT.read()
+                    for i in MT:
+                        if i not in lets:
+                            print i, "is wrong"
+                            return
+                    
+                    pureX = (x -   self.px)/self.sx  - 1
+                    pureS = 100.0
+                    pureY = (y    - self.py   )/self.sy
+                    
+                    
+                    self.FILE.events.append([pureX, pureS, pureY, urllib.unquote(data.get_text().split("\n")[0])[urllib.unquote(data.get_text().split("\n")[0]).rfind("/")+1:], MT])
+                
+                except:
+                    raise
+            
+            context.finish(True, False, time)
+            
+
+        graph.drag_dest_set(0,[],0)
+        graph.connect("drag_motion", motion_cb)
+        graph.connect("drag_drop", drop_cb)
+        graph.connect("drag_data_received", got_data_cb)
+        
+        
+        
         ## GETTING BUTTON PRESS EVENTS
         def bpe( w, event):
             
@@ -3045,6 +3270,7 @@ class bos:
         self.events = []
         self.arrows = []
         self.markers = []
+        self.images = []
         self.tree = [] # THIS IS THE PLACE WEHRE STORED THE [IND, NAME] of scenes in the connected line from START to END of the movie
         
     def new(self, name):
@@ -3153,6 +3379,7 @@ class bos:
         self.events = []
         self.arrows = []
         self.markers = []
+        self.images = []
         
         openfile = open(self.filename, "r")
         openfile = openfile.read()
@@ -3244,6 +3471,37 @@ class bos:
                 mark.append(str(marker[1][marker[1].find('"')+1:marker[1].replace('"'," ",1).find('"') ]))
                 
                 self.markers.append(mark)
+        
+        #### GETTING IMAGES
+        if "<image>" in openfile and "</image>" in openfile:
+            
+            allpixs = openfile[openfile.find("<image>"):openfile.rfind("</image>")+8]
+            print allpixs
+            for img in allpixs.split("</image>")[:-1]:
+                print img
+                image = []
+                
+                img = img[img.find("<image>")+7:].split(",")
+                
+                image.append(float(img[0]))
+                image.append(float(img[1]))
+                image.append(str(img[2][img[2].find('"')+1:img[2].replace('"'," ",1).find('"') ]))
+                image.append(str(img[3][img[3].find('"')+1:img[3].replace('"'," ",1).find('"') ]))
+                image.append(str(img[4][img[4].find('"')+1:img[4].replace('"'," ",1).find('"') ]))
+                image.append("NO PIXBUF")
+                
+                self.images.append(image)
+                
+                
+            
+            
+        
+        #for image in self.images:
+        #    
+        #    imX, imY, mode, url, thumb, pixthumb = image
+        #    savefile.write('<image>'+str(imX)+',"'+str(imY)+',"'+str(mode)+',"'+str(url)+',"'+str(thumb)+'"</image>\n')
+        
+        
         
         #### GETTING CAMERA DIMENTIONS ####
         
@@ -3412,7 +3670,11 @@ class bos:
         for marker in self.markers:
             savefile.write('<marker>'+str(marker[0])+',"'+str(marker[1])+'"</marker>\n')
         
-        
+        for image in self.images:
+            
+            imX, imY, mode, url, thumb, pixthumb = image
+            savefile.write('<image>'+str(imX)+','+str(imY)+',"'+str(mode)+'","'+str(url)+'","'+str(thumb)+'"</image>\n')
+                        
             
         savefile.close()
         

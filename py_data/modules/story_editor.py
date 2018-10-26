@@ -1007,10 +1007,10 @@ class story:
                 
                 imX = int(imX*self.sx+self.px)
                 imY = int(imY*self.sy+self.py)
-                piX = 70
-                piY = 70
+                piX = 200
+                piY = 200
                 
-                if pixthumb == "NO PIXBUF" and imX in range(-70, w/3*2) and imY in range(0, h):
+                if pixthumb == "NO PIXBUF" and imX in range(-200, w/3*2) and imY in range(0, h):
                     try:
                         self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
                     except:
@@ -1038,7 +1038,7 @@ class story:
                             
                             thumbnailer.thumbnail
                             
-                            fromr  = open(thumbnailer.thumbnail(u, x=70, y=70), "r")
+                            fromr  = open(thumbnailer.thumbnail(u, x=200, y=200), "r")
                             saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
                             saveto.write(fromr.read())
                             saveto.close()
@@ -1060,7 +1060,7 @@ class story:
                 if mode == "ABSOLUTE":
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("red"))
                 
-                if mx in range(imX, imX+piX) and my in range(imY, imY+piY):
+                if mx in range(imX, imX+piX) and my in range(imY, imY+piY) and mx in range(0, w-w/3):
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
                     
                     
@@ -1072,7 +1072,7 @@ class story:
                             os.system("xdg-open "+url)
                         elif mode == "RELATIVE":
                             os.system("xdg-open "+self.pf+url)
-                elif mx in range(imX, imX+piX) and my in range(imY-22, imY):
+                elif mx in range(imX, imX+piX) and my in range(imY-22, imY) and mx in range(0, w-w/3):
                      xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
                      if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         self.imageselected = count
@@ -3179,7 +3179,7 @@ class story:
                     
                     thumbnailer.thumbnail
                     
-                    fromr  = open(thumbnailer.thumbnail(u, x=70, y=70), "r")
+                    fromr  = open(thumbnailer.thumbnail(u, x=200, y=200), "r")
                     saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
                     saveto.write(fromr.read())
                     saveto.close()

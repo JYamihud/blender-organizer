@@ -1,4 +1,4 @@
-VERSION 4.09
+VERSION 4.10
 FILE update_info.data
 FILE py_data/modules/story_editor.py
 FILE py_data/icons/report_bug.png

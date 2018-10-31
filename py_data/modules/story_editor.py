@@ -1980,7 +1980,7 @@ class story:
             
             
             Pstart = w-(w)/3
-            Ppart = (w)/3
+            Ppart = (w)/3-50
             
             
             
@@ -2033,6 +2033,11 @@ class story:
                 anyscenedata = True
                 
                 
+                thisshotlistlengstart = shotlistlength
+                shotstatussidepanel = -1
+                
+                
+                
                 self.imgAT.append("")
                 
                 shotname, story, pixbuf, blends = i
@@ -2040,7 +2045,7 @@ class story:
                 if shotname:
                     for b in shotname[shotname.rfind("/")+1:].split("\n"):
                         
-                        SCnames.append([b, shotlistlength])
+                        
                         
                         ctx2.set_source_rgb(1,1,1)
                         ctx2.set_font_size(30)
@@ -2271,7 +2276,7 @@ class story:
                         
                         
                         # MOUSE OVER
-                        if mx in range(Pstart, w) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w-50) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
                             tooltip = "/"+shotname
                             
@@ -2309,8 +2314,9 @@ class story:
                         
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/storyboard")) > 0:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c6a5b"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#757533"))
                             widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            shotstatussidepanel = 1
                         # MOUSE OVER
                         if mx in range(Pstart, w-Ppart/2) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
@@ -2344,12 +2350,12 @@ class story:
                         # opengl
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/opengl")) > 0:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c6a5b"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
-                        
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#757533"))
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            shotstatussidepanel = 1
                         
                         # MOUSE OVER
-                        if mx in range(Pstart+Ppart/2, w) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart+Ppart/2, w-50) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
                             
                             
@@ -2357,7 +2363,7 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 
@@ -2382,8 +2388,9 @@ class story:
                         
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/test_rnd")) > 0:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c6a5b"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#333388"))
                             widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            shotstatussidepanel = 2
                         # MOUSE OVER
                         if mx in range(Pstart, w-Ppart/2) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
@@ -2416,13 +2423,14 @@ class story:
                         # rendered
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/rendered")) > 0:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c6a5b"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#338833"))
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            shotstatussidepanel = 3
                             
                         
                         
                         # MOUSE OVER
-                        if mx in range(Pstart+Ppart/2, w) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart+Ppart/2, w-50) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
                             
                             
@@ -2430,7 +2438,7 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 
@@ -2515,7 +2523,7 @@ class story:
                         
                         
                         # MOUSE OVER
-                        if mx in range(Pstart+Ppart/2, w) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart+Ppart/2, w-50) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
                             
                             
@@ -2523,7 +2531,7 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8c8c8c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 if checkexist:
@@ -2632,7 +2640,7 @@ class story:
                                         
                                         os.system("xdg-open "+self.pf+"/"+shotname+"/"+BName)
                                     
-                                    
+                                    thisshotlistlengstart
                                     
                                 
                                     
@@ -2698,7 +2706,7 @@ class story:
                                 
                                 
                                 
-                                
+                                thisshotlistlengstart
                                 
                                 # TRY TO LOAD THE LOGO
                                 
@@ -2868,6 +2876,12 @@ class story:
                         
                         shotlistlength = shotlistlength + 23
                     
+                        
+                        SCnames.append([shotname[shotname.rfind("/")+1:].split("\n")[0], thisshotlistlengstart, shotstatussidepanel])
+                        
+                        
+                        
+                        
                 
                 shotlistlength = shotlistlength + 20
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#424242"))
@@ -2995,14 +3009,25 @@ class story:
             
             
             
-            for name, loc in SCnames:
+            for name, loc, status in SCnames:
                 
                 yfloat = float(loc)/shotlistlength
                 
                 y = int(float(h-220-100)*yfloat)+220+50+15
                 
-                ctx2.set_source_rgb(0.5,0.5,0.5)
-                ctx2.set_font_size(15)
+                
+                if status == 0:                         ####ERROR
+                    ctx2.set_source_rgb(0.8,0.0,0.0)
+                elif status == 1:
+                    ctx2.set_source_rgb(0.75,0.75,0.0)    #PREP / OPENGL
+                elif status == 2:
+                    ctx2.set_source_rgb(0.0,0.0,0.8)    #TESTING
+                elif status == 3:
+                    ctx2.set_source_rgb(0.0,1,0.0)      # DONE
+                else:
+                    ctx2.set_source_rgb(0.5,0.5,0.5)     ##NOTHING
+                    
+                ctx2.set_font_size(12)
                 ctx2.move_to( w-50, y)
                 ctx2.show_text(name)
                 

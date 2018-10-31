@@ -156,11 +156,11 @@ class story:
         
         self.event_resize = False
         self.event_move = False
-        self.event_select = False
+        self.event_select = -1
         
         
         #scenes
-        self.scene_select = False
+        self.scene_select = -1
         self.scenes_in_event = []
         
         
@@ -794,7 +794,7 @@ class story:
                         
                         
                         
-                        if mx in range(ds, dw+ds) and my in range(ey, int(esy)+ey):
+                        if mx in range(ds, dw+ds) and my in range(ey, int(esy)+ey) and mx in range(0, w-w/3):
                             
                             
                             tooltip = "event ["+name+"]\nscene["+scnDATA[ind][n][1]+"]"
@@ -817,7 +817,8 @@ class story:
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and self.tool == "select": # IF CLICKED
                             
-                                self.imgAT = []     
+                                self.imgAT = []
+                            
                                 self.scene_select = n
                                 
                                 
@@ -998,11 +999,11 @@ class story:
             
             for count, image in enumerate(self.FILE.images):
                 
-                print image
+               
                 
                 imX, imY, mode, url, thumb, pixthumb = image
                 
-                print "\n\nIMAGE \n", image
+                
                 
                 
                 imX = int(imX*self.sx+self.px)
@@ -1051,8 +1052,8 @@ class story:
                             pass
                     
                 try:
-                    piX = pixthumb.get_width()
-                    piY = pixthumb.get_height()
+                    piX = int(pixthumb.get_width()*self.sx*(self.sy/20))
+                    piY = int(pixthumb.get_height()*self.sx*(self.sy/20))
                 except:
                     pass    
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
@@ -1112,7 +1113,7 @@ class story:
                             except:
                                 print "WASN'T ABLE TO REMOVE"
                             
-                            self.event_select = False
+                            self.event_select = -1
                             self.deletelastframe = True
                             
                     else:
@@ -1121,10 +1122,15 @@ class story:
                 widget.window.draw_rectangle(xgc, True, imX-2, imY-22, piX+4, piY+24)
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#F0F"))
                 widget.window.draw_rectangle(xgc, True, imX, imY, piX, piY)
-                try:
-                    widget.window.draw_pixbuf(None, pixthumb, 0, 0, imX, imY , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-                except:
-                    pass
+                
+                if imX in range(-piX, w/3*2) and imY in range(-piY, h):
+                    try:
+                        
+                        pixthumb = pixthumb.scale_simple(piX, piY, gtk.gdk.INTERP_NEAREST)
+                        
+                        widget.window.draw_pixbuf(None, pixthumb, 0, 0, imX, imY , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                    except:
+                        pass
             
             
             
@@ -2009,12 +2015,18 @@ class story:
             widget.window.draw_rectangle(xgc, True, w-50, h-50, 200, 50)
             
             
-            
+            ctx2.set_source_rgb(1,1,1)
+            ctx2.set_font_size(40)
+            ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
+            ctx2.show_text(scnDATA[self.event_select][self.scene_select][1])
+            shotlistlength = shotlistlength + 45
             
             
             
             
             anyscenedata = False
+            
+            SCnames = [] # [NAME, shotlistlength] 
             
             for ind, i in enumerate(self.shotsDATA):
                 #print i
@@ -2025,12 +2037,33 @@ class story:
                 
                 shotname, story, pixbuf, blends = i
                 
+                if shotname:
+                    for b in shotname[shotname.rfind("/")+1:].split("\n"):
+                        
+                        SCnames.append([b, shotlistlength])
+                        
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(30)
+                        ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
+                        ctx2.show_text(b)
+                        shotlistlength = shotlistlength + 30
+                
+                
+                
+                story = story[story.replace('"', " ", 1).find('"')+1:]
+                
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#575757"))
+                widget.window.draw_rectangle(xgc, True, Pstart+20, 15+shotlistlength+220+self.shotsSCROLL-15, w/3-90, len(story.split("\n"))*15+5)
                 
                     
                     
                     
-                    
                 for b in story.split("\n"):
+                    
+                    
+                    
+                    
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(15)
                     ctx.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
@@ -2929,8 +2962,19 @@ class story:
             
             RulerY = int(Pofruler*(float(self.shotsSCROLL*-1)/shotlistlength))+220+50
             
+            
+            # get ruler properly
+            d = h-220
+            din = h-220-110
+            
+            l = shotlistlength
+            
+            leng = int(float(din)*(float(d)/l))
+            
+            
+            
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-            widget.window.draw_rectangle(xgc, True, w-50, RulerY, 50, 50)
+            widget.window.draw_rectangle(xgc, True, w-50, RulerY, 50, leng)
             
             
             if mx in range(w-50, w):
@@ -2951,6 +2995,17 @@ class story:
             
             
             
+            for name, loc in SCnames:
+                
+                yfloat = float(loc)/shotlistlength
+                
+                y = int(float(h-220-100)*yfloat)+220+50+15
+                
+                ctx2.set_source_rgb(0.5,0.5,0.5)
+                ctx2.set_font_size(15)
+                ctx2.move_to( w-50, y)
+                ctx2.show_text(name)
+                
             
             
             

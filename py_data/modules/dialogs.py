@@ -319,11 +319,13 @@ def rendersettings(pf, blend):
         
         if w.get_active() == 4:
             
-            direntry.set_editable(True)
-            direntry.grab_focus()
+            
+            getdir.set_sensitive(True)
+            getdir.grab_focus()
+            
         else:
             
-            direntry.set_editable(False)
+            getdir.set_sensitive(False)
             
             direntry.set_text("/"+blend[:blend.rfind("/")+1]+directories[w.get_active()])
     
@@ -338,24 +340,73 @@ def rendersettings(pf, blend):
     dirbox.pack_start(gtk.Label("Folder "), False)
     dirbox.pack_start(dirselector)
     
+    direntrybox = gtk.HBox(False)
     
     
     direntry = gtk.Entry()
     direntry.set_text(FOLDER)
     direntry.set_has_frame(False)
+    direntrybox.pack_start(direntry, True)
+    direntry.set_editable(False)
     
+    
+    #Get Custom dir buton
+    
+    
+    def getthedir(w):
+        
+        w.set_sensitive(False)
+        
+        # FILE CHOOSER
+        box.set_sensitive(False)
+        addbuttondialog = gtk.FileChooserDialog("CHOOSE RENDER OUTPUT",
+                                         None,
+                                         gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
+                                        (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                         gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+        addbuttondialog.set_default_response(gtk.RESPONSE_OK)
+        addbuttondialog.set_current_folder(blend[:blend.rfind("/")])
+        
+        
+        
+        response = addbuttondialog.run()
+        if response == gtk.RESPONSE_OK:
+            
+            get = addbuttondialog.get_filename()
+            
+            if pf in get:
+                direntry.set_text(get.replace(pf, ""))
+            
+            
+            
+        box.set_sensitive(True)    
+        
+        addbuttondialog.destroy() 
+        
+        
+        
+        w.set_sensitive(True)
+    
+    getdir = gtk.Button()
+    getdir.connect("clicked", getthedir)
+    getdir.props.relief = gtk.RELIEF_NONE
+    getdiricon = gtk.Image()
+    getdiricon.set_from_file(pf+"/py_data/icons/folder.png")
+    getdir.add(getdiricon)
+    direntrybox.pack_end(getdir, False)
     
     if FOLDER[FOLDER.rfind("/")+1:] in directories:
         for n, i in enumerate(directories):
             if i == FOLDER[FOLDER.rfind("/")+1:]:
                 dirselector.set_active(n)
-                direntry.set_editable(False)
+                getdir.set_sensitive(False)
     else:
         dirselector.set_active(4)
-        direntry.set_editable(True)
+        getdir.set_sensitive(True)
     
     
-    box.pack_start(direntry, False)
+    
+    box.pack_start(direntrybox, False)
     
     
     ## NEW AUTOMATIC SWITCH SYSTEM FOR GPU/CPU AT RENDERING

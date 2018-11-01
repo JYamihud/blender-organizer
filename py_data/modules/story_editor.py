@@ -2014,13 +2014,14 @@ class story:
             
             widget.window.draw_rectangle(xgc, True, w-50, h-50, 200, 50)
             
-            
-            ctx2.set_source_rgb(1,1,1)
-            ctx2.set_font_size(40)
-            ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
-            ctx2.show_text(scnDATA[self.event_select][self.scene_select][1])
-            shotlistlength = shotlistlength + 45
-            
+            try:
+                ctx2.set_source_rgb(1,1,1)
+                ctx2.set_font_size(40)
+                ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
+                ctx2.show_text(scnDATA[self.event_select][self.scene_select][1])
+                shotlistlength = shotlistlength + 45
+            except:
+                pass
             
             
             
@@ -2352,7 +2353,7 @@ class story:
                         if len(os.listdir(self.pf+"/"+shotname+"/opengl")) > 0:
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#757533"))
                             widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
-                            shotstatussidepanel = 1
+                            shotstatussidepanel = 0
                         
                         # MOUSE OVER
                         if mx in range(Pstart+Ppart/2, w-50) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
@@ -3016,10 +3017,10 @@ class story:
                 y = int(float(h-220-100)*yfloat)+220+50+15
                 
                 
-                if status == 0:                         ####ERROR
-                    ctx2.set_source_rgb(0.8,0.0,0.0)
+                if status == 0:                         ####OPENGL
+                    ctx2.set_source_rgb(1,1,0.0)
                 elif status == 1:
-                    ctx2.set_source_rgb(0.75,0.75,0.0)    #PREP / OPENGL
+                    ctx2.set_source_rgb(0.75,0.75,0.0)    #PREP
                 elif status == 2:
                     ctx2.set_source_rgb(0.0,0.0,0.8)    #TESTING
                 elif status == 3:

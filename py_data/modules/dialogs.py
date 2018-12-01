@@ -23,6 +23,7 @@ import datetime
 import thumbnailer
 import checklist
 import quick
+import fileformats
 from subprocess import *
 
 tbox = gtk.VBox()
@@ -1210,7 +1211,44 @@ class event:
                         textbuffer.insert(textbuffer.get_end_iter(), scenetext)
                         second = True
         
+        # Mark images
         
+        pixbufs = [] #[ ["path", pixbuf] , ...]
+        
+        text = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())
+        
+        if "[image]" in text and "[/image]" in text:
+            
+            ttx = text
+            
+            for i in range(text.count("[image]")):
+                
+                if "[/image]" in ttx[ttx.find("[image]"):]:
+                    
+                    path = ttx[ttx.find("[image]")+7:ttx.find("[/image]")]
+                    
+                    notfound = True
+                    for p in pixbufs:
+                        if path in p:
+                            notfound = False
+                    
+                    if notfound:
+                        try:
+                            pixbufs.append([path, gtk.gdk.pixbuf_new_from_file(os.getcwd()+path)])
+                        except:
+                            try:
+                                pixbufs.append([path, gtk.gdk.pixbuf_new_from_file(path)])
+                            except:
+                                pixbufs.append([path, gtk.gdk.pixbuf_new_from_file(os.getcwd()+"/py_data/icons/pic_big.png")])
+                    for p in pixbufs:
+                        if path in p:
+                    
+                            textbuffer.insert_pixbuf(textbuffer.get_iter_at_offset(ttx.find("[image]")-1), p[1])
+                    
+                    
+                
+        
+         
         
         box.pack_start(textscroll)
         
@@ -1276,6 +1314,48 @@ class event:
             textview.grab_focus()
             
         
+        def insertimage(w=False):
+            
+            # FILE CHOOSER
+            
+            addbuttondialog = gtk.FileChooserDialog("CHOOSE INSERTING IMAGE",
+                                             None,
+                                             gtk.FILE_CHOOSER_ACTION_OPEN,
+                                            (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
+                                             gtk.STOCK_OPEN, gtk.RESPONSE_OK))
+            addbuttondialog.set_default_response(gtk.RESPONSE_OK)
+            addbuttondialog.set_current_folder(os.getcwd())
+            
+            
+            
+            response = addbuttondialog.run()
+            if response == gtk.RESPONSE_OK:
+                
+                u = addbuttondialog.get_filename()
+                
+                imageNOT = True
+                for i in fileformats.images:
+                    print u.lower(), i, u[-3:]
+                    if u.lower().endswith(i):
+                        imageNOT = False
+                        
+                        # FOUND THE IMAGE
+                        
+                        if os.getcwd() in u:
+                            u = u.replace(os.getcwd(), "")
+                        
+                        textbuffer.insert_at_cursor("[image]"+u+"[/image]")
+                        
+                        si = textbuffer.get_iter_at_offset(textbuffer.get_iter_at_mark(textbuffer.get_insert()).get_offset()-len("<image>"+u+"</image>"))
+                        ei = textbuffer.get_iter_at_offset(textbuffer.get_iter_at_mark(textbuffer.get_insert()).get_offset())
+                        
+                        
+                        textbuffer.select_range(si, ei)
+            
+                        textview.grab_focus()
+                
+            addbuttondialog.destroy() 
+            
         # mark scene
         
         markscenebutton = gtk.Button()
@@ -1301,6 +1381,20 @@ class event:
         markshotbutton.add(markshotbox)
         toolbox.pack_start(markshotbutton, False)
         markshotbutton.connect("clicked", mark_now, "shot")
+        
+        # new img
+        
+        insertimagebutton = gtk.Button()
+        insertimagebutton.props.relief = gtk.RELIEF_NONE
+        insertimagebox = gtk.HBox(False)
+        insertimageicon = gtk.Image()
+        insertimageicon.set_from_file("py_data/icons/new_img.png")
+        insertimagebox.pack_start(insertimageicon, False)
+        insertimagebox.pack_start(gtk.Label("Insert Image"))
+        insertimagebutton.add(insertimagebox)
+        toolbox.pack_start(insertimagebutton, False)
+        insertimagebutton.connect("clicked", insertimage)
+        
         
         
         
@@ -1345,6 +1439,12 @@ class event:
         textbuffer = textview.get_buffer()
         textbuffer.connect("changed", markup)
         textbuffer.set_text(self.text)
+        
+        
+        
+        
+        
+        
         
         
         
@@ -1621,6 +1721,7 @@ def markup(textbuffer):
         textbuffer.create_tag("YELLOW", foreground="#e47649", font="Monospace Bold")
         textbuffer.create_tag("BLUE", foreground="#8888FF", font="Monospace Bold")
         textbuffer.create_tag("GREEN", foreground="#55AA55", font="Monospace Bold")
+        textbuffer.create_tag("GREY", foreground="#999", font="Monospace Italic")
         
     except:
         pass
@@ -1631,15 +1732,18 @@ def markup(textbuffer):
     
     YELLOW = ["<scene>", "</scene>"]
     BLUE   = ["<shot>", "</shot>"]
+    GREY   = ["[image]", "[/image]"]
     
     
-    for l in [[YELLOW, "YELLOW"], [BLUE, "BLUE"]]:
+    grey = []
+    for l in [[YELLOW, "YELLOW"], [BLUE, "BLUE"], [GREY, "GREY"]]:
         for y in l[0]:
         
             if y in text:
                 
                 t = text
                 d = 0
+                
                 for i in range( text.count(y) ):
                     
                     d = t.find(y)
@@ -1648,8 +1752,21 @@ def markup(textbuffer):
                     t = t.replace(y, "."*len(y), 1)
                     d2 = d
                     
+                    
+                    
                     textbuffer.apply_tag_by_name(l[1], textbuffer.get_iter_at_offset(d1), textbuffer.get_iter_at_offset(d2))
-    
+                    
+                    try:
+                        if l[1] == "GREY":
+                            grey.append(d1)
+                            print grey, "THE GREY"
+                        
+                            textbuffer.apply_tag_by_name(l[1], textbuffer.get_iter_at_offset(grey[-2]), textbuffer.get_iter_at_offset(grey[-1]))
+                    except:
+                        
+                        
+                        
+                        print "FULL TEXT WAS NOT POSSIBLE TO DO"
      
     if '"' in text:
         y = '"'

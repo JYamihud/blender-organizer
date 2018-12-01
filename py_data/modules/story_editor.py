@@ -759,7 +759,7 @@ class story:
                                 start_active = True
                                 
                             if arrow[1][0] == -1:
-                                self.arrows_output_dots[arrowN][1] = [w-(w)/3-30,80]
+                                self.arrows_output_dots[arrowN][1] = [w-(w)/3-30,h-100]
                                 
                                 end_active = True
                             
@@ -1878,9 +1878,9 @@ class story:
             
             
             #end
-            if mx in range(w-(w)/3-50, w-(w)/3-10) and my in range(60, 110):
+            if mx in range(w-(w)/3-50, w-(w)/3-10) and my in range(h-120, h-120+110):
                 tooltip = "End of the film\n\n Connet the ending scene to it\nwith the arrow tool [ A ]"
-                widget.window.draw_pixbuf(None, self.end_mo, 0, 0, w-(w)/3-50, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                widget.window.draw_pixbuf(None, self.end_mo, 0, 0, w-(w)/3-50, h-120 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                 
                 
                 if self.tool == "arrow" and "GDK_BUTTON1" in str(fx):
@@ -1889,9 +1889,9 @@ class story:
                 
             else:
                 if end_active:
-                    widget.window.draw_pixbuf(None, self.end_active, 0, 0, w-(w)/3-50, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                    widget.window.draw_pixbuf(None, self.end_active, 0, 0, w-(w)/3-50, h-120 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                 else:
-                    widget.window.draw_pixbuf(None, self.end_grey, 0, 0, w-(w)/3-50, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                    widget.window.draw_pixbuf(None, self.end_grey, 0, 0, w-(w)/3-50, h-120 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
             
             
             

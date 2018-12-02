@@ -1226,11 +1226,13 @@ class event:
                 if "[/image]" in ttx[ttx.find("[image]"):]:
                     
                     path = ttx[ttx.find("[image]")+7:ttx.find("[/image]")]
-                    
+                    #print path, ttx.find("[image]"), ttx.find("[/image]"),  "####################################### PATH #################################"
                     notfound = True
                     for p in pixbufs:
                         if path in p:
                             notfound = False
+                    
+                    
                     
                     if notfound:
                         try:
@@ -1245,8 +1247,8 @@ class event:
                     
                             textbuffer.insert_pixbuf(textbuffer.get_iter_at_offset(ttx.find("[image]")-1), p[1])
                     
-                    
-                
+                    ttx = ttx.replace("[image]", " (image)", 1)
+                    ttx = ttx.replace("[/image]", "(/image)", 1)
         
          
         

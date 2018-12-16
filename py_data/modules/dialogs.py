@@ -1153,11 +1153,12 @@ class event:
         
         # text editor
         textview = gtk.TextView()
+        textview.set_wrap_mode(gtk.WRAP_WORD)
         textview.set_editable(False)
         #textcolors
         textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("#c6c6c6"))
         textview.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse("#424242"))
-        fontdesc = pango.FontDescription("Monospace Bold")
+        fontdesc = pango.FontDescription("FreeMono Bold 15")
         textview.modify_font(fontdesc)
         
         textscroll.add_with_viewport(textview)
@@ -1170,8 +1171,9 @@ class event:
         
         try:
             
-            self.second_tag = textbuffer.create_tag("Second", paragraph_background="#e0dede")
-            
+            self.second_tag = textbuffer.create_tag("Second", paragraph_background="#424242")
+            self.frase_tag = textbuffer.create_tag("frase_comment",justification=gtk.JUSTIFY_CENTER, left_margin=150, right_margin=150, foreground="#323232")
+            self.frasefirst_tag = textbuffer.create_tag("frasefirst_comment",justification=gtk.JUSTIFY_CENTER, font="FreeMono Bold 17", left_margin=150, right_margin=150)
         except:
             pass
         
@@ -1202,20 +1204,72 @@ class event:
                         scenetext = scenetext.replace(rmvname,   "")
                         scenetext = scenetext.replace("</shot>", "" ,1)
                         
-                        
+                    
+                    
+                    
                     # GETTING INTO THE BUFFER
-                    if second:
-                        textbuffer.insert_with_tags(textbuffer.get_end_iter(), scenetext, self.second_tag)
-                        second = False
-                    else:
-                        textbuffer.insert(textbuffer.get_end_iter(), scenetext)
-                        second = True
+                    
+                    textbuffer.insert(textbuffer.get_end_iter(), "\n"+scenetext+"\n")
+                    textbuffer.insert_with_tags(textbuffer.get_end_iter(), "\n", self.second_tag)
+                    
+                    
+                    #if second:
+                    #    textbuffer.insert_with_tags(textbuffer.get_end_iter(), scenetext, self.second_tag)
+                    #    second = False
+                    #else:
+                    #    textbuffer.insert(textbuffer.get_end_iter(), scenetext)
+                    #    second = True
         
         # Mark images
         
         pixbufs = [] #[ ["path", pixbuf] , ...]
         
         text = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())
+        
+        
+        # FRASES
+        
+        if " - [" in text and "]" in text:
+            
+            t = text
+            t = t.replace("[image]", "(image)")
+            t = t.replace("[/image]", "(/image)")
+            
+            
+            for i in range(text.count(" - [")):
+                
+                d = t.find(" - [")   
+                pt = t[:d]
+                textbuffer.apply_tag(self.frasefirst_tag, textbuffer.get_iter_at_offset(pt.rfind("\n")), textbuffer.get_iter_at_offset(d))
+                
+                d2 = t.find("]")+1
+                print d, d2, "\n\n"
+                
+                phrase = t[d+4:d2-1]
+                
+                t = t.replace(" - [", " - -", 1)
+                
+                
+                t = t.replace("]", "-", 1)
+                textbuffer.delete(textbuffer.get_iter_at_offset(d), textbuffer.get_iter_at_offset(d2))
+                textbuffer.insert_with_tags(textbuffer.get_iter_at_offset(d), "   \n"+phrase+"\n", self.frase_tag)
+                
+                
+                #y = '"'
+                #t = text
+                #d = 0
+
+                #for i in range( text.count(y)/2 ):
+                    #d = t.find(y)
+                    #d1 = d
+                    #d = t.replace(y, ".", 1).find(y)+1
+                    #t = t.replace(y, ".", 1)
+                    #t = t.replace(y, ".", 1)
+                    #d2 = d
+                    
+                    #textbuffer.apply_tag_by_name("GREEN", textbuffer.get_iter_at_offset(d1), textbuffer.get_iter_at_offset(d2))
+            
+        
         
         if "[image]" in text and "[/image]" in text:
             
@@ -1414,6 +1468,7 @@ class event:
         textview.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFF"))
         fontdesc = pango.FontDescription("Monospace")
         textview.modify_font(fontdesc)
+        textview.set_wrap_mode(gtk.WRAP_WORD)
         
         def treeview_changed(widget, thatsecondone):
             
@@ -1521,7 +1576,7 @@ class event:
         textview.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFF"))
         fontdesc = pango.FontDescription("Monospace")
         textview.modify_font(fontdesc)
-        
+        textview.set_wrap_mode(gtk.WRAP_WORD)
         def treeview_changed(widget, thatsecondone):
             
             adj = textscroll.get_vadjustment()
@@ -1647,7 +1702,7 @@ class event:
         textview.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFF"))
         fontdesc = pango.FontDescription("Monospace")
         textview.modify_font(fontdesc)
-        
+        textview.set_wrap_mode(gtk.WRAP_WORD)
         def treeview_changed(widget, thatsecondone):
             
             adj = textscroll.get_vadjustment()

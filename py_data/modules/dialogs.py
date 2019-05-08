@@ -1224,7 +1224,7 @@ class event:
         
         pixbufs = [] #[ ["path", pixbuf] , ...]
         
-        text = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())
+        text = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())+"\nPS - [Done in Blender-Organizer software Written by J.Y.Amihud]"
         export_text = text
         EXFR = [] #FRASE SPECKER NAME LOCATIONS LIST
         EXSP = [] #FRASES THEM SELFS LOCATIONS

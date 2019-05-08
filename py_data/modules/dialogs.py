@@ -1172,8 +1172,8 @@ class event:
         try:
             
             self.second_tag = textbuffer.create_tag("Second", paragraph_background="#424242")
-            self.frase_tag = textbuffer.create_tag("frase_comment",justification=gtk.JUSTIFY_CENTER, left_margin=150, right_margin=150, foreground="#323232")
-            self.frasefirst_tag = textbuffer.create_tag("frasefirst_comment",justification=gtk.JUSTIFY_CENTER, font="FreeMono Bold 17", left_margin=150, right_margin=150)
+            self.frase_tag = textbuffer.create_tag("frase_comment",justification=gtk.JUSTIFY_CENTER, left_margin=75, right_margin=75, foreground="#323232")
+            self.frasefirst_tag = textbuffer.create_tag("frasefirst_comment",justification=gtk.JUSTIFY_CENTER, font="FreeMono Bold 17", left_margin=75, right_margin=75)
         except:
             pass
         
@@ -1225,7 +1225,10 @@ class event:
         pixbufs = [] #[ ["path", pixbuf] , ...]
         
         text = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())
-        
+        export_text = text
+        EXFR = [] #FRASE SPECKER NAME LOCATIONS LIST
+        EXSP = [] #FRASES THEM SELFS LOCATIONS
+        EXIMG = [] #IMAGES
         
         # FRASES
         
@@ -1242,6 +1245,9 @@ class event:
                 pt = t[:d]
                 textbuffer.apply_tag(self.frasefirst_tag, textbuffer.get_iter_at_offset(pt.rfind("\n")), textbuffer.get_iter_at_offset(d))
                 
+                #add frase locations to the EXFR
+                EXFR.append([pt.rfind("\n"), d, "name"])
+                
                 d2 = t.find("]")+1
                 print d, d2, "\n\n"
                 
@@ -1253,6 +1259,10 @@ class event:
                 t = t.replace("]", "-", 1)
                 textbuffer.delete(textbuffer.get_iter_at_offset(d), textbuffer.get_iter_at_offset(d2))
                 textbuffer.insert_with_tags(textbuffer.get_iter_at_offset(d), "   \n"+phrase+"\n", self.frase_tag)
+                
+                #add sceach locations to the EXSP
+                EXSP.append([d, d2, "talk"])
+                    
                 
                 
                 #y = '"'
@@ -1281,6 +1291,11 @@ class event:
                     
                     path = ttx[ttx.find("[image]")+7:ttx.find("[/image]")]
                     #print path, ttx.find("[image]"), ttx.find("[/image]"),  "####################################### PATH #################################"
+                    
+                    
+                    #add sceach locations to the EXSP
+                    EXIMG.append([ttx.find("[image]")-1, ttx.find("[image]")-1, ["image", os.getcwd()+path.replace(os.getcwd(), "")]])
+                    
                     notfound = True
                     for p in pixbufs:
                         if path in p:
@@ -1304,7 +1319,68 @@ class event:
                     ttx = ttx.replace("[image]", " (image)", 1)
                     ttx = ttx.replace("[/image]", "(/image)", 1)
         
-         
+        ############# EXPORTING ODT content.xml FILE TO TMP
+        
+        
+        #EXFR names
+        #EXSP talks
+        #EXIMG images
+        #export_text
+        
+        reference = open("py_data/new_file/odt.reference")
+        ref = reference.read().split("[INSERT]")
+        
+        
+        MAIN = sorted(EXFR+EXSP+EXIMG)
+        
+        
+        
+        OUTPUT = ref[0]
+        imagei = 0
+        prev = 0
+        for i in MAIN:
+            
+            s, e, t = i
+            
+            if t != "talk":
+                text = export_text[prev:s].replace("&", "and")
+                text = text.replace("\n", '\n</text:p><text:p text:style-name="Normal">\n')
+                
+                OUTPUT = OUTPUT + '\n<text:p text:style-name="Normal">\n'+text+"\n</text:p>\n"
+            
+            if t == "name":
+                
+                OUTPUT = OUTPUT + '\n<text:p text:style-name="Speacker">\n'+export_text[s:e].upper()+"\n</text:p>\n"
+            
+            elif t == "talk":
+                
+                frase = export_text[s+4:e-1]
+                frase = frase.replace("\n", '\n</text:p><text:p text:style-name="Speach">\n')
+                
+                OUTPUT = OUTPUT + '\n<text:p text:style-name="Speach">\n'+frase+"\n</text:p>\n"
+            
+            elif t[0] == "image":   
+                
+                print i
+                imagei = imagei+1
+                
+                OUTPUT = OUTPUT + '''<draw:frame draw:style-name="fr1" draw:name="Image'''+str(imagei)+'''" text:anchor-type="as-char" svg:y="0.0972in" svg:width="2.3362in" svg:height="1.4583in" draw:z-index="0">
+<draw:image xlink:href="'''
+                
+                OUTPUT = OUTPUT + t[1]
+                OUTPUT = OUTPUT + '''" xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad"/>
+</draw:frame>'''
+            
+            prev = e
+        OUTPUT = OUTPUT + export_text[e:]
+        
+        OUTPUT = OUTPUT + ref[1]
+        
+        
+        save = open("/tmp/content.xml", "w")
+        save.write(OUTPUT)
+        save.close()
+       
         
         box.pack_start(textscroll)
         

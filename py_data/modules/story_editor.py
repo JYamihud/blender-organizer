@@ -1908,8 +1908,22 @@ class story:
                 tooltip = "Edit Movie\n Open /rnd/sequence.blend"
             
                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() : # IF CLICKED
-                
-                    os.system("xdg-open "+self.pf+"/rnd/sequence.blend")
+                    
+                    cblndr = ""
+                                        
+                    try:
+                        bv = open(self.pf+"/py_data/blenderver.data", "r")
+                        bv = bv.read().split("\n")
+                        
+                        print "bv", bv
+                        
+                        if int(bv[0]) > 0:
+                            cblndr = bv[int(bv[0])]+"/"
+                    except:
+                        pass
+                    
+                    
+                    os.system(cblndr+"blender "+self.pf+"/rnd/sequence.blend")
                 
                 
                 

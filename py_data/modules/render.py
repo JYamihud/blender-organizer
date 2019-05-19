@@ -517,7 +517,20 @@ class draw:
                         else:
                             self.win.set_title("FILE : "+FILE+" FRAME: "+str(i))
                         
-                        return Popen(['stdbuf', '-o0', "blender", "-b", pf+"/"+FILE, "-o",pf+FOLDER+"/####", "-F", FORMAT ,"-f", str(self.nowframe)], stdout=PIPE, universal_newlines=True)
+                        cblndr = ""
+                                        
+                        try:
+                            bv = open(self.pf+"/py_data/blenderver.data", "r")
+                            bv = bv.read().split("\n")
+                            
+                            print "bv", bv
+                            
+                            if int(bv[0]) > 0:
+                                cblndr = bv[int(bv[0])]+"/"
+                        except:
+                            pass
+                        
+                        return Popen(['stdbuf', '-o0', cblndr+"blender", "-b", pf+"/"+FILE, "-o",pf+FOLDER+"/####", "-F", FORMAT ,"-f", str(self.nowframe)], stdout=PIPE, universal_newlines=True)
         
         gtk.main_quit()
         

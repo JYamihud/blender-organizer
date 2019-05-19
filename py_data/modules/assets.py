@@ -872,7 +872,20 @@ class draw_assets:
                         # IF CLICKED
                         if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
                             
-                            os.system("xdg-open "+blend[1])
+                            cblndr = ""
+                                        
+                            try:
+                                bv = open(self.pf+"/py_data/blenderver.data", "r")
+                                bv = bv.read().split("\n")
+                                
+                                print "bv", bv
+                                
+                                if int(bv[0]) > 0:
+                                    cblndr = bv[int(bv[0])]+"/"
+                            except:
+                                pass
+                            
+                            os.system(cblndr+"blender "+blend[1])
                 
                     #BLEND PREVIEW 
                     widget.window.draw_pixbuf(None, blend[0], 0, 0, mmx + 117 +110 +(num*110)+self.blscroll, mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
@@ -923,8 +936,19 @@ class draw_assets:
                     
                         # IF CLICKED
                         if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
-                            
-                            os.system("xdg-open "+self.screen.ast[1])
+                            cblndr = ""
+                                        
+                            try:
+                                bv = open(self.pf+"/py_data/blenderver.data", "r")
+                                bv = bv.read().split("\n")
+                                
+                                print "bv", bv
+                                
+                                if int(bv[0]) > 0:
+                                    cblndr = bv[int(bv[0])]+"/"
+                            except:
+                                pass
+                            os.system(cblndr+"blender "+self.screen.ast[1])
                     
                     
                     widget.window.draw_pixbuf(None, self.screen.ast[0], 0, 0, mmx + 117 , mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)

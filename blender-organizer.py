@@ -126,6 +126,7 @@ from py_data.modules import story_editor
 from py_data.modules import checklist
 from py_data.modules import schedule
 from py_data.modules import update_window
+from py_data.modules import blendver
 
 ### FILES FOLDERS MAKE SURE
 
@@ -363,6 +364,21 @@ toppannelbox.pack_end(startsider, False)
 
 # SYNC
 
+blendverb = gtk.Button()
+blendverb.props.relief = gtk.RELIEF_NONE
+blendbox = gtk.HBox(False)
+blendico = gtk.Image()
+blendico.set_from_file("py_data/icons/blender.png")
+blendbox.pack_start(blendico, False)
+blendbox.pack_start(gtk.Label("  Blender Version"))
+blendverb.add(blendbox)
+blendverb.set_tooltip_text("Chose what Blender Version to use")
+blendverb.connect("clicked",chgCUR, "bldv")
+#blendver.set_sensitive(False)
+toppannelbox.pack_end(blendverb, False)
+
+# SYNC
+
 syncider = gtk.Button()
 syncider.props.relief = gtk.RELIEF_NONE
 syncibox = gtk.HBox(False)
@@ -485,6 +501,10 @@ def drawmain(w=None):
     if CUR == "rnd":    
     
         story_editor.story(os.getcwd(), drawbox, mainwin)
+        
+    if CUR == "bldv":
+        
+        blendver.draw_blendver(os.getcwd(), drawbox, mainwin)
 drawmain()
 
 

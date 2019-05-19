@@ -432,7 +432,7 @@ class draw_blendver:
             # TESTING SOMETHING
             ctx.set_font_size(20)
             ctx.move_to( mx, my)
-            ctx.show_text(str(mx)+":"+str(my)+" "+str(fx)+"  "+str(self.scroll))    
+            #ctx.show_text(str(mx)+":"+str(my)+" "+str(fx)+"  "+str(self.scroll))    
             
             
             self.dW = w

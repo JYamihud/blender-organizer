@@ -25,6 +25,7 @@ import checklist
 import quick
 import fileformats
 from subprocess import *
+import odt_export
 
 tbox = gtk.VBox()
 
@@ -1164,7 +1165,11 @@ class event:
     
     def view_script(self, linkchainpath):
         
-        dialog = gtk.Dialog("VIEW SCRIPT", None, 0, (gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
+        
+        
+        
+        
+        dialog = gtk.Dialog("VIEW SCRIPT", None, 0, ("Export to ODT", 250, gtk.STOCK_CLOSE, gtk.RESPONSE_CLOSE))
         
         box = dialog.get_child() # getting the box
         
@@ -1254,7 +1259,12 @@ class event:
         
         pixbufs = [] #[ ["path", pixbuf] , ...]
         
-        text = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())
+        text = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())+"\nPS - [Done in Blender-Organizer software Written by J.Y.Amihud]"
+        export_text = text
+        EXFR = [] #FRASE SPECKER NAME LOCATIONS LIST
+        EXSP = [] #FRASES THEM SELFS LOCATIONS
+        EXIMG = [] #IMAGES
+        
         
         
         # FRASES
@@ -1272,6 +1282,10 @@ class event:
                 pt = t[:d]
                 textbuffer.apply_tag(self.frasefirst_tag, textbuffer.get_iter_at_offset(pt.rfind("\n")), textbuffer.get_iter_at_offset(d))
                 
+                #add frase locations to the EXFR
+                EXFR.append([pt.rfind("\n"), d, "name"])
+                
+                
                 d2 = t.find("]")+1
                 print d, d2, "\n\n"
                 
@@ -1284,6 +1298,8 @@ class event:
                 textbuffer.delete(textbuffer.get_iter_at_offset(d), textbuffer.get_iter_at_offset(d2))
                 textbuffer.insert_with_tags(textbuffer.get_iter_at_offset(d), "   \n"+phrase+"\n", self.frase_tag)
                 
+                #add sceach locations to the EXSP
+                EXSP.append([d, d2, "talk"])
                 
                 #y = '"'
                 #t = text
@@ -1311,6 +1327,12 @@ class event:
                     
                     path = ttx[ttx.find("[image]")+7:ttx.find("[/image]")]
                     #print path, ttx.find("[image]"), ttx.find("[/image]"),  "####################################### PATH #################################"
+                    
+                    #add sceach locations to the EXSP
+                    EXIMG.append([ttx.find("[image]")-1, ttx.find("[image]")-1, ["image", os.getcwd()+path.replace(os.getcwd(), "")]])
+
+
+                    
                     notfound = True
                     for p in pixbufs:
                         if path in p:
@@ -1334,7 +1356,67 @@ class event:
                     ttx = ttx.replace("[image]", " (image)", 1)
                     ttx = ttx.replace("[/image]", "(/image)", 1)
         
-         
+         ############# EXPORTING ODT content.xml FILE TO TMP
+
+
+        #EXFR names
+        #EXSP talks
+        #EXIMG images
+        #export_text
+
+        reference = open("py_data/new_file/odt.reference")
+        ref = reference.read().split("[INSERT]")
+
+
+        MAIN = sorted(EXFR+EXSP+EXIMG)
+
+
+
+        OUTPUT = ref[0]
+        imagei = 0
+        prev = 0
+        for i in MAIN:
+
+            s, e, t = i
+
+            if t != "talk":
+                text = export_text[prev:s].replace("&", "and")
+                text = text.replace("\n", '\n</text:p><text:p text:style-name="Normal">\n')
+
+                OUTPUT = OUTPUT + '\n<text:p text:style-name="Normal">\n'+text+"\n</text:p>\n"
+
+            if t == "name":
+
+                OUTPUT = OUTPUT + '\n<text:p text:style-name="Speacker">\n'+export_text[s:e].upper()+"\n</text:p>\n"
+
+            elif t == "talk":
+
+                frase = export_text[s+4:e-1]
+                frase = frase.replace("\n", '\n</text:p><text:p text:style-name="Speach">\n')
+
+                OUTPUT = OUTPUT + '\n<text:p text:style-name="Speach">\n'+frase+"\n</text:p>\n"
+
+            elif t[0] == "image":   
+
+                print i
+                imagei = imagei+1
+
+                OUTPUT = OUTPUT + '''<draw:frame draw:style-name="fr1" draw:name="Image'''+str(imagei)+'''" text:anchor-type="as-char" svg:y="0.0972in" svg:width="2.3362in" svg:height="1.4583in" draw:z-index="0">
+<draw:image xlink:href="'''
+
+                OUTPUT = OUTPUT + t[1]
+                OUTPUT = OUTPUT + '''" xlink:type="simple" xlink:show="embed" xlink:actuate="onLoad"/>
+</draw:frame>'''
+
+            prev = e
+        OUTPUT = OUTPUT + export_text[e:]
+
+        OUTPUT = OUTPUT + ref[1]
+
+
+        save = open("/tmp/content.xml", "w")
+        save.write(OUTPUT)
+        save.close()
         
         box.pack_start(textscroll)
         
@@ -1344,6 +1426,8 @@ class event:
         
         box.show_all()
         r = dialog.run()
+        if r == 250:
+            odt_export.export()
         dialog.destroy()
        
     def edit(self):

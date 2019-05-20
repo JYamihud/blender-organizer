@@ -78,6 +78,7 @@ class draw_blendver:
         self.scroll = 0        
         #making a filewith the setting storeage
         
+        self.launchfolder = True # Makes sure just one folder choose dialogue is running
         
         if os.path.exists(pf+"/py_data/blenderver.data"):
             pass
@@ -377,7 +378,9 @@ class draw_blendver:
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
                 
                 if "GDK_BUTTON1" in str(fx) and self.win.is_active():
-                    glib.timeout_add(10, selfolder)
+                    if self.launchfolder:
+                        glib.timeout_add(10, selfolder)
+                        self.launchfolder = False
                     
             
             widget.window.draw_rectangle(xgc, True, 10, NS, w-20, 32)
@@ -458,6 +461,8 @@ class draw_blendver:
         
         
         def selfolder():
+            
+            
             chosefolder = gtk.FileChooserDialog("CHOOSE FOLDER CONTAINING BLENDER",
                                              None,
                                              gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
@@ -476,6 +481,7 @@ class draw_blendver:
                 save()
             
             chosefolder.destroy()
+            self.launchfolder = True
             
         def save():
             

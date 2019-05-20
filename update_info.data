@@ -1,3 +1,12 @@
+VERSION 4.16
+FILE update_info.data
+FILE py_data/modules/dialogs.py
+FILE py_data/modules/blendver.py
+FILE py_data/modules/odt_export.py
+FILE py_data/new_file/empty.odt
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.16
+
+
 VERSION 4.15
 MAIN_FILE
 FILE update_info.data

@@ -3,6 +3,7 @@
 # system
 import os
 import socket
+from subprocess import *
 
 # graphics interface
 import gtk
@@ -1922,8 +1923,8 @@ class story:
                     except:
                         pass
                     
-                    
-                    os.system(cblndr+"blender "+self.pf+"/rnd/sequence.blend")
+                    Popen(['stdbuf', '-o0', cblndr+"blender", self.pf+"/rnd/sequence.blend"])
+                    #os.system(cblndr+"blender "+self.pf+"/rnd/sequence.blend")
                 
                 
                 
@@ -2669,8 +2670,8 @@ class story:
                                             
                                         
                                         
-                                        
-                                        os.system(cblndr+"blender "+self.pf+"/"+shotname+"/"+BName)
+                                        Popen(['stdbuf', '-o0', cblndr+"blender", self.pf+"/"+shotname+"/"+BName])
+                                        #os.system(cblndr+"blender "+self.pf+"/"+shotname+"/"+BName)
                                     
                                     thisshotlistlengstart
                                     

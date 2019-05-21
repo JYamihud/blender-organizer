@@ -103,8 +103,23 @@ def rendersettings(pf, blend):
     
     def openblend(W=False):
         
+        cblndr = ""
+                                        
+        try:
+            bv = open(self.pf+"/py_data/blenderver.data", "r")
+            bv = bv.read().split("\n")
+            
+            print "bv", bv
+            
+            if int(bv[0]) > 0:
+                cblndr = bv[int(bv[0])]+"/"
+        except:
+            pass
+            
         
-        os.system("xdg-open "+pf+"/"+blend)
+        
+        Popen(['stdbuf', '-o0', cblndr+"blender", pf+"/"+blend])
+        #os.system("xdg-open "+pf+"/"+blend)
     
     
     blendfileicon = gtk.Image()

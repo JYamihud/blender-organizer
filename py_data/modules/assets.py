@@ -3,6 +3,7 @@
 # system
 import os
 import socket
+from subprocess import *
 
 # graphics interface
 import gtk
@@ -884,8 +885,8 @@ class draw_assets:
                                     cblndr = bv[int(bv[0])]+"/"
                             except:
                                 pass
-                            
-                            os.system(cblndr+"blender "+blend[1])
+                            Popen(['stdbuf', '-o0', cblndr+"blender", blend[1]])
+                            #os.system(cblndr+"blender "+blend[1])
                 
                     #BLEND PREVIEW 
                     widget.window.draw_pixbuf(None, blend[0], 0, 0, mmx + 117 +110 +(num*110)+self.blscroll, mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)

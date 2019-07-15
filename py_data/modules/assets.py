@@ -3,7 +3,6 @@
 # system
 import os
 import socket
-from subprocess import *
 
 # graphics interface
 import gtk
@@ -25,6 +24,8 @@ import thumbnailer
 import checklist
 import dialogs
 import fileformats
+
+from subprocess import *
 
 #### AN ASSET IS AN OBJECT THAT WILL HOLD INFORMATION ABOUT A PARTICULAR ASSET
 #    IN THE PROJECT
@@ -885,7 +886,7 @@ class draw_assets:
                                     cblndr = bv[int(bv[0])]+"/"
                             except:
                                 pass
-                            Popen(['stdbuf', '-o0', cblndr+"blender", blend[1]])
+                            Popen([cblndr+"blender", blend[1]])
                             #os.system(cblndr+"blender "+blend[1])
                 
                     #BLEND PREVIEW 
@@ -949,7 +950,8 @@ class draw_assets:
                                     cblndr = bv[int(bv[0])]+"/"
                             except:
                                 pass
-                            os.system(cblndr+"blender "+self.screen.ast[1])
+                            Popen([cblndr+"blender", self.screen.ast[1]])
+                            #os.system(cblndr+"blender "+self.screen.ast[1])
                     
                     
                     widget.window.draw_pixbuf(None, self.screen.ast[0], 0, 0, mmx + 117 , mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)

@@ -3,7 +3,6 @@
 # system
 import os
 import socket
-from subprocess import *
 
 # graphics interface
 import gtk
@@ -30,6 +29,8 @@ import fileformats
 import render_lists
 
 import copy # OMG OPTIMIZATION HACKS OMG I HOPE IT'S GOING TO WORK
+
+from subprocess import *
 
 # FIRST LET'S BREAK APPRAT THE DATA STRUCTURE
 
@@ -1923,7 +1924,7 @@ class story:
                     except:
                         pass
                     
-                    Popen(['stdbuf', '-o0', cblndr+"blender", self.pf+"/rnd/sequence.blend"])
+                    Popen([cblndr+"blender", self.pf+"/rnd/sequence.blend"])
                     #os.system(cblndr+"blender "+self.pf+"/rnd/sequence.blend")
                 
                 
@@ -2670,7 +2671,7 @@ class story:
                                             
                                         
                                         
-                                        Popen(['stdbuf', '-o0', cblndr+"blender", self.pf+"/"+shotname+"/"+BName])
+                                        Popen([cblndr+"blender", self.pf+"/"+shotname+"/"+BName])
                                         #os.system(cblndr+"blender "+self.pf+"/"+shotname+"/"+BName)
                                     
                                     thisshotlistlengstart

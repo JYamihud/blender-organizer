@@ -1,3 +1,9 @@
+VERSION 4.17
+FILE update_info.data
+FILE py_data/modules/assets.py
+FILE py_data/modules/story_editor.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.17
+
 VERSION 4.16
 FILE update_info.data
 FILE py_data/modules/dialogs.py

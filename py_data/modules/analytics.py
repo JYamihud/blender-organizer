@@ -602,8 +602,8 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             # let's get the w of each thing
             
-            wfortext = self.pixbuf.get_width()+80 # for the start of text
-            wstCubes = self.pixbuf.get_width()+60
+            wfortext = 580#self.pixbuf.get_width()+80 # for the start of text
+            wstCubes = 560#self.pixbuf.get_width()+60
             
             
             tboxsH = int(     h/2/5*0.8    )
@@ -706,7 +706,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                         if mx in range(30, w-30) and my in range(30+self.pixbuf.get_height()+25*ind+10, 30+self.pixbuf.get_height()+25*ind+25+10):
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6c6c6c"))
-                            widget.window.draw_rectangle(xgc, True, 30, 30+self.pixbuf.get_height()+25*ind+10, w-60, 25 )
+                            widget.window.draw_rectangle(xgc, True, 30, 30+self.pixbuf.get_height()+25*ind+10, 500, 25 )
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
                                 
@@ -801,7 +801,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             if mx in range(30, 300) and my in range(30+self.pixbuf.get_height()+90, 30+self.pixbuf.get_height()+90+30):
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6c6c6c"))
-                widget.window.draw_rectangle(xgc, True, 30, 30+self.pixbuf.get_height()+110-20, 260, 25 )
+                widget.window.draw_rectangle(xgc, True, 30, 30+self.pixbuf.get_height()+110-20, 220, 25 )
                 
                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
                 
@@ -821,7 +821,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             if mx in range(300, 600) and my in range(30+self.pixbuf.get_height()+90, 30+self.pixbuf.get_height()+90+30):
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6c6c6c"))
-                widget.window.draw_rectangle(xgc, True, 300, 30+self.pixbuf.get_height()+110-20, 260, 25 )
+                widget.window.draw_rectangle(xgc, True, 300, 30+self.pixbuf.get_height()+110-20, 230, 25 )
             
                 
                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED

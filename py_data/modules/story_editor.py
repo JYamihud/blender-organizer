@@ -1377,7 +1377,7 @@ class story:
                     
                     
                     eventname = "Event"
-                    storypart = "Something is happening."
+                    storypart = "<scene>\"Scene\"\n\n</scene>"
                     foundtimes = 0
                     for event in self.FILE.events:
                         if event[3].startswith(eventname):
@@ -1576,26 +1576,26 @@ class story:
             # EVENT BUTTON
             
             
-            if 69 in self.keys or 101 in self.keys:   # SHORT CUT
-                self.tool = "event"                   # PRESS E
-                self.toolactive = False
-            
-            if self.tool == "event":
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
-                widget.window.draw_rectangle(xgc, True, 160, 5, 40, 40)
-            else:
-                if mx in range(160, 200) and my in range(5,45):
-                    
-                    tooltip = "[ E ]\n\nAdd Event\nA part of scrip/story\nin relation to time"
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                    widget.window.draw_rectangle(xgc, True, 160, 5, 40, 40)
-                    
-                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
-                        
-                        self.tool = "event"
-                        self.toolactive = False
-            
-            widget.window.draw_pixbuf(None, self.eventicon, 0, 0, 160, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+            #if 69 in self.keys or 101 in self.keys:   # SHORT CUT
+            #    self.tool = "event"                   # PRESS E
+            #    self.toolactive = False
+            #
+            #if self.tool == "event":
+            #    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+            #    widget.window.draw_rectangle(xgc, True, 160, 5, 40, 40)
+            #else:
+            #    if mx in range(160, 200) and my in range(5,45):
+            #        
+            #        tooltip = "[ E ]\n\nAdd Event\nA part of scrip/story\nin relation to time"
+            #        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
+            #        widget.window.draw_rectangle(xgc, True, 160, 5, 40, 40)
+            #        
+            #        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+            #            
+            #            self.tool = "event"
+            #            self.toolactive = False
+            # 
+            #widget.window.draw_pixbuf(None, self.eventicon, 0, 0, 160, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
             
             
             
@@ -1604,24 +1604,35 @@ class story:
             if 83 in self.keys and self.win.is_active() and 65507 not in self.keys and not saveshortcut:
                 if 83 in self.keys:
                     self.keys.remove(83)
-                addscenenowshortcut = True
+                #addscenenowshortcut = True
+                self.tool = "event"
+                self.toolactive = False
             if 115 in self.keys and self.win.is_active() and 65507 not in self.keys and not saveshortcut:
                 
                 if 115 in self.keys:
                     self.keys.remove(115)
-                addscenenowshortcut = True
-                
+                #addscenenowshortcut = True
+                self.tool = "event"
+                self.toolactive = False
+            
+            if self.tool == "event":
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                widget.window.draw_rectangle(xgc, True, 210, 5, 40, 40)    
                 
             
             if mx in range(210,240) and my in range(5,45):
                 
-                tooltip = "[ S ]\n\nSelect a scene\nwithin an event"
+                tooltip = "[ S ]\n\Create a new scene"
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
                 widget.window.draw_rectangle(xgc, True, 210, 5, 40, 40)
                 
                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and len(self.FILE.events):
-                    addscenenowshortcut = True
+                    
+                    self.tool = "event"
+                    self.toolactive = False
+                    
+                    #addscenenowshortcut = True
             if addscenenowshortcut and len(self.FILE.events):
                     
                 self.tool = "select"

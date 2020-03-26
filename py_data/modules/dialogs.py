@@ -1447,7 +1447,7 @@ class event:
        
     def edit(self):
         
-        dialog = gtk.Dialog("Edit Event", None, 0, (gtk.STOCK_OK,  gtk.RESPONSE_APPLY, 
+        dialog = gtk.Dialog("Scene Editor", None, 0, (gtk.STOCK_OK,  gtk.RESPONSE_APPLY, 
                                                gtk.STOCK_CANCEL, gtk.RESPONSE_CLOSE))
         
         box = dialog.get_child() # getting the box
@@ -1455,7 +1455,7 @@ class event:
         namebox = gtk.HBox(False)
         box.pack_start(namebox, False)
         
-        namebox.pack_start(gtk.Label(" Event Name: "), False)
+        namebox.pack_start(gtk.Label(" Event ID: "), False)
         
         nameentry = gtk.Entry()
         nameentry.set_text(self.name)
@@ -1551,7 +1551,7 @@ class event:
         markscenebox.pack_start(marksceneicon, False)
         markscenebox.pack_start(gtk.Label("Mark Scene"))
         markscenebutton.add(markscenebox)
-        toolbox.pack_start(markscenebutton, False)
+        #toolbox.pack_start(markscenebutton, False)
         markscenebutton.connect("clicked", mark_now, "scene")
         
         # mark shot
@@ -1598,6 +1598,8 @@ class event:
         fontdesc = pango.FontDescription("Monospace")
         textview.modify_font(fontdesc)
         textview.set_wrap_mode(gtk.WRAP_WORD)
+        
+        
         
         def treeview_changed(widget, thatsecondone):
             

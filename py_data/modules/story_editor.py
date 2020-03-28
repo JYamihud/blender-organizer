@@ -1385,8 +1385,16 @@ class story:
                     
                     if foundtimes > 0:
                         eventname = eventname + "_" + str(foundtimes+1)
+                    
+                    s = "1234567890qwertyuiopasdfghjklzxcvbnm"
+                    rn = ""
+                    for i in range(12):
+                        rn = rn + random.choice(s)                    
+                    
                         
-                    storypart = "<scene>\""+eventname+"\"\n\n</scene>"    
+                    storypart = "<scene>\"Scene_"+rn+"\"\n\n</scene>"    
+                    
+                    
                     
                     # getting the event editor
                     
@@ -2044,9 +2052,9 @@ class story:
             
             try:
                 ctx2.set_source_rgb(1,1,1)
-                ctx2.set_font_size(40)
+                ctx2.set_font_size(15)
                 ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
-                ctx2.show_text(scnDATA[self.event_select][self.scene_select][1])
+                ctx2.show_text("rnd/"+scnDATA[self.event_select][self.scene_select][1]+"/")
                 shotlistlength = shotlistlength + 45
             except:
                 pass

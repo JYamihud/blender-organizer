@@ -1376,8 +1376,8 @@ class story:
                     
                     
                     
-                    eventname = "Event"
-                    storypart = "<scene>\"Scene\"\n\n</scene>"
+                    eventname = "Scene"
+                    
                     foundtimes = 0
                     for event in self.FILE.events:
                         if event[3].startswith(eventname):
@@ -1386,6 +1386,7 @@ class story:
                     if foundtimes > 0:
                         eventname = eventname + "_" + str(foundtimes+1)
                         
+                    storypart = "<scene>\""+eventname+"\"\n\n</scene>"    
                     
                     # getting the event editor
                     

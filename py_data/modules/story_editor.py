@@ -2086,8 +2086,8 @@ class story:
                 story = story[story.replace('"', " ", 1).find('"')+1:]
                 
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#575757"))
-                widget.window.draw_rectangle(xgc, True, Pstart+20, 15+shotlistlength+220+self.shotsSCROLL-15, w/3-90, len(story.split("\n"))*15+5)
+                #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#575757"))
+                #widget.window.draw_rectangle(xgc, True, Pstart+20, 15+shotlistlength+220+self.shotsSCROLL-15, w/3-90, len(story.split("\n"))*15+5)
                 
                     
                     
@@ -2095,14 +2095,40 @@ class story:
                 for b in story.split("\n"):
                     
                     
+                    if len(b) < (Ppart/10):
                     
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
+                        ctx2.show_text(b)
+                        shotlistlength = shotlistlength + 15
                     
-                    ctx.set_source_rgb(1,1,1)
-                    ctx.set_font_size(15)
-                    ctx.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
-                    ctx.show_text(b)
-                    shotlistlength = shotlistlength + 15
-                
+                    else:
+                        
+                        newb = ""
+                        for word in b.split(" "):
+                            
+                            
+                            if len(newb +  word + " ") < (Ppart/10):
+                                newb = newb + word + " "
+                                #print "Adding to newb"
+                            else:
+                                ctx2.set_source_rgb(1,1,1)
+                                ctx2.set_font_size(15)
+                                ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
+                                ctx2.show_text(newb)
+                                shotlistlength = shotlistlength + 15
+                                #print "newb = "+newb
+                                #print "word = "+word
+                                newb = ""
+                                
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
+                        ctx2.show_text(newb)
+                        shotlistlength = shotlistlength + 15    
+                        
+                    
                 
                 
                     
@@ -3166,14 +3192,14 @@ class story:
                 for LI, Line in enumerate(story.split("\n")[sclval:sclval+9]):
                     
                     
-                    ctx.set_source_rgb(1,1,1)
-                    ctx.set_font_size(15)
-                    ctx.move_to( Pstart+20, 15*LI+20+50)
-                    ctx.show_text(Line)
+                    ctx2.set_source_rgb(0.6,0.6,0.6)
+                    ctx2.set_font_size(15)
+                    ctx2.move_to( Pstart+20, 15*LI+20+50)
+                    ctx2.show_text(Line)
                 ctx.set_source_rgb(.8,.8,.8)
                 ctx.set_font_size(12)
                 ctx.move_to( Pstart+20, 15*10+20+45)
-                ctx.show_text("... Click To Read Full Version Or EDIT ...")
+                ctx.show_text("... Click To View Scene Code Nor EDIT ...")
                 
                 
                 

@@ -198,6 +198,7 @@ class draw_assets:
         self.blendericon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blender.png")
         self.blendfileicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blendfile_big.png")
         self.okicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/ok.png")
+        self.plusicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
         self.fade_01 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_01.png")
         self.fade_02 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_02.png")
         self.fade_03 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_03.png")
@@ -826,6 +827,46 @@ class draw_assets:
                 ctx.set_source_rgb(1,1,1)
                 ctx.move_to( mmx+172, mmy-24)
                 ctx.show_text("BLEND FILES")
+                
+                
+                
+                # ADD THE NEW BLEND FILE OPTION 
+                
+                if mx in range (mmx+144+165, mmx+144+165+20) and my in range (mmy-41, mmy-41+20):
+                    mouseoverany = True
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, mmx+144+165, mmy-41, 20, 20)
+                    
+                    # IF CLICKED
+                    if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
+                        
+                        def ee():
+                                    
+                            Pname = ""
+                            Pname = dialogs.PickName("New_File.blend")
+                        
+                            if Pname != "":
+                                
+                                if Pname.endswith(".blend") == False:
+                                    Pname = Pname + ".blend"
+                                
+                                if Pname not in os.listdir(self.screen.path):
+                                    
+                                    fr = open(self.pf+"/py_data/new_file/empty.blend", "r")
+                                    to = open(self.screen.path+"/"+str(Pname), "w")
+                                    to.write(fr.read())
+                                    to.close()
+                                    self.blends = self.loadBlendFiles(self.screen)
+                                    
+                                    
+                                    
+                        glib.timeout_add(10, ee) 
+                        
+                    
+                widget.window.draw_pixbuf(None, self.plusicon, 0, 0, mmx+144+165, mmy-41, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                
+                
                 
                 
                 #### SCROLL OF BLEN FILES ####

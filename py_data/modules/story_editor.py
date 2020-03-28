@@ -2104,7 +2104,7 @@ class story:
                 for b in story.split("\n"):
                     
                     
-                    if len(b) < (Ppart/10):
+                    if len(b) < (Ppart/11):
                     
                         ctx2.set_source_rgb(1,1,1)
                         ctx2.set_font_size(15)
@@ -2118,10 +2118,11 @@ class story:
                         for word in b.split(" "):
                             
                             
-                            if len(newb +  word + " ") < (Ppart/10):
-                                newb = newb + word + " "
+                            if len(newb +  " " + word) < (Ppart/11):
+                                newb = newb + " " + word
                                 #print "Adding to newb"
                             else:
+                                newb = newb + " " + word
                                 ctx2.set_source_rgb(1,1,1)
                                 ctx2.set_font_size(15)
                                 ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
@@ -2131,6 +2132,9 @@ class story:
                                 #print "word = "+word
                                 newb = ""
                                 
+                        #if b.endswith(newb + word):
+                        #    newb = newb + word
+                        
                         ctx2.set_source_rgb(1,1,1)
                         ctx2.set_font_size(15)
                         ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)

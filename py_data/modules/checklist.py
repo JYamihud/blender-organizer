@@ -259,7 +259,7 @@ class checkwindow:
         xgc.line_width = 2
         
         # BACKGROUND COLOR
-        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#868686")) ## CHOSE COLOR
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2b2b2b")) ## CHOSE COLOR
         widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME  
         
         
@@ -305,9 +305,17 @@ class checkwindow:
                 xmove = line.find("[")*20
                 ymove = ind*40+self.offset
                 
-                
+                #every even darker
+                if (ind % 2) == 0 and self.tool != "grab":    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#262626")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, 0, ymove,  w, 39)
                 
                 gpos = ((len(self.grab_text)*12)+35+35)-35
+                
+                
+                
+                
+                
                 
                 
                 ## HIGLIGHT
@@ -316,13 +324,14 @@ class checkwindow:
                         
                         foundhightlight = True
                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9c9c9c")) ## CHOSE COLOR
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384")) ## CHOSE COLOR
                         widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
                         
                         if self.initframe:
                             self.offset = 0-ymove+100
-                    
-                    
+                
+                
+                
                     
                 
                 
@@ -342,7 +351,7 @@ class checkwindow:
                     
                 if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "grab":
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, int(float(mx - gpos)/80)*80, ind*40+self.offset-7,  w, 5)
                     widget.window.draw_line(xgc, int(float(mx - gpos)/80)*80, 0, int(float(mx - gpos)/80)*80, h )
                     
@@ -364,7 +373,7 @@ class checkwindow:
                     
                 if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "select":
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c7c7c")) ## CHOSE COLOR
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
                     
                 
@@ -382,7 +391,7 @@ class checkwindow:
                 
                 ctx.set_source_rgb(1,1,1)
                 if sofar[0]:
-                    ctx.set_source_rgb(0.6,1,0.6)
+                    ctx.set_source_rgb(0.4,0.54,0.85) #395384
                 ctx.set_font_size(20)
                 
                 
@@ -401,7 +410,7 @@ class checkwindow:
                 # IF MOUSE OVER
                 if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+5, line.find("[")*20+5+20) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     
                     # IF CLICKED
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
@@ -433,7 +442,7 @@ class checkwindow:
                 
                 if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+5+self.offset-2, 22, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
@@ -482,7 +491,7 @@ class checkwindow:
                 
                 if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+5+self.offset-2, 22, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
@@ -543,7 +552,7 @@ class checkwindow:
                         
                         if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select":
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                             widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
@@ -563,7 +572,7 @@ class checkwindow:
                 
                 if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist:
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
@@ -678,7 +687,7 @@ class checkwindow:
                 # IF MOUSE OVER
                 if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(w-40, w-40+20) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, w-42, ind*40+5+self.offset-2, 22, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
@@ -721,7 +730,7 @@ class checkwindow:
                 
         if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select":
             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
             widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+5+self.offset-2, 22, 22)
             
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))

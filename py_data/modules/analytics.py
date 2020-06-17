@@ -336,12 +336,13 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             
             ctx = widget.window.cairo_create()
-            ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            #ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            ctx.set_source_rgb(1,1,1)
             
             xgc.line_width = 2
             
             # BACKGROUND COLOR
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#868686")) ## CHOSE COLOR
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3a3a3a")) ## CHOSE COLOR
             widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME            
             
             
@@ -499,7 +500,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     xgc.line_width = 4
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_polygon(xgc, True, [(prevW, prevH),(nowW,nowH),(nowW,h),(prevW,h)])
                     
                     
@@ -535,31 +536,31 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             xgc.line_width = 2
                             widget.window.draw_rectangle(xgc, False , nowW+2, pointshouldbe-30-2, 200+6, 15+4)  
                             xgc.line_width = 4
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
                             widget.window.draw_rectangle(xgc, True , nowW+4, pointshouldbe-30, int(200.0*float(shouldbepercent)/100), 15)
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#a54118"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                             widget.window.draw_rectangle(xgc, True , nowW+4, pointshouldbe-30, int(200.0*float(thepercent)/100), 15)
                             
                             # TEXT THINGY
-                            ctx.set_source_rgb(0,0,0)
+                            ctx.set_source_rgb(1,1,1)
                             ctx.set_font_size(20)
                             ctx.move_to( nowW+5, pointshouldbe-100)
                             ctx.show_text(str(thedate))
                             
-                            ctx.set_source_rgb(.1,.1,.1)
+                            ctx.set_source_rgb(0.8,0.8,0.8)
                             ctx.set_font_size(20)
                             ctx.move_to( nowW+5+int(200.0*float(shouldbepercent)/100), pointshouldbe-70)
                             ctx.show_text(str(shouldbepercent)+"% should be done")
                             
-                            ctx.set_source_rgb(1,0,0)
+                            ctx.set_source_rgb(1,0.2,0.2)
                             ctx.set_font_size(20)
                             ctx.move_to( nowW+5+int(200.0*float(thepercent)/100), pointshouldbe-40)
                             ctx.show_text(str(thepercent)+"% done")
                             
                         # THOSE LITTLE SQUARES TO REPRESEND VERTICES
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#a54118"))    
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#0faa96"))    
                         widget.window.draw_rectangle(xgc, True , prevW-5, prevH-5, 10, 10)    
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#FFF"))    
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3a3a3a"))    
                         widget.window.draw_rectangle(xgc, True , prevW-2, prevH-2, 4, 4) 
                         prevLB = nowW
                     
@@ -590,10 +591,10 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
             widget.window.draw_rectangle(xgc, False, w-260, int(  h /2 / 100 * self.enddateval  )*-1+h-20, 250, 10)
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
             widget.window.draw_rectangle(xgc, True, w-260+2, int(  h /2 / 100 * self.enddateval  )*-1+h-20+2, int(250*self.enddateval/100), 10-4)
             
-            ctx.set_source_rgb(0,0,0)
+            ctx.set_source_rgb(1,1,1)
             ctx.set_font_size(12)
             ctx.move_to( w-260, int(  h /2 / 100 * self.enddateval  )*-1+h-20-10)
             ctx.show_text(str(int(self.enddateval))+"% by the deadline")
@@ -602,8 +603,8 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             # let's get the w of each thing
             
-            wfortext = 580#self.pixbuf.get_width()+80 # for the start of text
-            wstCubes = 560#self.pixbuf.get_width()+60
+            wfortext = 640#self.pixbuf.get_width()+80 # for the start of text
+            wstCubes = 620#self.pixbuf.get_width()+60
             
             
             tboxsH = int(     h/2/5*0.8    )
@@ -611,13 +612,13 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             boxendH = int(      w-30-wstCubes       ) 
             
             # DONE
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
-            widget.window.draw_rectangle(xgc, False, wstCubes, 30, boxendH, tboxsH)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
+            widget.window.draw_rectangle(xgc, True, wstCubes, 30, boxendH, tboxsH)
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#CCC"))
-            widget.window.draw_rectangle(xgc, True, wstCubes+2, 30+2, int((boxendH-2)*(float(projectpercent)/100)), tboxsH-3)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+            widget.window.draw_rectangle(xgc, True, wstCubes, 30, int((boxendH)*(float(projectpercent)/100)), tboxsH)
             
-            ctx.set_source_rgb(0,0,0)
+            ctx.set_source_rgb(1,1,1)
             ctx.set_font_size(tintsH/2)
             ctx.move_to( wfortext, 30+tintsH-tintsH/2)
             ctx.show_text("Done : "+str(projectpercent)+"%")
@@ -625,11 +626,11 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             
             # Time Passed
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
-            widget.window.draw_rectangle(xgc, False, wstCubes, 30+tintsH, boxendH, tboxsH)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
+            widget.window.draw_rectangle(xgc, True, wstCubes, 30+tintsH, boxendH, tboxsH)
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
-            widget.window.draw_rectangle(xgc, True, wstCubes+2, 30+tintsH+2, int((boxendH-2)*(1.0/self.alltime*passed)), tboxsH-3)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+            widget.window.draw_rectangle(xgc, True, wstCubes, 30+tintsH, int((boxendH)*(1.0/self.alltime*passed)), tboxsH)
             
             
             
@@ -637,11 +638,11 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             ctx.show_text("Time Passed : "+str(int(deadline))+"%  "+str(self.alltime-passed)+" days left")
             
             # Checklist
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
-            widget.window.draw_rectangle(xgc, False, wstCubes, 30+tintsH*2, boxendH, tboxsH)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
+            widget.window.draw_rectangle(xgc, True, wstCubes, 30+tintsH*2, boxendH, tboxsH)
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
-            widget.window.draw_rectangle(xgc, True, wstCubes+2, 30+tintsH*2+2, int((boxendH-2)*self.mainchecklist), tboxsH-3)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+            widget.window.draw_rectangle(xgc, True, wstCubes, 30+tintsH*2, int((boxendH)*self.mainchecklist), tboxsH)
             
             
             
@@ -649,11 +650,11 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             ctx.show_text("Checklist : "+str(int(self.mainchecklist*100))+"%")    
             
             # Assets / Scenes
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
-            widget.window.draw_rectangle(xgc, False, wstCubes, 30+tintsH*3, boxendH, tboxsH)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
+            widget.window.draw_rectangle(xgc, True, wstCubes, 30+tintsH*3, boxendH, tboxsH)
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#ff9900"))
-            widget.window.draw_rectangle(xgc, True, wstCubes+2, 30+tintsH*3+2, int((boxendH-2)*(float(assetpercent)/100)), tboxsH-3)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+            widget.window.draw_rectangle(xgc, True, wstCubes, 30+tintsH*3, int((boxendH)*(float(assetpercent)/100)), tboxsH)
             
             
             

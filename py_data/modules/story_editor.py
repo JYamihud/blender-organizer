@@ -206,6 +206,8 @@ class story:
         self.split_event = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/split_event.png")
         self.split_action = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/split_action.png")
         
+        self.node_link = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/node_link.png")
+        
         #start end
         
         self.start_grey = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/start_grey.png")
@@ -312,12 +314,12 @@ class story:
             self.FILE.tree = linkchainpath
             
             ctx = widget.window.cairo_create()
-            ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            #ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             
             xgc.line_width = 2
             
             # BACKGROUND COLOR
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#868686")) ## CHOSE COLOR
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222")) ## CHOSE COLOR
             widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME    
             
             
@@ -372,31 +374,31 @@ class story:
             
             nw = (w-(w)/3)/2
                 
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999")) ## CHOSE COLOR
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#181818")) ## CHOSE COLOR
             
             xgc.line_width = 1
             #widget.window.draw_line(xgc, nw, 0, nw, h) 
             #widget.window.draw_line(xgc, 0, h/2, w, h/2)
             
             #mouse lines
-            widget.window.draw_line(xgc, mx, 0, mx, h) 
-            widget.window.draw_line(xgc, 0, my, w, my)
+            #widget.window.draw_line(xgc, mx, 0, mx, h) 
+            #widget.window.draw_line(xgc, 0, my, w, my)
             
-            ctx2.set_source_rgb(1,1,1)
-            ctx2.set_font_size(10)
-            ctx2.move_to( mx, 65)
-            tmpx = str(float(mx - self.px) / self.sx )
-            ctx2.show_text(tmpx[:tmpx.find(".")+3])
+            #ctx2.set_source_rgb(1,1,1)
+            #ctx2.set_font_size(20)
+            #ctx2.move_to( mx, 65)
+            #tmpx = str(float(mx - self.px) / self.sx )
+            #ctx2.show_text(tmpx[:tmpx.find(".")+3])
             
-            ctx2.set_source_rgb(1,1,1)
-            ctx2.set_font_size(10)
-            ctx2.move_to( 5, my)
-            tmpy = str(int(float(my - self.py) / self.sy ))
-            ctx2.show_text(tmpy[:tmpy.find(".")+3])
+            #ctx2.set_source_rgb(1,1,1)
+            #ctx2.set_font_size(10)
+            #ctx2.move_to( 5, my)
+            #tmpy = str(int(float(my - self.py) / self.sy ))
+            #ctx2.show_text(tmpy[:tmpy.find(".")+3])
             
             
             # grid
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#777"))
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#181818"))
             for y,  i in enumerate(range(int(float(0 - self.py) / self.sy ), int(float(h - self.py) / self.sy ))):
                 
                 widget.window.draw_line(xgc, 0, int(i*self.sy+self.py), w, int(i*self.sy+self.py))
@@ -542,11 +544,12 @@ class story:
                 textPX = len(i[1])*6  + 2
                 
                 xgc.line_width = 1
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#00F"))
+                xgc.set_line_attributes(1, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9b9b9b"))
                 
                 if self.marker_select == ind:  ## IF MARKER SELECTED
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#66F"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9b9b9b"))
                     
                     
                     if 65535 in self.keys: # DELETE BUTTON
@@ -580,7 +583,7 @@ class story:
                 
                 if mx in range(markX-textPX/2, markX+textPX/2) and my in range(h-10, h):    # IF MOUSE OVER
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#66F"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                     
                         
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and self.tool == "select":
@@ -590,13 +593,13 @@ class story:
                         self.event_select = len(self.FILE.events)+2
                         
                         
-                        
+                       
                 
                 
                 widget.window.draw_line(xgc, markX, 0, markX, h)
                 xgc.line_width = 2
                 
-                
+                xgc.set_line_attributes(1, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER) 
                 
                 
                 widget.window.draw_rectangle(xgc, True, markX-textPX/2, h-10, textPX,10)
@@ -669,16 +672,19 @@ class story:
                 
                 
                 ex = int(event[0] * sx + px)
-                ey = int(int(event[2]) * sy + py)
+                ey = int(float(event[2]) * sy + py)
                 esx = int(event[1] * sx )
                 esy = int(sy)
                 
                 name = event[3]
                 story = event[4]
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
-                widget.window.draw_rectangle(xgc, True, ex, ey, esx, int(esy))
-                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3d3d3d"))
+                #widget.window.draw_rectangle(xgc, True, ex, ey, esx+5, int(esy))
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
+                ctx3.rectangle(ex, ey, esx+5, int(esy))
+                ctx3.fill()
                 
                 
                 
@@ -739,11 +745,13 @@ class story:
                         dw = int(   (float(esx) / len(story) *  d2)-( float(esx) / len(story) *  d1 ))
                         
     
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
-                        widget.window.draw_rectangle(xgc, True, ds, ey+3, dw, int(esy)-5)
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#98323c"))
+                        widget.window.draw_rectangle(xgc, True, ds, ey, dw+5, int(esy)/3)
+                        
+                        
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
-                        widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)
+                        #widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)
                         
                         
                         
@@ -802,19 +810,19 @@ class story:
                             tooltip = "event ["+name+"]\nscene["+scnDATA[ind][n][1]+"]"
                             
                             
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#FFF"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#959595"))
                             
                             if self.tool == "arrow":
                                 
                                 scnDATA = self.FILE.get_scenes_data()
                                 
-                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e13d3d"))
                                 
                                 self.arrow_to = [ds, (ey+(ey+esy))/2]
                                 
                                 self.arrow_selection[1] = [ind, scnDATA[ind][n][1]]
                                 
-                            widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)
+                            #widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)
                             
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and self.tool == "select": # IF CLICKED
@@ -890,15 +898,15 @@ class story:
                                 
                                 
                                 
-                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
-                                widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)        
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e13d3d"))
+                                #widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)        
                                 
                                 
                         if n == self.scene_select and self.event_select == ind and self.tool != "arrow":
                             
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#FFF"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#959595"))
                             
-                            widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)
+                            #widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)
                             
                 
                 
@@ -930,14 +938,15 @@ class story:
                     
                     # GUIDING LINES
                     xgc.line_width = 1
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                    widget.window.draw_rectangle(xgc, False, 0, ey, w, esy)
-                    widget.window.draw_rectangle(xgc, False, ex, -2 , esx, h+2)
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                    widget.window.draw_rectangle(xgc, False, ex, ey, esx+5, int(esy))
+                    #widget.window.draw_rectangle(xgc, False, 0, ey, w, esy)
+                    #widget.window.draw_rectangle(xgc, False, ex, -2 , esx, h+2)
                     
                     # select color
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
                     
-                widget.window.draw_rectangle(xgc, False, ex, ey, esx, int(esy))
+                #widget.window.draw_rectangle(xgc, False, ex, ey, esx, int(esy))
                 ctx.set_source_rgb(1,1,1)
                 ctx.set_font_size(10)
                 ctx.move_to( ex+2, ey+10)
@@ -963,22 +972,24 @@ class story:
                     
                     
                     if linkchained:
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#FFF"))        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#959595"))        
                     else:
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#0024ff"))    
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))    
                 else:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
-                xgc.line_width = 4
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e13d3d"))
+                xgc.line_width = 3
                 widget.window.draw_line(xgc, arx, ary, tox, toy)
                 xgc.line_width = 1
                 
                 #TRIANGLES LOL
-                dots = (arx-10, ary+10), (arx, ary), (arx-10, ary-10)
-                widget.window.draw_polygon(xgc, True, dots)
+                #dots = (arx-10, ary+10), (arx, ary), (arx-10, ary-10)
+                #widget.window.draw_polygon(xgc, True, dots)
+                widget.window.draw_pixbuf(None, self.node_link, 0, 0, arx-5, ary-5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                 
-                dots = (tox, toy+10), (tox+10, toy), (tox, toy-10)
-                widget.window.draw_polygon(xgc, True, dots)
                 
+                #dots = (tox, toy+10), (tox+10, toy), (tox, toy-10)
+                #widget.window.draw_polygon(xgc, True, dots)
+                widget.window.draw_pixbuf(None, self.node_link, 0, 0, tox-5, toy-5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                 
                 
                 
@@ -1174,7 +1185,7 @@ class story:
                             
                             # show the selection color around
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
-                            widget.window.draw_rectangle(xgc, False, ex, ey, esx, esy)
+                            widget.window.draw_rectangle(xgc, False, ex, ey, esx+5, esy)
                             
                             
                             if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
@@ -1221,7 +1232,7 @@ class story:
                     
                     # SO FAR THE BUG IS MADE BY THE DELETING OF EVENT WTF
                     try:
-                        self.FILE.events[ind][2] = int(self.FILE.events[ind][2])
+                        self.FILE.events[ind][2] = float(self.FILE.events[ind][2])
                         self.event_move = False
                     except:
                         pass
@@ -1507,7 +1518,7 @@ class story:
                     self.toolactive = False
             
                 xgc.line_width = 1
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#00F"))
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
                 widget.window.draw_line(xgc, mx, 0, mx, h)
                 xgc.line_width = 2
             
@@ -1537,7 +1548,7 @@ class story:
             ### TOP N SIDE PANEL
                 
                 
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
             widget.window.draw_rectangle(xgc, True, 0, 0, w-(w)/3, 50) 
             
                 
@@ -1555,14 +1566,14 @@ class story:
             if 65507 in self.keys and 83 in self.keys:
                 saveshortcut = True
             
-            if mx in range(360+50,400+50) and my in range(5,45):
+            if mx in range(240,280) and my in range(5,45):
                 
                 
                 tooltip = "[ CTRL - S ]\n\nSave File to \n/pln/main.bos"
                 
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                widget.window.draw_rectangle(xgc, True, 260+100+50, 5, 40, 40)
+                widget.window.draw_rectangle(xgc, True, 240, 5, 40, 40)
                 
                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
                     
@@ -1579,7 +1590,7 @@ class story:
                    
                 self.FILE.save(px,py,sx,sy)
             
-            widget.window.draw_pixbuf(None, self.saveicon, 0, 0, 160+150+50+50, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+            widget.window.draw_pixbuf(None, self.saveicon, 0, 0, 240, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
             
             
             # EVENT BUTTON
@@ -1625,16 +1636,16 @@ class story:
                 self.toolactive = False
             
             if self.tool == "event":
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
-                widget.window.draw_rectangle(xgc, True, 210, 5, 40, 40)    
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
+                widget.window.draw_rectangle(xgc, True, 10, 5, 40, 40)    
                 
             
-            if mx in range(210,240) and my in range(5,45):
+            if mx in range(10,50) and my in range(5,45):
                 
                 tooltip = "[ S ]\n\Create a new scene"
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                widget.window.draw_rectangle(xgc, True, 210, 5, 40, 40)
+                widget.window.draw_rectangle(xgc, True, 10, 5, 40, 40)
                 
                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and len(self.FILE.events):
                     
@@ -1660,7 +1671,7 @@ class story:
             
             
              
-            widget.window.draw_pixbuf(None, self.scenceicon, 0, 0, 160+50, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            widget.window.draw_pixbuf(None, self.scenceicon, 0, 0, 10, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
             
             
             
@@ -1673,22 +1684,22 @@ class story:
             
             
             if self.tool == "arrow":
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
-                widget.window.draw_rectangle(xgc, True, 260, 5, 40, 40)
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
+                widget.window.draw_rectangle(xgc, True, 60, 5, 40, 40)
             else:
-                if mx in range(260,290) and my in range(5,45):
+                if mx in range(60,60+40) and my in range(5,45):
                     
                     tooltip = "[ A ]\n\nArrow connection\nto guide editing of the scenes"
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                    widget.window.draw_rectangle(xgc, True, 260, 5, 40, 40)
+                    widget.window.draw_rectangle(xgc, True, 60, 5, 40, 40)
                     
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and len(self.FILE.events):
                         
                         self.tool = "arrow"
                         self.toolactive = False
             
-            widget.window.draw_pixbuf(None, self.cuticon, 0, 0, 160+100, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            widget.window.draw_pixbuf(None, self.cuticon, 0, 0, 60, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
             
             
             # SPLIT EVENT BETWEEN SCENES
@@ -1702,16 +1713,16 @@ class story:
             
             
             if self.tool == "split":
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
-                widget.window.draw_rectangle(xgc, True, 260+50, 5, 40, 40)
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
+                widget.window.draw_rectangle(xgc, True, 110, 5, 40, 40)
             else:
-                if mx in range(310,340) and my in range(5,45):
+                if mx in range(110,150) and my in range(5,45):
                 
                 
                     tooltip = "[ K ]\n\nSplit events between the scenes\nlike a Knife"
                         
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                    widget.window.draw_rectangle(xgc, True, 260+50, 5, 40, 40)
+                    widget.window.draw_rectangle(xgc, True, 110, 5, 40, 40)
                     
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
                         
@@ -1719,7 +1730,7 @@ class story:
                         self.toolactive = False
                     
                     
-            widget.window.draw_pixbuf(None, self.split_event, 0, 0, 160+150, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            widget.window.draw_pixbuf(None, self.split_event, 0, 0, 110, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
             
             
             
@@ -1733,15 +1744,15 @@ class story:
             
             
             if self.tool == "marker":
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
-                widget.window.draw_rectangle(xgc, True, 260+50+50, 5, 40, 40)
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
+                widget.window.draw_rectangle(xgc, True, 160, 5, 40, 40)
             else:
-                if mx in range(310+50,340+50) and my in range(5,45):
+                if mx in range(160,200) and my in range(5,45):
                     
                     tooltip = "[ M ]\n\nMark an important timepoint"
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                    widget.window.draw_rectangle(xgc, True, 260+50+50, 5, 40, 40)
+                    widget.window.draw_rectangle(xgc, True, 160, 5, 40, 40)
                     
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
                         
@@ -1758,7 +1769,7 @@ class story:
             
             
             
-            widget.window.draw_pixbuf(None, self.markericon, 0, 0, 160+150+50, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            widget.window.draw_pixbuf(None, self.markericon, 0, 0, 160, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
             
             
             
@@ -1769,15 +1780,15 @@ class story:
             
             
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8c8c8c"))
-            widget.window.draw_rectangle(xgc, False, 260+150+50, 5, w-(w)/3-110-(260+150+100), 40)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
+            widget.window.draw_rectangle(xgc, True, 400, 5, w-(w)/3-110-(450), 40)
             
-            
-            widget.window.draw_rectangle(xgc, True, 260+150+50, 5, int((w-(w)/3-110-(260+150+100))*self.scnPERCENT), 40)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+            widget.window.draw_rectangle(xgc, True, 400, 5, int((w-(w)/3-110-(450))*self.scnPERCENT), 40)
             
             ctx.set_source_rgb(1,1,1)
-            ctx.set_font_size(15)
-            ctx.move_to( 260+150+50, 20)
+            ctx.set_font_size(20)
+            ctx.move_to( 320, 32)
             ctx.show_text(str(int(self.scnPERCENT*100))+"%")
             
             
@@ -1967,7 +1978,7 @@ class story:
             
             
             
-            # DELETE EVENT SHOR KEY #
+            # DELETE EVENT SHORT KEY #
             
             allowdelete = False
             if not self.deletelastframe:
@@ -2008,7 +2019,7 @@ class story:
             
             
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#333333"))
             widget.window.draw_rectangle(xgc, True, w-(w)/3, 0, (w)/3, h) 
             
             
@@ -2036,16 +2047,16 @@ class story:
            
            
            
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#494949"))   #7e5349
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))   #7e5349
             widget.window.draw_rectangle(xgc, True, Pstart, 220, Ppart, h-220)
                     
                     
             #mark for faster moves
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4F4F4F"))
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
             widget.window.draw_rectangle(xgc, True, w-50, 220, 200, h-220)
             
             #mark for faster moves
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#575757"))
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#292929"))
             widget.window.draw_rectangle(xgc, True, w-50, 220, 200, 50)
             
             widget.window.draw_rectangle(xgc, True, w-50, h-50, 200, 50)
@@ -2381,7 +2392,7 @@ class story:
                         
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/storyboard")) > 0:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#757533"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
                             widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                             shotstatussidepanel = 1
                         # MOUSE OVER
@@ -2417,7 +2428,7 @@ class story:
                         # opengl
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/opengl")) > 0:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#757533"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
                             widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                             shotstatussidepanel = 0
                         
@@ -2455,7 +2466,7 @@ class story:
                         
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/test_rnd")) > 0:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#333388"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
                             widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                             shotstatussidepanel = 2
                         # MOUSE OVER
@@ -2490,7 +2501,7 @@ class story:
                         # rendered
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/rendered")) > 0:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#338833"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649")) 
                             widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                             shotstatussidepanel = 3
                             
@@ -3071,7 +3082,7 @@ class story:
             
             
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#292929"))
             widget.window.draw_rectangle(xgc, True, w-50, RulerY, 50, leng)
             
             
@@ -3122,7 +3133,7 @@ class story:
             
             
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#333333"))
             widget.window.draw_rectangle(xgc, True, Pstart, 0, Ppart, 220) ##################
             
             # loading selected event to the side panel
@@ -3174,7 +3185,7 @@ class story:
                     
                     
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#757575"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
                     widget.window.draw_rectangle(xgc, True, Pstart, 0, Ppart, 220)
                     
                     # IF CLICKED

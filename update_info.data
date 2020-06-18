@@ -1,6 +1,9 @@
 VERSION 4.22
 FILE update_info.data
 FILE py_data/modules/assets.py
+FILE py_data/modules/render.py
+FILE py_data/modules/render_lists.py
+FILE py_data/modules/update_window.py
 FILE py_data/modules/analytics.py
 FILE py_data/modules/checklist.py
 FILE py_data/modules/fileformats.py
@@ -39,6 +42,21 @@ FILE py_data/icons/split_event.png
 FILE py_data/icons/stats.png
 FILE py_data/icons/sync.png
 FILE py_data/icons/update.png
+FILE py_data/icons/chr_asset_done.png
+FILE py_data/icons/chr_asset_undone.png
+FILE py_data/icons/chr_prev.png
+FILE py_data/icons/loc_asset_done.png
+FILE py_data/icons/loc_asset_undone.png
+FILE py_data/icons/loc_prev.png
+FILE py_data/icons/no_frame.png
+FILE py_data/icons/obj_asset_done.png
+FILE py_data/icons/obj_asset_undone.png
+FILE py_data/icons/obj_prev.png
+FILE py_data/icons/scn_asset_done.png
+FILE py_data/icons/scn_asset_undone.png
+FILE py_data/icons/veh_asset_done.png
+FILE py_data/icons/veh_asset_undone.png
+FILE py_data/icons/veh_prev.png
 UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.22
 
 VERSION 4.21

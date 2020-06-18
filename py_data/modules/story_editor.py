@@ -180,7 +180,7 @@ class story:
         self.move_marker = False
         
         
-        self.imageselected = 0
+        self.imageselected = -1
         
         
         
@@ -655,6 +655,159 @@ class story:
                 
             
             
+            ######## SHOWING DRAGGED IMAGES ######
+            
+            
+            for count, image in enumerate(self.FILE.images):
+                
+               
+                
+                imX, imY, mode, url, thumb, pixthumb = image
+                
+                
+                
+                
+                imX = int(imX*self.sx+self.px)
+                imY = int(imY*self.sy+self.py)
+                piX = 200
+                piY = 200
+                
+                if pixthumb == "NO PIXBUF" and imX in range(-200, w/3*2) and imY in range(0, h):
+                    try:
+                        self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
+                    except:
+                        
+                        # If the thumbnail isn't there try to recover it
+                        try:
+                            if mode == "ABSOLUTE":
+                                u = url
+                            if mode == "RELATIVE":
+                                u = self.pf+url
+                            
+                            
+                            if not os.path.exists(self.pf+"/pln/thumbs/"):
+                                os.makedirs(self.pf+"/pln/thumbs/")
+                        
+                        
+                            #chosing a random name for the thumb
+                            rndname = ""
+                            rndchar = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+                            while os.path.exists(self.pf+"/pln/thumbs/"+rndname+".png") or rndname == "":
+                                rndname = ""
+                                for l in range(20):
+                                    rndname = rndname + random.choice(rndchar)
+                                
+                            
+                            thumbnailer.thumbnail
+                            
+                            fromr  = open(thumbnailer.thumbnail(u, x=200, y=200), "r")
+                            saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
+                            saveto.write(fromr.read())
+                            saveto.close()
+                            
+                            self.FILE.images[count][-2] = rndname
+                            thumb = rndname
+                            self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
+                        
+                        except:
+                            pass
+                    
+                try:
+                    piX = int(pixthumb.get_width()*self.sx*(self.sy/20))
+                    piY = int(pixthumb.get_height()*self.sx*(self.sy/20))
+                except:
+                    pass    
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
+                
+                if mode == "ABSOLUTE":
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("red"))
+                
+                if mx in range(imX, imX+piX) and my in range(imY, imY+piY) and mx in range(0, w-w/3):
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                    
+                    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                    
+                    
+                    
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                        
+                        if mode == "ABSOLUTE":
+                            os.system("xdg-open "+url)
+                        elif mode == "RELATIVE":
+                            os.system("xdg-open "+self.pf+url)
+                elif mx in range(imX, imX+piX) and my in range(imY-22, imY) and mx in range(0, w-w/3):
+                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                     widget.window.draw_rectangle(xgc, True, imX-3, imY-23, piX+6, piY+26)
+                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
+                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                        self.imageselected = count
+                               
+                            
+                if "GDK_BUTTON1" in str(fx) and self.win.is_active() and self.imageselected == count:
+                    
+                    self.FILE.images[count][0] = self.FILE.images[count][0] + ((mx-self.mpx ) / sx)
+                    self.FILE.images[count][1] = self.FILE.images[count][1] + ((my-self.mpy ) / sy)
+                    
+                if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf):
+                    self.imageselected = -1
+                    
+                
+                
+                
+                
+                
+                if mx in range(imX, imX+piX) and my in range(imY-22, imY+piY):
+                     
+                    # DELETE EVENT SHOR KEY #
+                    
+                    allowdelete = False
+                    if not self.deletelastframe:
+                        allowdelete = True
+                    
+                    
+                    if 65535 in self.keys: #and allowdelete
+                        
+                        
+                        
+                        if self.event_select < len(self.FILE.events)  and allowdelete  and self.tool == "select":
+                            
+                            del self.FILE.images[count]
+                            try:
+                                os.remove(self.pf+"/pln/thumbs/"+thumb+".png")
+                            except:
+                                print "WASN'T ABLE TO REMOVE"
+                            
+                            self.event_select = -1
+                            self.deletelastframe = True
+                            
+                    else:
+                        self.deletelastframe = False      
+                
+                widget.window.draw_rectangle(xgc, True, imX-2, imY-22, piX+4, piY+24)
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#F0F"))
+                widget.window.draw_rectangle(xgc, True, imX, imY, piX, piY)
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8a7d2c"))
+                widget.window.draw_rectangle(xgc, True, imX-2, imY-22, piX+4, 20)
+                
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(10)
+                ctx.move_to( imX, imY-10)
+                ctx.show_text(url)
+                
+                
+                if imX in range(-piX, w/3*2) and imY in range(-piY, h):
+                    try:
+                        
+                        pixthumb = pixthumb.scale_simple(piX, piY, gtk.gdk.INTERP_NEAREST)
+                        
+                        widget.window.draw_pixbuf(None, pixthumb, 0, 0, imX, imY , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                    except:
+                        pass
+            
+            
+            
+            
             ################# EVENT TOOL ##################
             
             
@@ -685,7 +838,10 @@ class story:
                 ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
                 ctx3.rectangle(ex, ey, esx+5, int(esy))
                 ctx3.fill()
+                #526969
                 
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#526969"))
+                widget.window.draw_rectangle(xgc, True, ex, ey, esx+5, int(esy)/3)
                 
                 
                 ############## SHOWING THE SCENES IN THE EVENT #############
@@ -745,7 +901,7 @@ class story:
                         dw = int(   (float(esx) / len(story) *  d2)-( float(esx) / len(story) *  d1 ))
                         
     
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#98323c"))
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4987af"))
                         widget.window.draw_rectangle(xgc, True, ds, ey, dw+5, int(esy)/3)
                         
                         
@@ -764,12 +920,12 @@ class story:
                             
                             # start end arrows
                             if arrow[0][0] == -1:
-                                self.arrows_output_dots[arrowN][0] = [30,80]
+                                self.arrows_output_dots[arrowN][0] = [60,80]
                                 
                                 start_active = True
                                 
                             if arrow[1][0] == -1:
-                                self.arrows_output_dots[arrowN][1] = [w-(w)/3-30,h-100]
+                                self.arrows_output_dots[arrowN][1] = [w-(w)/3-60,h-100]
                                 
                                 end_active = True
                             
@@ -1006,144 +1162,6 @@ class story:
             
             
             
-            
-            ######## SHOWING DRAGGED IMAGES ######
-            
-            
-            for count, image in enumerate(self.FILE.images):
-                
-               
-                
-                imX, imY, mode, url, thumb, pixthumb = image
-                
-                
-                
-                
-                imX = int(imX*self.sx+self.px)
-                imY = int(imY*self.sy+self.py)
-                piX = 200
-                piY = 200
-                
-                if pixthumb == "NO PIXBUF" and imX in range(-200, w/3*2) and imY in range(0, h):
-                    try:
-                        self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
-                    except:
-                        
-                        # If the thumbnail isn't there try to recover it
-                        try:
-                            if mode == "ABSOLUTE":
-                                u = url
-                            if mode == "RELATIVE":
-                                u = self.pf+url
-                            
-                            
-                            if not os.path.exists(self.pf+"/pln/thumbs/"):
-                                os.makedirs(self.pf+"/pln/thumbs/")
-                        
-                        
-                            #chosing a random name for the thumb
-                            rndname = ""
-                            rndchar = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
-                            while os.path.exists(self.pf+"/pln/thumbs/"+rndname+".png") or rndname == "":
-                                rndname = ""
-                                for l in range(20):
-                                    rndname = rndname + random.choice(rndchar)
-                                
-                            
-                            thumbnailer.thumbnail
-                            
-                            fromr  = open(thumbnailer.thumbnail(u, x=200, y=200), "r")
-                            saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
-                            saveto.write(fromr.read())
-                            saveto.close()
-                            
-                            self.FILE.images[count][-2] = rndname
-                            thumb = rndname
-                            self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
-                        
-                        except:
-                            pass
-                    
-                try:
-                    piX = int(pixthumb.get_width()*self.sx*(self.sy/20))
-                    piY = int(pixthumb.get_height()*self.sx*(self.sy/20))
-                except:
-                    pass    
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
-                
-                if mode == "ABSOLUTE":
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("red"))
-                
-                if mx in range(imX, imX+piX) and my in range(imY, imY+piY) and mx in range(0, w-w/3):
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
-                    
-                    
-                    
-                    
-                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
-                        
-                        if mode == "ABSOLUTE":
-                            os.system("xdg-open "+url)
-                        elif mode == "RELATIVE":
-                            os.system("xdg-open "+self.pf+url)
-                elif mx in range(imX, imX+piX) and my in range(imY-22, imY) and mx in range(0, w-w/3):
-                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
-                        self.imageselected = count
-                               
-                            
-                if "GDK_BUTTON1" in str(fx) and self.win.is_active() and self.imageselected == count:
-                    
-                    self.FILE.images[count][0] = self.FILE.images[count][0] + ((mx-self.mpx ) / sx)
-                    self.FILE.images[count][1] = self.FILE.images[count][1] + ((my-self.mpy ) / sy)
-                    
-                if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf):
-                    self.imageselected = -1
-                    
-                
-                
-                
-                
-                
-                if mx in range(imX, imX+piX) and my in range(imY-22, imY+piY):
-                     
-                    # DELETE EVENT SHOR KEY #
-                    
-                    allowdelete = False
-                    if not self.deletelastframe:
-                        allowdelete = True
-                    
-                    
-                    if 65535 in self.keys: #and allowdelete
-                        
-                        
-                        
-                        if self.event_select < len(self.FILE.events)  and allowdelete  and self.tool == "select":
-                            
-                            del self.FILE.images[count]
-                            try:
-                                os.remove(self.pf+"/pln/thumbs/"+thumb+".png")
-                            except:
-                                print "WASN'T ABLE TO REMOVE"
-                            
-                            self.event_select = -1
-                            self.deletelastframe = True
-                            
-                    else:
-                        self.deletelastframe = False      
-                
-                widget.window.draw_rectangle(xgc, True, imX-2, imY-22, piX+4, piY+24)
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#F0F"))
-                widget.window.draw_rectangle(xgc, True, imX, imY, piX, piY)
-                
-                if imX in range(-piX, w/3*2) and imY in range(-piY, h):
-                    try:
-                        
-                        pixthumb = pixthumb.scale_simple(piX, piY, gtk.gdk.INTERP_NEAREST)
-                        
-                        widget.window.draw_pixbuf(None, pixthumb, 0, 0, imX, imY , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-                    except:
-                        pass
             
             
             
@@ -1642,7 +1660,7 @@ class story:
             
             if mx in range(10,50) and my in range(5,45):
                 
-                tooltip = "[ S ]\n\Create a new scene"
+                tooltip = "[ S ]\nCreate a new scene"
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
                 widget.window.draw_rectangle(xgc, True, 10, 5, 40, 40)
@@ -1868,7 +1886,7 @@ class story:
                 
                 
                 else:
-                    tooltip = "Connect arrows [ A ]\nfrom Start to End circles\nthrough all the movie scenes\nif this icon will glow\nyou will be able to\nview full script"
+                    tooltip = "Connect arrows [ A ]\nfrom Start to End nodes\nthrough all the movie scenes\nif this icon will glow\nyou will be able to\nview full script"
                     
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
                 widget.window.draw_rectangle(xgc, True, w-(w)/3-50, 5, 40, 40)
@@ -1888,43 +1906,95 @@ class story:
             
             
             #start
+            #if mx in range(10, 50) and my in range(60, 110):
+            #    tooltip = "Start of the film\n\n Connect to the first scene\nwith the arrow tool [ A ]"
+            #    widget.window.draw_pixbuf(None, self.start_mo, 0, 0, 10, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            #else:
+            #    
+            #    if start_active:
+            #        widget.window.draw_pixbuf(None, self.start_active, 0, 0, 10, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)                  
+            #    else:
+            #        widget.window.draw_pixbuf(None, self.start_grey, 0, 0, 10, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            # 
+            
+            
+            # THE NEW START WIDGET THAT LOOKS LIKE A NODE
+            
+            #ctx3 = widget.window.cairo_create()
+            ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
+            ctx3.rectangle(5, 55, 50, int(esy))
+            ctx3.fill()
+            
+            # TOP PART
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9e343e"))
+            widget.window.draw_rectangle(xgc, True, 5,55,50,int(esy)/3)
+            
+            #TEXT
+            ctx.set_source_rgb(1,1,1)
+            ctx.set_font_size(10)
+            ctx.move_to( 10, 67)
+            ctx.show_text("Start")
+            
             if mx in range(10, 50) and my in range(60, 110):
                 tooltip = "Start of the film\n\n Connect to the first scene\nwith the arrow tool [ A ]"
-                widget.window.draw_pixbuf(None, self.start_mo, 0, 0, 10, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-            else:
-                
-                if start_active:
-                    widget.window.draw_pixbuf(None, self.start_active, 0, 0, 10, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)                  
-                else:
-                    widget.window.draw_pixbuf(None, self.start_grey, 0, 0, 10, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                widget.window.draw_rectangle(xgc, False, 5,55,50,int(esy))
+            
+            
             
             if tx in range(10, 50) and ty in range(60, 110):    
-                if self.tool == "arrow" and "GDK_BUTTON1" in str(fx):
-                
-                    self.arrow_selection[0] = [-1,"start"]
+               if self.tool == "arrow" and "GDK_BUTTON1" in str(fx):
+               
+                   self.arrow_selection[0] = [-1,"start"]
                 
                 
                 
             
             
             
+            
+            
+            
+            
+            
+            
+            # THE NEW END WIDGET THAT LOOKS LIKE A NODE
+            
+            #ctx3 = widget.window.cairo_create()
+            ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
+            ctx3.rectangle(w-(w)/3-55, h-120, 50, int(esy))
+            ctx3.fill()
+            
+            # TOP PART
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9e343e"))
+            widget.window.draw_rectangle(xgc, True, w-(w)/3-55,h-120,50,int(esy)/3)
+            
+            #TEXT
+            ctx.set_source_rgb(1,1,1)
+            ctx.set_font_size(10)
+            ctx.move_to( w-(w)/3-50, h-110)
+            ctx.show_text("End")
             
             
             #end
             if mx in range(w-(w)/3-50, w-(w)/3-10) and my in range(h-120, h-120+110):
                 tooltip = "End of the film\n\n Connet the ending scene to it\nwith the arrow tool [ A ]"
-                widget.window.draw_pixbuf(None, self.end_mo, 0, 0, w-(w)/3-50, h-120 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                #widget.window.draw_pixbuf(None, self.end_mo, 0, 0, w-(w)/3-50, h-120 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                widget.window.draw_rectangle(xgc, False, w-(w)/3-55,h-120,50,int(esy))
+                
+                
                 
                 
                 if self.tool == "arrow" and "GDK_BUTTON1" in str(fx):
                 
                     self.arrow_selection[1] = [-1,"end"]
                 
-            else:
-                if end_active:
-                    widget.window.draw_pixbuf(None, self.end_active, 0, 0, w-(w)/3-50, h-120 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-                else:
-                    widget.window.draw_pixbuf(None, self.end_grey, 0, 0, w-(w)/3-50, h-120 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            #else:
+            #    if end_active:
+            #        widget.window.draw_pixbuf(None, self.end_active, 0, 0, w-(w)/3-50, h-120 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            #    else:
+            #        widget.window.draw_pixbuf(None, self.end_grey, 0, 0, w-(w)/3-50, h-120 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
             
             
             

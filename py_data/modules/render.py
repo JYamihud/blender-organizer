@@ -90,7 +90,7 @@ class draw:
         
         
         self.preview = [None, 0]
-        
+        self.no_frame = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/no_frame.png")
         
         
         def framegraph(widget, event):
@@ -106,13 +106,23 @@ class draw:
             self.winactive = self.win.is_active()
             
             ctx = widget.window.cairo_create()
-            ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            #ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            ctx.set_source_rgb(1,1,1)
             
             xgc.line_width = 2
             
             # BACKGROUND COLOR
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#868686")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME    
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c")) ## CHOSE COLOR
+            widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME   
+            
+            #Top Line
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#424242")) ## CHOSE COLOR
+            widget.window.draw_rectangle(xgc, True, 0, 0, w, 30)  ## FILL FRAME   
+            
+            
+            
+            
+             
             
             # MAIN TRY BECAUSE SOMETIMES UNEXPECTED STUFF HAPPENS
             
@@ -169,14 +179,14 @@ class draw:
                         pass
                     
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9F9F9F")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, False, 0, 30, int(w*PS), 20)  ## FILL FRAME  
+                #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1d1d1d")) ## CHOSE COLOR
+                #widget.window.draw_rectangle(xgc, True, 0, 30, int(w*PS), 20)  ## FILL FRAME  
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9F9F9F")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 0, 30, int(float(intile)*SS)+int(w*PS)-int(float(w)/float(tiles)), 20)  ## FILL FRAME  
+                #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#547ab5")) ## CHOSE COLOR
+                #widget.window.draw_rectangle(xgc, True, 0, 30, int(float(intile)*SS)+int(w*PS)-int(float(w)/float(tiles)), 20)  ## FILL FRAME  
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 0, 30, int(w*DN), 20)  ## FILL FRAME
+                #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
+                #widget.window.draw_rectangle(xgc, True, 0, 30, int(w*DN), 20)  ## FILL FRAME
                 
                 
                 if self.process.poll() != None:
@@ -224,13 +234,13 @@ class draw:
                 
                 PWX = 220
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 20-5, 60, PWX-20, 110)  ## FILL FRAME    
+                #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
+                #widget.window.draw_rectangle(xgc, True, 20-5, 60, PWX-20, 110)  ## FILL FRAME    
                 
-               
+                widget.window.draw_pixbuf(None, self.no_frame, 0, 0, 15, 60 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                 
                 
-                
+                #widget.window.draw_pixbuf(None, self.no_frame, 0, 0, 220, 60, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                 
                 
                 
@@ -291,9 +301,10 @@ class draw:
                     
                     if divided > 5: 
                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8f8f8f")) ## CHOSE COLOR
-                        widget.window.draw_rectangle(xgc, False, int(divided*(frame-self.START))+PWX, 60, int(divided)+1, 100)
-                    
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START))+PWX, 60, int(divided)+1, 100)
+                        #widget.window.draw_pixbuf(None, self.no_frame, 0, 0, int(divided*(frame-self.START))+PWX, 60 , int(round(divided)), 100, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
                     THIS = LARGEST
                     
                     for i in read:
@@ -311,10 +322,11 @@ class draw:
                                 
                                 #DONEFRAMS = DONEFRAMS + 1
                                 
-                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6f6f6f")) ## CHOSE COLOR
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2b2b2b")) ## CHOSE COLOR
                                 widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START))+PWX, 60+100-TY, int(divided)+1, TY)
-                    
-                        
+                                
+                                
+                                
                         except:
                             pass
                     
@@ -331,11 +343,29 @@ class draw:
                         
                         TY = int(100* (float(seconds) / float(LARGEST)) )
                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16")) ## CHOSE COLOR
-                        widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START))+PWX, 60+100-TY, int(divided), TY)
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START))+PWX+1, 60+100-TY-1, int(divided)-1, TY)
+                        
+                        
+                        #blender style crosses during rendering
+                                
+                        #ff8500
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#ff8500"))
+                        xgc.line_width = 1
+                                
+                        
+                        widget.window.draw_line(xgc, int(divided*(frame-self.START))+PWX, 60, int(divided*(frame-self.START))+PWX+5, 60)
+                        widget.window.draw_line(xgc, int(divided*(frame-self.START))+PWX, 60, int(divided*(frame-self.START))+PWX, 60+5)
                     
-                    
-                    
+                        widget.window.draw_line(xgc, int(divided*(frame-self.START))+PWX+int(divided)-1, 60, int(divided*(frame-self.START))+PWX+int(divided)-6, 60)
+                        widget.window.draw_line(xgc, int(divided*(frame-self.START))+PWX+int(divided)-1, 60, int(divided*(frame-self.START))+PWX+int(divided)-1, 60+5)
+                        
+                        widget.window.draw_line(xgc, int(divided*(frame-self.START))+PWX, 160, int(divided*(frame-self.START))+PWX+5, 160)
+                        widget.window.draw_line(xgc, int(divided*(frame-self.START))+PWX, 160, int(divided*(frame-self.START))+PWX, 160-5)
+                        
+                        widget.window.draw_line(xgc, int(divided*(frame-self.START))+PWX+int(divided)-1, 160, int(divided*(frame-self.START))+PWX+int(divided)-6, 160)
+                        widget.window.draw_line(xgc, int(divided*(frame-self.START))+PWX+int(divided)-1, 160, int(divided*(frame-self.START))+PWX+int(divided)-1, 160-5)
+                        
                     
                     
                     TY = int(100* (float(THIS) / float(LARGEST)) )
@@ -345,14 +375,14 @@ class draw:
                         
                         DONEFRAMS = DONEFRAMS + 1
                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) ## CHOSE COLOR
                         widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START))+PWX, 60+100-TY, int(divided)+1, TY)
                         
                         
                         
                         if mx in range(int(divided*(frame-self.START)+PWX), int(divided*(frame-self.START)+PWX) + int(divided)+1 ) and my in range(60, 160) and frameselectstill:  
                             frameselectstill = False
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16")) ## CHOSE COLOR
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384")) ## CHOSE COLOR
                             widget.window.draw_rectangle(xgc, True, int(divided*(frame-self.START)+PWX), 60+100-TY, int(divided)+1, TY)
                             
                             

@@ -150,7 +150,7 @@ class main:
         xgc.line_width = 2
         
         # BACKGROUND COLOR
-        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#868686")) ## CHOSE COLOR
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) ## CHOSE COLOR
         widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME  
         
         widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW))
@@ -218,7 +218,7 @@ class main:
             
             # RLIST FRAME
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) ## CHOSE COLOR
             widget.window.draw_rectangle(xgc, True, 0, (listY*ind)+self.mainscroll+20, w, listY-20)
             
             

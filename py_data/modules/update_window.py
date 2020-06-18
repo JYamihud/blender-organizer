@@ -113,7 +113,7 @@ class main:
         xgc.line_width = 2
         
         # BACKGROUND COLOR
-        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#868686")) ## CHOSE COLOR
+        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) ## CHOSE COLOR
         widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME  
         
         

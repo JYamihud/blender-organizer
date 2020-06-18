@@ -373,7 +373,7 @@ class draw_assets:
                     
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#727272"))
-                    widget.window.draw_rectangle(xgc, True, nx+50, ny+50, 100, 100)
+                    #widget.window.draw_rectangle(xgc, True, nx+50, ny+50, 100, 100)
                     
                     
                     widget.window.draw_pixbuf(None, i.pic, 0, 0, nx+50+xoffset, ny+50+yoffset, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
@@ -1255,7 +1255,7 @@ class draw_assets:
             
             renders = []
             
-            for FILE in os.walk(self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+part).next()[2]:
+            for FILE in sorted(os.walk(self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+part).next()[2]):
                 
                 # getting photos, images
                 

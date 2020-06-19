@@ -1129,10 +1129,10 @@ class editPreview:
             
             # OPENING AND COPEING
             
-            if get.lower().endswith(".jpg") or get.lower().endswith(".png") and ifol+"/renders/Preview.jpg" not in get:
+            if get.lower().endswith(".jpg") or get.lower().endswith(".png") and ifol+"/renders/Preview.png" not in get:
                 source = open(get, "r")
                 
-                to = open(ifol+"/renders/Preview.jpg", "w")
+                to = open(ifol+"/renders/Preview.png", "w")
                 to.write(source.read())
                 to.close()
             

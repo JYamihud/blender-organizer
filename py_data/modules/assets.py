@@ -95,13 +95,21 @@ class asset:
         
         # getting the icon
         
+        if os.path.exists(self.path+"/renders/Preview.png"):
+            self.pic = thumbnailer.thumbnail(self.path+"/renders/Preview.png", 182, 124)
+            self.pic = gtk.gdk.pixbuf_new_from_file(self.pic)
+            self.preview = thumbnailer.thumbnail(self.path+"/renders/Preview.png", 400, 400)
+            self.preview = gtk.gdk.pixbuf_new_from_file(self.preview)
         
-        if os.path.exists(self.path+"/renders/Preview.jpg"):
-            self.pic = thumbnailer.thumbnail(self.path+"/renders/Preview.jpg", 100, 100)
+        elif os.path.exists(self.path+"/renders/Preview.jpg"):
+        
+            self.pic = thumbnailer.thumbnail(self.path+"/renders/Preview.jpg", 182, 124)
             self.pic = gtk.gdk.pixbuf_new_from_file(self.pic)
             self.preview = thumbnailer.thumbnail(self.path+"/renders/Preview.jpg", 400, 400)
             self.preview = gtk.gdk.pixbuf_new_from_file(self.preview)
-            
+        
+        
+        
         else:
             self.pic = self.pf+"/py_data/icons/"+CUR+"_prev.png"
             self.pic = gtk.gdk.pixbuf_new_from_file(self.pic)
@@ -199,6 +207,7 @@ class draw_assets:
         self.blendericon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blender.png")
         self.blendfileicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blendfile_big.png")
         self.okicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/ok.png")
+        self.refresh = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/refresh.png")
         self.plusicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
         self.fade_01 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_01.png")
         self.fade_02 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_02.png")
@@ -553,6 +562,8 @@ class draw_assets:
                 mmx = self.screen.preview.get_width()
                 mmy = self.screen.preview.get_height()
                 
+                if mmy < 120:
+                    mmy = 120
                 
                 
                 
@@ -570,11 +581,12 @@ class draw_assets:
                 
                 
                 
+                # I GONNA REORDER THEM BECAUSE AHHH
+                #rawnames = ["Renders", "Textures", "References"]
+                #rawdirs = ["renders", "tex","reference"]
                 
-                rawnames = ["Renders", "Textures", "References"]
-                rawdirs = ["renders", "tex","reference"]
-                
-                
+                rawnames = ["References", "Textures", "Renders"]
+                rawdirs = ["reference", "tex","renders"]
                 
                         
                 
@@ -591,7 +603,7 @@ class draw_assets:
                 raw_true_w = (w / raws)
                 raw_w = (w / raws) - (margin * 2) # getting the width of the raw
                 
-                raw_start = mmy + 170 # starting height
+                raw_start = mmy + 145 # starting height
                 raw_h = h - raw_start # height
                 
                 
@@ -600,9 +612,23 @@ class draw_assets:
                     # a little more math
                     the_raw_w_start = raw_true_w*raw+10
                     
+                    
+                    #an attemt to bring Tetures and references up a little
+                    if raw != 0 and (mmx+100) < the_raw_w_start:
+                        raw_start = 105 + 140
+                        raw_h = h - raw_start
+                    
+                    
+                    
+                    
+                    
+                    
                     # raws frames
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, the_raw_w_start , raw_start, raw_w, raw_h)
+                    
+                    
+                    
                     
                     
                     ## IMAGES ##
@@ -816,8 +842,8 @@ class draw_assets:
                 
                 ######### BLEND FILES
                 
-                
-                
+                tmp_mmy = mmy # I'm Redesigning the UI and trying to bring the blendfiles up.
+                mmy = 105 # comment this setting to see how low they were originally
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) ## CHOSE COLOR
                 widget.window.draw_rectangle(xgc, True, mmx-15, mmy-45, w, 100)
@@ -994,10 +1020,14 @@ class draw_assets:
                 
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2b2b2b")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 0,50, mmx+100, mmy+80) 
+                widget.window.draw_rectangle(xgc, True, 0,50, mmx+100, mmy+50) 
+                
+                
+                
+                
                 
                 ### MAIN MENU  ####
-                
+                mmy = tmp_mmy
                 
                 
                 
@@ -1128,7 +1158,7 @@ class draw_assets:
                             self.blends = self.loadBlendFiles(self.screen)
                             self.iteminfo = self.loaditem(self.screen)
                             
-                            self.screen.preview = thumbnailer.thumbnail(self.screen.path+"/renders/Preview.jpg", 400, 400)
+                            self.screen.preview = thumbnailer.thumbnail(self.screen.path+"/renders/Preview.png", 400, 400)
                             self.screen.preview = gtk.gdk.pixbuf_new_from_file(self.screen.preview)
                             
                             
@@ -1137,6 +1167,32 @@ class draw_assets:
                         glib.timeout_add(10, dobutton)
                     
                 widget.window.draw_pixbuf(None, self.editicon, 0, 0, mmx+60, 80+mmy-27, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                
+                # Refresh
+                #mouse over
+                if mx in range(mmx+60, mmx+60+22) and my in range(80+mmy-27-27, 80+mmy-27-5):
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                    widget.window.draw_rectangle(xgc, True, mmx+60, 80+mmy-27-27, 22, 22)
+                    
+                    # TOOLTIP
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))   
+                    widget.window.draw_rectangle(xgc, True, mx+20, my+5, 200, 20)
+                    ctx.set_font_size(15)
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.move_to( mx+30, my+20)
+                    ctx.show_text("Refresh")
+                    
+                    # IF CLICKED
+                    if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
+                        
+                        self.blends = self.loadBlendFiles(self.screen)
+                        self.iteminfo = self.loaditem(self.screen)
+                        #self.screen.preview = gtk.gdk.pixbuf_new_from_file(self.screen.preview)
+                        self.screen.percent = checklist.partcalculate(checklist.openckecklist(self.screen.path+"/asset.progress"))
+                    
+                widget.window.draw_pixbuf(None, self.refresh, 0, 0, mmx+60, 80+mmy-27-27, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
                 
                 
                 
@@ -1157,7 +1213,7 @@ class draw_assets:
                 
                 
                 
-                # BIG PERCENTAGE BAR FOR THE ENTIRE CATEGORY
+                # BIG PERCENTAGE BAR 
                 ctx.set_source_rgb(1,1,1)
                 ctx.set_font_size(20)
                 ctx.move_to( 20, 30)
@@ -1251,7 +1307,7 @@ class draw_assets:
         
         
         
-        for part in ["renders", "tex", "reference"]:
+        for part in ["reference", "tex", "renders"]: # I REORDERED THEM
             
             renders = []
             

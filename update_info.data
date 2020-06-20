@@ -3,6 +3,9 @@ FILE update_info.data
 FILE py_data/modules/assets.py
 FILE py_data/modules/dialogs.py
 FILE py_data/icons/refresh.png
+FILE py_data/icons/obj_asset_done.png
+FILE py_data/icons/obj_asset_undone.png
+FILE py_data/icons/obj_prev.png
 UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.23
 
 VERSION 4.22

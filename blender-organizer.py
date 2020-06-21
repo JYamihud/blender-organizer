@@ -177,52 +177,60 @@ mainwin.add(mainbox)
 gtk.window_set_default_icon_from_file("py_data/icon.png")
 
 # Let's make a quick functions panel on the top
+def buttons1():
+    
+    globals()["toppannelbox"] = gtk.HBox(False)
+    mainbox.pack_start(toppannelbox, False)
+    mainbox.pack_start(gtk.HSeparator(), False)
 
-toppannelbox = gtk.HBox(False)
-mainbox.pack_start(toppannelbox, False)
-mainbox.pack_start(gtk.HSeparator(), False)
+    # open project folder
 
-# open project folder
+    projectfolder = gtk.Button()
+    projectfolder.props.relief = gtk.RELIEF_NONE
+    projectfolbox = gtk.HBox(False)
+    projectfolico = gtk.Image()
+    projectfolico.set_from_file("py_data/icons/folder.png")
+    projectfolbox.pack_start(projectfolico, False)
+    projectfolbox.pack_start(gtk.Label("  Project"))
+    projectfolder.add(projectfolbox)
+    projectfolder.set_tooltip_text("Open the "+os.getcwd())
 
-projectfolder = gtk.Button()
-projectfolder.props.relief = gtk.RELIEF_NONE
-projectfolbox = gtk.HBox(False)
-projectfolico = gtk.Image()
-projectfolico.set_from_file("py_data/icons/folder.png")
-projectfolbox.pack_start(projectfolico, False)
-projectfolbox.pack_start(gtk.Label("  Project"))
-projectfolder.add(projectfolbox)
-projectfolder.set_tooltip_text("Open the "+os.getcwd())
+    def openpf(w=None):
+        os.system("nautilus "+os.getcwd())
+    projectfolder.connect("clicked",openpf)
 
-def openpf(w=None):
-    os.system("nautilus "+os.getcwd())
-projectfolder.connect("clicked",openpf)
-
-toppannelbox.pack_start(projectfolder, False)
-
-
-# open rnd folder
-
-rndfolder = gtk.Button()
-rndfolder.props.relief = gtk.RELIEF_NONE
-rndfolbox = gtk.HBox(False)
-rndfolico = gtk.Image()
-rndfolico.set_from_file("py_data/icons/folder.png")
-rndfolbox.pack_start(rndfolico, False)
-rndfolbox.pack_start(gtk.Label("  Renders"))
-rndfolder.add(rndfolbox)
-rndfolder.set_tooltip_text("Open the "+os.getcwd()+"/rnd")
-
-def openpf(w=None):
-    os.system("nautilus "+os.getcwd()+"/rnd")
-rndfolder.connect("clicked",openpf)
-
-toppannelbox.pack_start(rndfolder, False)
-toppannelbox.pack_start(gtk.VSeparator(), False)
+    toppannelbox.pack_start(projectfolder, False)
 
 
-#### OLD STYLE ELEMENTS BUTTONS WITH A TWIST
+    # open rnd folder
 
+    rndfolder = gtk.Button()
+    rndfolder.props.relief = gtk.RELIEF_NONE
+    rndfolbox = gtk.HBox(False)
+    rndfolico = gtk.Image()
+    rndfolico.set_from_file("py_data/icons/folder.png")
+    rndfolbox.pack_start(rndfolico, False)
+    rndfolbox.pack_start(gtk.Label("  Renders"))
+    rndfolder.add(rndfolbox)
+    rndfolder.set_tooltip_text("Open the "+os.getcwd()+"/rnd")
+
+    def openpf(w=None):
+        os.system("nautilus "+os.getcwd()+"/rnd")
+    rndfolder.connect("clicked",openpf)
+
+    toppannelbox.pack_start(rndfolder, False)
+    toppannelbox.pack_start(gtk.VSeparator(), False)
+
+
+    #### OLD STYLE ELEMENTS BUTTONS WITH A TWIST
+
+    
+        
+        
+        
+    mainbuttonsbox = gtk.HBox()
+    toppannelbox.pack_start(mainbuttonsbox, False)
+buttons1()
 CUR = "stats"
 
 def chgCUR(w=None, cur=CUR):
@@ -235,12 +243,6 @@ def chgCUR(w=None, cur=CUR):
     CUR = cur
     drawmainbuttons()
     drawmain()
-    
-    
-    
-mainbuttonsbox = gtk.HBox()
-toppannelbox.pack_start(mainbuttonsbox, False)
-
 def drawmainbuttons():
     
     
@@ -347,131 +349,131 @@ def drawmainbuttons():
     mainbuttonsbox.show_all()
     
 drawmainbuttons()
+def secondarybuttonsOMGWTF():
+    # Analytics
 
-# Analytics
+    startsider = gtk.Button()
+    startsider.props.relief = gtk.RELIEF_NONE
+    startsibox = gtk.HBox(False)
+    startsiico = gtk.Image()
+    startsiico.set_from_file("py_data/icons/stats.png")
+    startsibox.pack_start(startsiico, False)
+    startsibox.pack_start(gtk.Label("  Analytics"))
+    startsider.add(startsibox)
+    startsider.set_tooltip_text("See Analytics")
+    startsider.connect("clicked",chgCUR, "stats")
+    toppannelbox.pack_end(startsider, False)
 
-startsider = gtk.Button()
-startsider.props.relief = gtk.RELIEF_NONE
-startsibox = gtk.HBox(False)
-startsiico = gtk.Image()
-startsiico.set_from_file("py_data/icons/stats.png")
-startsibox.pack_start(startsiico, False)
-startsibox.pack_start(gtk.Label("  Analytics"))
-startsider.add(startsibox)
-startsider.set_tooltip_text("See Analytics")
-startsider.connect("clicked",chgCUR, "stats")
-toppannelbox.pack_end(startsider, False)
+    # SYNC
 
-# SYNC
+    blendverb = gtk.Button()
+    blendverb.props.relief = gtk.RELIEF_NONE
+    blendbox = gtk.HBox(False)
+    blendico = gtk.Image()
+    blendico.set_from_file("py_data/icons/blender.png")
+    blendbox.pack_start(blendico, False)
+    blendbox.pack_start(gtk.Label("  Blender Version"))
+    blendverb.add(blendbox)
+    blendverb.set_tooltip_text("Chose what Blender Version to use")
+    blendverb.connect("clicked",chgCUR, "bldv")
+    #blendver.set_sensitive(False)
+    toppannelbox.pack_end(blendverb, False)
 
-blendverb = gtk.Button()
-blendverb.props.relief = gtk.RELIEF_NONE
-blendbox = gtk.HBox(False)
-blendico = gtk.Image()
-blendico.set_from_file("py_data/icons/blender.png")
-blendbox.pack_start(blendico, False)
-blendbox.pack_start(gtk.Label("  Blender Version"))
-blendverb.add(blendbox)
-blendverb.set_tooltip_text("Chose what Blender Version to use")
-blendverb.connect("clicked",chgCUR, "bldv")
-#blendver.set_sensitive(False)
-toppannelbox.pack_end(blendverb, False)
+    # SYNC
 
-# SYNC
-
-syncider = gtk.Button()
-syncider.props.relief = gtk.RELIEF_NONE
-syncibox = gtk.HBox(False)
-synciico = gtk.Image()
-synciico.set_from_file("py_data/icons/sync.png")
-syncibox.pack_start(synciico, False)
-syncibox.pack_start(gtk.Label("  Synchronize"))
-syncider.add(syncibox)
-syncider.set_tooltip_text("Synchronize between multiple machines")
-syncider.connect("clicked",chgCUR, "sync")
-syncider.set_sensitive(False)
-toppannelbox.pack_end(syncider, False)
-
-
-# REPORT BUG
-def Reportbug(w=False):
-    
-    os.system("xdg-open https://github.com/JYamihud/blender-organizer/issues")
-Reportbugider = gtk.Button()
-Reportbugider.props.relief = gtk.RELIEF_NONE
-Reportbugibox = gtk.HBox(False)
-Reportbugiico = gtk.Image()
-Reportbugiico.set_from_file("py_data/icons/report_bug.png")
-Reportbugibox.pack_start(Reportbugiico, False)
-Reportbugibox.pack_start(gtk.Label("  Report BUG!"))
-Reportbugider.add(Reportbugibox)
-Reportbugider.set_tooltip_text("Go to report bug page.")
-#Reportbugider.set_sensitive(False)
-Reportbugider.connect("clicked", Reportbug)
+    syncider = gtk.Button()
+    syncider.props.relief = gtk.RELIEF_NONE
+    syncibox = gtk.HBox(False)
+    synciico = gtk.Image()
+    synciico.set_from_file("py_data/icons/sync.png")
+    syncibox.pack_start(synciico, False)
+    syncibox.pack_start(gtk.Label("  Synchronize"))
+    syncider.add(syncibox)
+    syncider.set_tooltip_text("Synchronize between multiple machines")
+    syncider.connect("clicked",chgCUR, "sync")
+    syncider.set_sensitive(False)
+    toppannelbox.pack_end(syncider, False)
 
 
-toppannelbox.pack_end(Reportbugider, False)
-
-# Update
-
-
-
-Updateider = gtk.Button()
-Updateider.props.relief = gtk.RELIEF_NONE
-Updateibox = gtk.HBox(False)
-Updateiico = gtk.Image()
-Updateiico.set_from_file("py_data/icons/update.png")
-Updateibox.pack_start(Updateiico, False)
-Updateibox.pack_start(gtk.Label("  Update"))
-Updateider.add(Updateibox)
-Updateider.set_tooltip_text("Check for updates")
-#Updateider.set_sensitive(False)
-Updateider.connect("clicked", update_window.main, os.getcwd())
+    # REPORT BUG
+    def Reportbug(w=False):
+        
+        os.system("xdg-open https://github.com/JYamihud/blender-organizer/issues")
+    Reportbugider = gtk.Button()
+    Reportbugider.props.relief = gtk.RELIEF_NONE
+    Reportbugibox = gtk.HBox(False)
+    Reportbugiico = gtk.Image()
+    Reportbugiico.set_from_file("py_data/icons/report_bug.png")
+    Reportbugibox.pack_start(Reportbugiico, False)
+    Reportbugibox.pack_start(gtk.Label("  Report BUG!"))
+    Reportbugider.add(Reportbugibox)
+    Reportbugider.set_tooltip_text("Go to report bug page.")
+    #Reportbugider.set_sensitive(False)
+    Reportbugider.connect("clicked", Reportbug)
 
 
-toppannelbox.pack_end(Updateider, False)
+    toppannelbox.pack_end(Reportbugider, False)
 
-# Schedule
-def start_schedule(w):
-    schedule.draw(os.getcwd())
-    
-    
-#make sure schedule.data exists
-if os.path.exists(os.getcwd()+"/schedule.data") == False:
-    
-    s = open(os.getcwd()+"/schedule.data", "w")
-    s.close()
-
-Scheduleider = gtk.Button()
-Scheduleider.props.relief = gtk.RELIEF_NONE
-Scheduleibox = gtk.HBox(False)
-Scheduleiico = gtk.Image()
-Scheduleiico.set_from_file("py_data/icons/schedule.png")
-Scheduleibox.pack_start(Scheduleiico, False)
-Scheduleibox.pack_start(gtk.Label("  Schedule"))
-Scheduleider.add(Scheduleibox)
-Scheduleider.set_tooltip_text("Edit Scheduling")
-Scheduleider.connect("clicked",start_schedule)
-
-#toppannelbox.pack_end(Scheduleider, False)
-
-
-# checklist
-
-checklistider = gtk.Button()
-checklistider.props.relief = gtk.RELIEF_NONE
-checklistibox = gtk.HBox(False)
-checklistiico = gtk.Image()
-checklistiico.set_from_file("py_data/icons/checklist.png")
-checklistibox.pack_start(checklistiico, False)
-checklistibox.pack_start(gtk.Label("  Checklist"))
-checklistider.add(checklistibox)
-checklistider.set_tooltip_text("Open Main Checklist")
-checklistider.connect("clicked", checklist.checkwindow, os.getcwd(), "Main Checklist", "project.progress")
-toppannelbox.pack_end(checklistider, False)
+    # Update
 
 
 
+    Updateider = gtk.Button()
+    Updateider.props.relief = gtk.RELIEF_NONE
+    Updateibox = gtk.HBox(False)
+    Updateiico = gtk.Image()
+    Updateiico.set_from_file("py_data/icons/update.png")
+    Updateibox.pack_start(Updateiico, False)
+    Updateibox.pack_start(gtk.Label("  Update"))
+    Updateider.add(Updateibox)
+    Updateider.set_tooltip_text("Check for updates")
+    #Updateider.set_sensitive(False)
+    Updateider.connect("clicked", update_window.main, os.getcwd())
+
+
+    toppannelbox.pack_end(Updateider, False)
+
+    # Schedule
+    def start_schedule(w):
+        schedule.draw(os.getcwd())
+        
+        
+    #make sure schedule.data exists
+    if os.path.exists(os.getcwd()+"/schedule.data") == False:
+        
+        s = open(os.getcwd()+"/schedule.data", "w")
+        s.close()
+
+    Scheduleider = gtk.Button()
+    Scheduleider.props.relief = gtk.RELIEF_NONE
+    Scheduleibox = gtk.HBox(False)
+    Scheduleiico = gtk.Image()
+    Scheduleiico.set_from_file("py_data/icons/schedule.png")
+    Scheduleibox.pack_start(Scheduleiico, False)
+    Scheduleibox.pack_start(gtk.Label("  Schedule"))
+    Scheduleider.add(Scheduleibox)
+    Scheduleider.set_tooltip_text("Edit Scheduling")
+    Scheduleider.connect("clicked",start_schedule)
+
+    #toppannelbox.pack_end(Scheduleider, False)
+
+
+    # checklist
+
+    checklistider = gtk.Button()
+    checklistider.props.relief = gtk.RELIEF_NONE
+    checklistibox = gtk.HBox(False)
+    checklistiico = gtk.Image()
+    checklistiico.set_from_file("py_data/icons/checklist.png")
+    checklistibox.pack_start(checklistiico, False)
+    checklistibox.pack_start(gtk.Label("  Checklist"))
+    checklistider.add(checklistibox)
+    checklistider.set_tooltip_text("Open Main Checklist")
+    checklistider.connect("clicked", checklist.checkwindow, os.getcwd(), "Main Checklist", "project.progress")
+    toppannelbox.pack_end(checklistider, False)
+
+
+secondarybuttonsOMGWTF()
 #### DRAWING
 
 drawbox = gtk.VBox(False)
@@ -481,26 +483,32 @@ def drawmain(w=None):
     
     
     
-    global drawbox
-    drawbox.destroy()
-    
+    #global drawbox
+    #drawbox.destroy()
+    global mainbox
+    mainbox.destroy()
+    mainbox = gtk.VBox(False)
+    mainwin.add(mainbox)
+    buttons1()
+    drawmainbuttons()
+    secondarybuttonsOMGWTF()
     
     drawbox = gtk.VBox(False)
     mainbox.pack_start(drawbox, True)
     
     if CUR in ["chr","obj","loc","veh"]:
-        assets.draw_assets(os.getcwd(), drawbox, mainwin, CUR)
+        assets.draw_assets(os.getcwd(), drawbox, mainwin, CUR,)
         
     
     if CUR == "stats":
-        analytics.draw_analytics(os.getcwd(), drawbox, mainwin)
+        analytics.draw_analytics(os.getcwd(), drawbox, mainwin, mainbox)
 
     mainbox.show_all()
     
     
     if CUR == "rnd":    
     
-        story_editor.story(os.getcwd(), drawbox, mainwin)
+        story_editor.story(os.getcwd(), drawbox, mainwin, mainbox)
         
     if CUR == "bldv":
         

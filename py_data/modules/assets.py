@@ -301,7 +301,9 @@ class draw_assets:
                         self.blends = self.loadBlendFiles(i)
                         self.iteminfo = self.loaditem(i)
                         self.screen = i
-                    
+                        
+                        break
+                        
                     nx = xc*200
                     ny = yc*200-self.scroll+50
                     

@@ -268,7 +268,7 @@ class checkwindow:
         ############################# DRAW HERE #####################################
         #############################################################################
         
-        removestring = None
+        removestring = []
         
         
         if self.tool == "select":
@@ -290,7 +290,7 @@ class checkwindow:
         
         for ind, line in enumerate(self.FILE[9:]):
             
-            
+            checked = False
                 
                 
                 
@@ -432,10 +432,15 @@ class checkwindow:
                 widget.window.draw_rectangle(xgc, True, xmove+5, ymove+5, 20, 20)
                 
                 
-                if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v"):
+                if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v"): # IF THE LINE IS CHECKED
                     
                     widget.window.draw_pixbuf(None, self.ok, 0, 0, xmove+7, ymove , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                
+                    
+                    
+                    #HERE I WANT TO ADD A SPECIAL THING THAT MAKES IT SO IF YOU CHECKED THE THING THERE IS NO ADD SCHEDULES
+                    removestring.append(self.get_line_path(ind, line))
+                    #foundhightlight = False
+                    checked = True
                 
                 # ADD SUBTASK
                 
@@ -523,137 +528,138 @@ class checkwindow:
                 # EDIT TASK'S STRING
                 
                 # removestring
-                
-                #checking is task has a scheduling already
-                o = open(self.pf+"/schedule.data","r")
-                o = o.read().split("\n")
-                
-                alreadyexist = False
-                
-                for task in o:
+                if not checked:
+                    #checking is task has a scheduling already
+                    o = open(self.pf+"/schedule.data","r")
+                    o = o.read().split("\n")
                     
+                    alreadyexist = False
                     
-                    
-                    if task.endswith(self.get_line_path(ind, line)) and self.FILENAME.replace(self.pf, "") in task:
+                    for task in o:
                         
                         
-                        self.FILENAME.replace(self.pf, "") in task
                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                        widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
-                        
-                        ctx.set_source_rgb(1,1,1)
-                        ctx.set_font_size(20)
-                        ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
-                        ctx.show_text(task[:task.find(" ")])
-                        
-                        alreadyexist = True
-                        
-                        
-                        if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select":
-                            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                            widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
+                        if task.endswith(self.get_line_path(ind, line)) and self.FILENAME.replace(self.pf, "") in task:
+                            
+                            
+                            
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
                             widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
                             
-                            
                             ctx.set_source_rgb(1,1,1)
                             ctx.set_font_size(20)
                             ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
-                            ctx.show_text("Remove Schedule")
+                            ctx.show_text(task[:task.find(" ")])
                             
-                            # IF CLICKED
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                            alreadyexist = True
+                            
+                            
+                            
+                            if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select":
+                                widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                                widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
                                 
-                                removestring = self.get_line_path(ind, line)
-                                print removestring
-                
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist:
-                    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                                widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
+                                
+                                
+                                ctx.set_source_rgb(1,1,1)
+                                ctx.set_font_size(20)
+                                ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
+                                ctx.show_text("Remove Schedule")
+                                
+                                # IF CLICKED
+                                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                                    
+                                    removestring.append(self.get_line_path(ind, line))
+                                    print removestring
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
-                    
-                    
-                    ctx.set_source_rgb(1,1,1)
-                    ctx.set_font_size(20)
-                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
-                    ctx.show_text("Add To Schedule")
-                    
-                    # IF CLICKED
-                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                    if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist:
+                        widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                        widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
+                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                        widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
                         
                         
-                        def ee(ind, line):
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(20)
+                        ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
+                        ctx.show_text("Add To Schedule")
                         
-                            #MAKING A STRING TO WRITE TO THE SCHEDULE.DATA FILE
-                            #IT CONTAINS 3 PARTS
-                            # date
-                            #spacebar
-                            # path to the .progress (checklist) file
-                            # spacebar
-                            # path to the task with in the file
-                            # EXAMPLE: 2018/12/31 /dev/chr/character/asset.progress Modeling=:>BaseModeling
-                            
-                            # GETTING DATE
-                            y, m, d = int(datetime.datetime.now().year), int(datetime.datetime.now().month)-1, int(datetime.datetime.now().day)
-                    
-                    
-                            y, m, d = dialogs.GetDate(y, m, d)
+                        # IF CLICKED
+                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                             
                             
-                            y, m, d = str(y), str(m+1), str(d)
-                            if len(m) < 2:
-                                m = "0"+m
-                            if len(d) < 2:
-                                d = "0"+d
+                            def ee(ind, line):
                             
-                            newdate = y+"/"+m+"/"+d
-                            
-                            
-                            ### ADDING THE FILENAME TO THE STRING
-                            
-                            schstr = newdate+" "+self.FILENAME.replace(self.pf, "")
-                            
-                            # GETTING THE PATH WITH IN 
-                            
-                            
-                            p = self.get_line_path(ind, line)
-                            
-                            schstr = schstr+" "+p
-                            
-                            print schstr
-                            
-                            
-                            # OPENING EXISTANT FILE
-                            o = open(self.pf+"/schedule.data","r")
-                            o = o.read().split("\n")
-                            if o [-1] == "":
-                                o = o[:-1]
-                            
-                            o.append(schstr)
-                            
-                            o = sorted(o)
-                            
-                            
-                            s = open(self.pf+"/schedule.data","w")
-                            for i in o:
-                                s.write(i+"\n")
-                            
-                            s.close()
+                                #MAKING A STRING TO WRITE TO THE SCHEDULE.DATA FILE
+                                #IT CONTAINS 3 PARTS
+                                # date
+                                #spacebar
+                                # path to the .progress (checklist) file
+                                # spacebar
+                                # path to the task with in the file
+                                # EXAMPLE: 2018/12/31 /dev/chr/character/asset.progress Modeling=:>BaseModeling
+                                
+                                # GETTING DATE
+                                y, m, d = int(datetime.datetime.now().year), int(datetime.datetime.now().month)-1, int(datetime.datetime.now().day)
                         
                         
-                        glib.timeout_add(10, ee, ind, line)
+                                y, m, d = dialogs.GetDate(y, m, d)
+                                
+                                
+                                y, m, d = str(y), str(m+1), str(d)
+                                if len(m) < 2:
+                                    m = "0"+m
+                                if len(d) < 2:
+                                    d = "0"+d
+                                
+                                newdate = y+"/"+m+"/"+d
+                                
+                                
+                                ### ADDING THE FILENAME TO THE STRING
+                                
+                                schstr = newdate+" "+self.FILENAME.replace(self.pf, "")
+                                
+                                # GETTING THE PATH WITH IN 
+                                
+                                
+                                p = self.get_line_path(ind, line)
+                                
+                                schstr = schstr+" "+p
+                                
+                                print schstr
+                                
+                                
+                                # OPENING EXISTANT FILE
+                                o = open(self.pf+"/schedule.data","r")
+                                o = o.read().split("\n")
+                                if o [-1] == "":
+                                    o = o[:-1]
+                                
+                                o.append(schstr)
+                                
+                                o = sorted(o)
+                                
+                                
+                                s = open(self.pf+"/schedule.data","w")
+                                for i in o:
+                                    s.write(i+"\n")
+                                
+                                s.close()
+                            
+                            
+                            glib.timeout_add(10, ee, ind, line)
+                        
+                        
+                    if self.tool == "select":       
+                        widget.window.draw_pixbuf(None, self.schedule, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
-                if self.tool == "select":       
-                    widget.window.draw_pixbuf(None, self.schedule, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                
-                
                 if mx in range(line.find("[")*20+25,  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35) and my in range(ind*40+self.offset+5, ind*40+self.offset+5+25):
                     #widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.display_get_default(), self.edit, 1,20))
                     
@@ -779,34 +785,35 @@ class checkwindow:
         
         if not foundhightlight and self.highlight:
             #print "PROBLEMATIC", self.highlight
-            removestring = self.highlight
+            removestring.append(self.highlight)
         if removestring:
             
-            o = open(self.pf+"/schedule.data","r")
-            o = o.read().split("\n")
+            for removing in removestring:
+                o = open(self.pf+"/schedule.data","r")
+                o = o.read().split("\n")
+                
+                if o[-1] == "":
+                    o = o[:-1]
+                
+                try:
+                    print removing
+                    
+                    for i in o:
+                        if i.endswith(removing):
+                            o.remove(i)
+                    
+                    
+                    
+                    s = open(self.pf+"/schedule.data","w")
+                    for i in o:
+                        print i
+                        s.write(i+"\n")
+                    s.close()
+                    self.highlight = None
+                except Exception as e:
+                    print e
+                
             
-            if o[-1] == "":
-                o = o[:-1]
-            
-            try:
-                print removestring
-                
-                for i in o:
-                    if i.endswith(removestring):
-                        o.remove(i)
-                
-                
-                
-                s = open(self.pf+"/schedule.data","w")
-                for i in o:
-                    print i
-                    s.write(i+"\n")
-                s.close()
-                self.highlight = None
-            except Exception as e:
-                print e
-            
-        
         
         #SCROLL
         

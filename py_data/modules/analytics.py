@@ -25,18 +25,18 @@ import checklist
 import dialogs
 import story_editor # to get scene percentage
 import schedule
-    
+import assets
 
 
 class draw_analytics:
     
-    def __init__(self, pf, box, win):
+    def __init__(self, pf, box, win, mainbox=None):
     
         self.pf = pf # pf stands for project folder. It's a string to know
                      # where the project's folders start with
         
         self.box = box # the gtk.Box() container to put this widget into
-        
+        self.mainbox = mainbox
         self.win = win
         
         self.mainchecklist = checklist.partcalculate(checklist.openckecklist("project.progress"))
@@ -72,7 +72,16 @@ class draw_analytics:
         
         self.editicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/edit.png")
         self.scheduleicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/schedule.png")
+        self.checklist  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/checklist.png")
         
+        
+        
+        #getting icons into place OMG WHY????
+        self.objicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/obj_asset_undone.png")
+        self.chricon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/chr_asset_undone.png")
+        self.vehicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/veh_asset_undone.png")
+        self.locicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/loc_asset_undone.png")
+        self.scnicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/scn_asset_undone.png")
         ####### DATA
             
             
@@ -420,7 +429,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): #####   IF MOUSE CLICKED #####
                         
                          
-                        
+                        self.scnicon
                         self.allowed = False
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) 
@@ -610,7 +619,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             tboxsH = int(     h/2/5*0.8    )
             tintsH = int(     h/2/5    )
             boxendH = int(      w-30-wstCubes       ) 
-            
+            self.scnicon
             # DONE
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
             widget.window.draw_rectangle(xgc, True, wstCubes, 30, boxendH, tboxsH)
@@ -711,9 +720,6 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
                                 
-                                
-                                    
-                                    
                                 
                                 glib.timeout_add(10, edit, infostr, arg)
                         
@@ -855,7 +861,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
                 xpos = 20 #int(w*xpos)-5
                 
-                ypos = h - (ypos*22) - 20 -h/5    
+                ypos = h - (ypos*30) - 20 -h/5    
                 
                 
                 
@@ -872,12 +878,15 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     istx = xpos
                     isty = len(taskstring)*9+5
-                    isty2 = len(taskfile)*6+50
+                    isty2 = len(taskfile)*9+50+22
+                    if taskfile != "project.progress" and taskfile.startswith("/dev/"):
+                        #we need to get type of the file the CUR
+                        isty2 = (len(taskfile[9:taskfile.rfind("/")]))*9+50+22
                     
                     if istx + len(taskstring)*9+5 > w:
                         istx = w-(len(taskstring)*9+5)
-                    if istx + len(taskfile)*6 > w:
-                        istx = w-len(taskfile)*6
+                    if istx + len(taskfile)*9 > w:
+                        istx = w-len(taskfile)*9
                     
                     #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
                     #widget.window.draw_rectangle(xgc, True, xpos-1, ypos, 10, 10 )
@@ -893,13 +902,16 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     ctx3 = widget.window.cairo_create()
                     ctx3.set_source_rgba(0.1,0.1,0.1,0.75)
-                    ctx3.rectangle(xpos-1, ypos, isty+isty2, 20)
+                    ctx3.rectangle(xpos-1, ypos, isty+22, 22)
                     ctx3.fill()
                     
-                    if mx in range(xpos-1, xpos+isty+100) and my in range(ypos, ypos+20):
+                    ctx3.rectangle(xpos+isty+44, ypos, isty2+22, 22)
+                    ctx3.fill()
+                    
+                    if mx in range(xpos-1, xpos+isty+22) and my in range(ypos, ypos+22):
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
-                        widget.window.draw_rectangle(xgc, True, xpos-1, ypos, isty+isty2, 20 )
+                        widget.window.draw_rectangle(xgc, True, xpos-1, ypos, isty+22, 22 )
                         
                         
                         if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
@@ -910,19 +922,75 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                                 checklist.checkwindow(pf=self.pf, title="[ "+taskstring[taskstring.rfind("/")+1:]+" ] in ", FILE=self.pf+taskfile, highlight=rawline)
                     
                     
+                    
+                    # ICON OF THE TYPE OF ITEM OF THE CHECKLIST
+                    needicon = self.checklist
+                    
+                    if taskfile.startswith("/dev/chr"):
+                        needicon = self.chricon
+                    elif taskfile.startswith("/dev/veh"):
+                        needicon = self.vehicon
+                    elif taskfile.startswith("/dev/loc"):
+                        needicon = self.locicon
+                    elif taskfile.startswith("/dev/obj"):
+                        needicon = self.objicon
+                    
+                    # IF WE HAVE AN ITEM
+                    
+                    if taskfile != "project.progress" and taskfile.startswith("/dev/"):
+                        #we need to get type of the file the CUR
+                        CUR = taskfile[5:8]
+                        
+                        
+                        name = taskfile[9:taskfile.rfind("/")]
+                        taskfile = name
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    
+                        if mx in range(xpos+isty+44, xpos+isty+isty2+44+22) and my in range(ypos, ypos+22): #IF MOUSE OVER
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
+                            widget.window.draw_rectangle(xgc, True, xpos+isty+44, ypos, isty2+22, 22 )
+                            
+                        
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                        
+                                #CUR = "veh"
+                                 
+                                
+                                self.box.destroy()
+                                
+                                
+                                self.box = gtk.VBox(False)
+                                self.mainbox.pack_start(self.box, True)
+                                
+                                
+                                assets.draw_assets(os.getcwd(), self.box, self.win, CUR, name)
+                                    
+                                    
+                                
+                    if taskfile.startswith("/rnd/"):
+                        needicon = self.scnicon
+                    
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(15)
                     ctx.move_to( istx+22, ypos+16)
                     ctx.show_text(taskstring)
                     
-                    ctx.set_font_size(10)
-                    ctx.move_to( istx+isty+30, ypos+16)
+                    ctx.set_font_size(15)
+                    ctx.move_to( istx+isty+30+44, ypos+16)
                     
                     if taskfile == "project.progress":
-                        ctx.show_text("Main")
+                        ctx.show_text("Main Checklist")
                     else:
                         ctx.show_text(taskfile)
                     
+                    widget.window.draw_pixbuf(None, needicon, 0, 0, istx+isty+44, ypos-1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                     widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, istx, ypos-1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                     
                     showtooltip = False

@@ -153,7 +153,7 @@ class asset:
 ####   ACTUALL DRAWING OF THE DIALOG ( WITH DRAWABLE BECAUSE WHY NOT )
 class draw_assets:
     
-    def __init__(self, pf, box, win, CUR):
+    def __init__(self, pf, box, win, CUR, Goto=None):
     
         self.pf = pf # pf stands for project folder. It's a string to know
                      # where the project's folders start with
@@ -177,6 +177,7 @@ class draw_assets:
         
         # PREPARATION TO DRAW
         
+        self.Goto = Goto   # THIS IS THE ITEM NAME IF YOU WANT TO LINK IT FROM SOME OTHER PLACE
         self.screen = "selection"
         self.allowed = True
         
@@ -295,6 +296,11 @@ class draw_assets:
                 
                 
                 for x, i in enumerate(self.assets):
+                    
+                    if self.Goto == i.name:
+                        self.blends = self.loadBlendFiles(i)
+                        self.iteminfo = self.loaditem(i)
+                        self.screen = i
                     
                     nx = xc*200
                     ny = yc*200-self.scroll+50

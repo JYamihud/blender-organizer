@@ -27,6 +27,7 @@ import checklist
 import dialogs
 import fileformats
 import render_lists
+import assets # SO I COULD LINK TO ITEMS
 
 import copy # OMG OPTIMIZATION HACKS OMG I HOPE IT'S GOING TO WORK
 
@@ -53,13 +54,13 @@ from subprocess import *
 class story:
     
     
-    def __init__(self, pf, box, win):
+    def __init__(self, pf, box, win, mainbox=None):
         
         
         self.pf = pf
         self.box = box
         self.win = win
-        
+        self.mainbox = mainbox
         
         self.allowed = True
         
@@ -118,8 +119,8 @@ class story:
     def editor(self):
     
         # TRANSFORMATION
-        self.sx = 1.0
-        self.sy = 20.0
+        self.sx = 0.6
+        self.sy = 61.5
         self.px = 0.0
         self.py = 0.0
         
@@ -250,6 +251,13 @@ class story:
         self.fade_03 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_03.png")
         self.fade_04 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_04.png")
         
+        #getting icons into place OMG WHY????
+        self.objicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/obj_asset_undone.png")
+        self.chricon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/chr_asset_undone.png")
+        self.vehicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/veh_asset_undone.png")
+        self.locicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/loc_asset_undone.png")
+        self.scnicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/scn_asset_undone.png")
+        self.picicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/pic.png")
         
         
         
@@ -519,8 +527,8 @@ class story:
             # SHORT CUT TO MAKE VIEW NORMILIZE TO STAR UP VALUES
             if 65307 in self.keys:  # ESCAPE BUTTON
                 
-                self.sx = 1
-                self.sy = 20
+                self.sx = 0.6
+                self.sy = 61.5
                 self.px = 0
                 self.py = 0
             
@@ -667,8 +675,8 @@ class story:
                 
                 
                 
-                imX = int(imX*self.sx+self.px)
-                imY = int(imY*self.sy+self.py)
+                imX = int(imX*sx+px) #DAMN IT WAS SO SIMPLE I WAS READING THE VALUES FROM THE PREVIOUS FRAME
+                imY = int(imY*sy+py) #BY REMOVING THE SELF I NOW READ THE UPDATED VALUES HELL YEAH!!!!!!!!
                 piX = 200
                 piY = 200
                 
@@ -719,9 +727,38 @@ class story:
                     pass    
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
                 
-                if mode == "ABSOLUTE":
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("red"))
                 
+                tinyicon = self.picicon
+                
+                if mode == "ABSOLUTE":
+                    
+                
+                    launchitem = False
+                
+                
+                else:  #IF THE IMAGE IS FROM THE PROJECT
+                    
+                    if url.startswith("/dev/chr"):
+                        tinyicon = self.chricon
+                    elif url.startswith("/dev/veh"):
+                        tinyicon = self.vehicon
+                    elif url.startswith("/dev/loc"):
+                        tinyicon = self.locicon
+                    elif url.startswith("/dev/obj"):
+                        tinyicon = self.objicon
+                    
+                    if url.startswith("/dev/"):
+                        
+                        CUR = url[5:8]
+                            
+                            
+                        name = url[9:9+url[9:].find("/")]
+                        url = name
+                    
+                        launchitem = True
+                    else:
+                        launchitem = False
+                        
                 if mx in range(imX, imX+piX) and my in range(imY, imY+piY) and mx in range(0, w-w/3):
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                     
@@ -731,10 +768,25 @@ class story:
                     
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         
-                        if mode == "ABSOLUTE":
-                            os.system("xdg-open "+url)
-                        elif mode == "RELATIVE":
-                            os.system("xdg-open "+self.pf+url)
+                        if launchitem:
+                            
+                            self.box.destroy()
+                            
+                            
+                            self.box = gtk.VBox(False)
+                            self.mainbox.pack_start(self.box, True)
+                            
+                            assets.draw_assets(os.getcwd(), self.box, self.win, CUR, url)
+                            launchitem = False
+                            
+                        else:   
+                            if mode == "ABSOLUTE":
+                                os.system("xdg-open "+url)
+                            elif mode == "RELATIVE":
+                                os.system("xdg-open "+self.pf+url)
+                                
+                                
+                                
                 elif mx in range(imX, imX+piX) and my in range(imY-22, imY) and mx in range(0, w-w/3):
                      xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                      widget.window.draw_rectangle(xgc, True, imX-3, imY-23, piX+6, piY+26)
@@ -787,8 +839,29 @@ class story:
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#F0F"))
                 widget.window.draw_rectangle(xgc, True, imX, imY, piX, piY)
                 
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8a7d2c"))
+                if launchitem:
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6e5daf"))
+                elif mode == "ABSOLUTE":
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#af5d5d"))
                 widget.window.draw_rectangle(xgc, True, imX-2, imY-22, piX+4, 20)
+                
+                
+                widget.window.draw_pixbuf(None, tinyicon, 0, 0, imX+piX-22, imY-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                
+                
                 
                 ctx.set_source_rgb(1,1,1)
                 ctx.set_font_size(10)

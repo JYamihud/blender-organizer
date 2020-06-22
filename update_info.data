@@ -1,4 +1,4 @@
-VERSION 4.26
+VERSION 4.27
 FILE update_info.data
 FILE py_data/modules/analytics.py
 FILE py_data/modules/dialogs.py

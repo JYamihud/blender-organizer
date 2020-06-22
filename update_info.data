@@ -1,3 +1,9 @@
+ERSION 4.26
+FILE update_info.data
+FILE py_data/modules/analytics.py
+FILE py_data/modules/dialogs.py
+UPDATE PAGE https://github.com/JYamihud/updates-manager/blob/master/blender-organizer/4.27
+
 VERSION 4.26
 FILE update_info.data
 FILE py_data/modules/analytics.py

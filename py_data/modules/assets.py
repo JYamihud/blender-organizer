@@ -450,6 +450,7 @@ class draw_assets:
                 
                 
                 
+                
                 pixtdall = (yc+1)*200-h+50
                 
                 if self.scroll > pixtdall:

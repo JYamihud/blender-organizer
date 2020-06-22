@@ -21,6 +21,7 @@ import datetime
 # self made modules
 
 import thumbnailer
+import itemselector
 import checklist
 import quick
 import fileformats
@@ -1254,7 +1255,14 @@ class event:
                         scenetext = scenetext.replace(rmvname,   "")
                         scenetext = scenetext.replace("</shot>", "" ,1)
                         
-                    
+                    #CLEARING THE SCENETEXT FROM <item>
+                    for H in range(scenetext.count("<item>")):
+                        
+                        rmvname = scenetext[scenetext.find("<item>")+6:]
+                        rmvname = rmvname[rmvname.find('"'):rmvname.replace('"', " ", 1).find('"')+1]
+                        scenetext = scenetext.replace("<item>",  "" , 1)
+                        scenetext = scenetext.replace(rmvname,   "")
+                        scenetext = scenetext.replace("</item>", "" ,1)
                     
                     
                     # GETTING INTO THE BUFFER
@@ -1540,6 +1548,54 @@ class event:
                         textview.grab_focus()
                 
             addbuttondialog.destroy() 
+         
+         
+        def markitem(w=False):
+            
+            s, e = textbuffer.get_selection_bounds()
+            
+            print "TRYING TO RUN THE BLOODY ITEMSELECTOR"
+            
+            pf = os.getcwd()
+            
+            
+            searchfor = textbuffer.get_text(s, e)
+            
+            name = itemselector.select(pf, searchfor) # THIS COULD CAUSE ISSUES IDK
+            
+            
+            
+            if len(name) > 0:
+                print s, e
+                
+                
+                com = "item"
+                
+                scnname = '"'+str(name)+'"'
+                
+                s = s.get_offset()
+                
+                textbuffer.insert(e, "</"+com+">")
+                
+                
+                si = textbuffer.get_iter_at_offset(s)
+                
+                textbuffer.insert(si, "<"+com+">"+scnname)
+                
+                
+                si = textbuffer.get_iter_at_offset(s+len(com)+3)
+                ei = textbuffer.get_iter_at_offset(s+len(com)+len(scnname)+1)
+                #if com == "scene":  
+                #    ei = textbuffer.get_iter_at_offset(s+len(com)+13)
+                
+                
+                textbuffer.select_range(si, ei)
+                
+            textview.grab_focus()
+            
+            
+            
+            
             
         # mark scene
         
@@ -1547,7 +1603,7 @@ class event:
         markscenebutton.props.relief = gtk.RELIEF_NONE
         markscenebox = gtk.HBox(False)
         marksceneicon = gtk.Image()
-        marksceneicon.set_from_file("py_data/icons/scene_editor.png")
+        marksceneicon.set_from_file("py_data/icons/render.png")
         markscenebox.pack_start(marksceneicon, False)
         markscenebox.pack_start(gtk.Label("Mark Scene"))
         markscenebutton.add(markscenebox)
@@ -1555,17 +1611,37 @@ class event:
         markscenebutton.connect("clicked", mark_now, "scene")
         
         # mark shot
+        markitembutton = gtk.Button()
+        markitembutton.props.relief = gtk.RELIEF_NONE
+        markitembox = gtk.HBox(False)
+        markitemicon = gtk.Image()
+        markitemicon.set_from_file("py_data/icons/render.png")
+        markitembox.pack_start(markitemicon, False)
+        markitembox.pack_start(gtk.Label("Mark Shot"))
+        markitembutton.add(markitembox)
+        toolbox.pack_start(markitembutton, False)
+        markitembutton.connect("clicked", mark_now, "shot")
+        
         
         markshotbutton = gtk.Button()
         markshotbutton.props.relief = gtk.RELIEF_NONE
         markshotbox = gtk.HBox(False)
         markshoticon = gtk.Image()
-        markshoticon.set_from_file("py_data/icons/render_big.png")
+        markshoticon.set_from_file("py_data/icons/plus.png")
         markshotbox.pack_start(markshoticon, False)
-        markshotbox.pack_start(gtk.Label("Mark Shot"))
+        markshotbox.pack_start(gtk.Label("Mark Item"))
         markshotbutton.add(markshotbox)
         toolbox.pack_start(markshotbutton, False)
-        markshotbutton.connect("clicked", mark_now, "shot")
+        markshotbutton.connect("clicked", markitem)
+        
+        
+        
+        # mark item
+        
+       
+        
+        
+        
         
         # new img
         
@@ -1573,11 +1649,11 @@ class event:
         insertimagebutton.props.relief = gtk.RELIEF_NONE
         insertimagebox = gtk.HBox(False)
         insertimageicon = gtk.Image()
-        insertimageicon.set_from_file("py_data/icons/new_img.png")
+        insertimageicon.set_from_file("py_data/icons/pic.png")
         insertimagebox.pack_start(insertimageicon, False)
         insertimagebox.pack_start(gtk.Label("Insert Image"))
         insertimagebutton.add(insertimagebox)
-        toolbox.pack_start(insertimagebutton, False)
+        toolbox.pack_end(insertimagebutton, False)
         insertimagebutton.connect("clicked", insertimage)
         
         
@@ -1592,7 +1668,7 @@ class event:
         # text editor
         textview = gtk.TextView()
         #textcolors
-        textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("#5c5c5c"))
+        textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("#222222"))
         textview.modify_base(gtk.STATE_SELECTED, gtk.gdk.color_parse("#2c2c2c"))
         textview.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFF"))
         fontdesc = pango.FontDescription("Monospace")
@@ -1702,7 +1778,7 @@ class event:
         textview = gtk.TextView()
         textview.set_editable(False)
         #textcolors
-        textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("#5c5c5c"))
+        textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("#222222"))
         textview.modify_base(gtk.STATE_SELECTED, gtk.gdk.color_parse("#db3c16"))
         textview.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFF"))
         fontdesc = pango.FontDescription("Monospace")
@@ -1906,10 +1982,11 @@ class event:
 def markup(textbuffer):
     
     try:
-        textbuffer.create_tag("YELLOW", foreground="#e47649", font="Monospace Bold")
-        textbuffer.create_tag("BLUE", foreground="#8888FF", font="Monospace Bold")
-        textbuffer.create_tag("GREEN", foreground="#55AA55", font="Monospace Bold")
-        textbuffer.create_tag("GREY", foreground="#999", font="Monospace Italic")
+        textbuffer.create_tag("YELLOW", foreground="#4987af", font="Monospace Bold") #SCENE
+        textbuffer.create_tag("BLUE", foreground="#8a7d2c", font="Monospace Bold") #SHOT
+        textbuffer.create_tag("PURPLE", foreground="#6e5daf", font="Monospace Bold") #ITEM
+        textbuffer.create_tag("GREEN", foreground="#9e343e", font="Monospace Bold") #TEXT
+        textbuffer.create_tag("GREY", foreground="#526969", font="Monospace Italic") #IMAGE
         
     except:
         pass
@@ -1921,10 +1998,10 @@ def markup(textbuffer):
     YELLOW = ["<scene>", "</scene>"]
     BLUE   = ["<shot>", "</shot>"]
     GREY   = ["[image]", "[/image]"]
-    
+    PURPLE = ["<item>", "</item>"]
     
     grey = []
-    for l in [[YELLOW, "YELLOW"], [BLUE, "BLUE"], [GREY, "GREY"]]:
+    for l in [[YELLOW, "YELLOW"], [BLUE, "BLUE"],[PURPLE, "PURPLE"], [GREY, "GREY"]]:
         for y in l[0]:
         
             if y in text:

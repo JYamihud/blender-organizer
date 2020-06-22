@@ -35,6 +35,12 @@ class draw_analytics:
         self.pf = pf # pf stands for project folder. It's a string to know
                      # where the project's folders start with
         
+        # THIS DOESN'T REALLY MAKES TOO MUCH SENSE HERE. LOOK AT STORY EDITOR
+        # BUT IT HAS TO BE DONE ON THE STARTUP OF THE SOFTWARE
+        os.system("rm -r "+self.pf+"/pln/thumbs")
+        
+        
+        
         self.box = box # the gtk.Box() container to put this widget into
         self.mainbox = mainbox
         self.win = win

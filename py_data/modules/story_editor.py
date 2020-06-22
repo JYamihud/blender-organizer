@@ -23,6 +23,7 @@ import datetime
 # self made modules
 
 import thumbnailer
+import itemselector
 import checklist
 import dialogs
 import fileformats
@@ -206,6 +207,7 @@ class story:
         self.cuticon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/new_cut.png")
         self.split_event = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/split_event.png")
         self.split_action = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/split_action.png")
+        self.item_big = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/item_big.png")
         
         self.node_link = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/node_link.png")
         
@@ -677,8 +679,10 @@ class story:
                 
                 imX = int(imX*sx+px) #DAMN IT WAS SO SIMPLE I WAS READING THE VALUES FROM THE PREVIOUS FRAME
                 imY = int(imY*sy+py) #BY REMOVING THE SELF I NOW READ THE UPDATED VALUES HELL YEAH!!!!!!!!
-                piX = 200
-                piY = 200
+                piX = 150
+                piY = 150
+                
+                
                 
                 if pixthumb == "NO PIXBUF" and imX in range(-200, w/3*2) and imY in range(0, h):
                     try:
@@ -706,9 +710,9 @@ class story:
                                     rndname = rndname + random.choice(rndchar)
                                 
                             
-                            thumbnailer.thumbnail
+                            #thumbnailer.thumbnail
                             
-                            fromr  = open(thumbnailer.thumbnail(u, x=200, y=200), "r")
+                            fromr  = open(thumbnailer.thumbnail(u, x=150, y=150), "r")
                             saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
                             saveto.write(fromr.read())
                             saveto.close()
@@ -720,11 +724,11 @@ class story:
                         except:
                             pass
                     
-                try:
-                    piX = int(pixthumb.get_width()*self.sx*(self.sy/20))
-                    piY = int(pixthumb.get_height()*self.sx*(self.sy/20))
-                except:
-                    pass    
+                #try:
+                #    piX = int(pixthumb.get_width()*self.sx*(self.sy/20))
+                #    piY = int(pixthumb.get_height()*self.sx*(self.sy/20))
+                #except:
+                #    pass    
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
                 
                 
@@ -758,9 +762,17 @@ class story:
                         launchitem = True
                     else:
                         launchitem = False
+                
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0.1,0.1,0.1,0.7)
+                ctx3.rectangle(imX-2, imY, piX+4, piY)
+                ctx3.fill()
+                
                         
                 if mx in range(imX, imX+piX) and my in range(imY, imY+piY) and mx in range(0, w-w/3):
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                    widget.window.draw_rectangle(xgc, False, imX-2, imY, piX+4, piY)
+                    
                     
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     
@@ -789,7 +801,7 @@ class story:
                                 
                 elif mx in range(imX, imX+piX) and my in range(imY-22, imY) and mx in range(0, w-w/3):
                      xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
-                     widget.window.draw_rectangle(xgc, True, imX-3, imY-23, piX+6, piY+26)
+                     widget.window.draw_rectangle(xgc, True, imX-3, imY-23, piX+6, 22)
                      xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
                      if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         self.imageselected = count
@@ -835,9 +847,9 @@ class story:
                     else:
                         self.deletelastframe = False      
                 
-                widget.window.draw_rectangle(xgc, True, imX-2, imY-22, piX+4, piY+24)
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#F0F"))
-                widget.window.draw_rectangle(xgc, True, imX, imY, piX, piY)
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
+                #widget.window.draw_rectangle(xgc, True, imX, imY, piX, piY)
                 
                 
                 
@@ -866,15 +878,17 @@ class story:
                 ctx.set_source_rgb(1,1,1)
                 ctx.set_font_size(10)
                 ctx.move_to( imX, imY-10)
-                ctx.show_text(url)
-                
+                if "/dev/" not in url:
+                    ctx.show_text(url[url.rfind("/")+1:])
+                else:   
+                    ctx.show_text(url)
                 
                 if imX in range(-piX, w/3*2) and imY in range(-piY, h):
                     try:
                         
-                        pixthumb = pixthumb.scale_simple(piX, piY, gtk.gdk.INTERP_NEAREST)
+                        #pixthumb = pixthumb.scale_simple(piX, piY, gtk.gdk.INTERP_NEAREST)
                         
-                        widget.window.draw_pixbuf(None, pixthumb, 0, 0, imX, imY , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        widget.window.draw_pixbuf(None, pixthumb, 0, 0, imX + ((piX-pixthumb.get_width())/2), imY + ((piY-pixthumb.get_height())/2), -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                     except:
                         pass
             
@@ -1233,11 +1247,134 @@ class story:
             
             
             
+            #ITEM ADDER
             
             
+            if self.tool == "linkitem":
+                
+                
+                if "GDK_BUTTON3" in str(fx): ## CANCEL with right mouse button
+                    
+                    self.tool = "select"
+                    self.toolactive = False 
             
             
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
+                widget.window.draw_rectangle(xgc, False, mx, my, 150, 150+22)
+                
+                if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active(): #IF CLICKED
+                    
+                    
+                    
+                    def ee(e=None):
+                        
+                        
+                         
+                        
+                        u = itemselector.select(self.pf)+"/renders/"
+                        
+                        if os.path.exists(self.pf+"/"+u+"Preview.png"):
+                            u = u+"Preview.png"
+                        else:
+                            u = u+"Preview.jpg"
+                        
+                        
+                        u = self.pf+""+u
+                        
+                        x,y = self.toolXY
+                        
+                        pureX = (x  -  px)/sx  - 1
+                        pureY = (y+22  -  py)/sy 
+                        
+                        
+                        ################## COPIED FROM THE BOTTOM ######################
+                        
+                        imageNOT = True
+                        for i in fileformats.images:
+                            print u.lower(), i, u[-3:]
+                            if u.lower().endswith(i):
+                                imageNOT = False
+                                
+                                # FOUND THE IMAGE
+                                
+                                #making athumb and saving it using a random name
+                                
+                                #making sure that thumb directory exists
+                                if not os.path.exists(self.pf+"/pln/thumbs/"):
+                                    os.makedirs(self.pf+"/pln/thumbs/")
+                                
+                                
+                                #chosing a random name for the thumb
+                                rndname = ""
+                                rndchar = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+                                while os.path.exists(self.pf+"/pln/thumbs/"+rndname+".png") or rndname == "":
+                                    rndname = ""
+                                    for l in range(20):
+                                        rndname = rndname + random.choice(rndchar)
+                                    
+                                
+                                #thumbnailer.thumbnail
+                                
+                                fromr  = open(thumbnailer.thumbnail(u, x=150, y=150), "r")
+                                saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
+                                saveto.write(fromr.read())
+                                saveto.close()
+                                pureX = (x -   self.px)/self.sx  - 1
+                                pureY = int((y    - self.py   )/self.sy)
+                                
+                                if u.startswith(self.pf):
+                                    self.FILE.images.append([pureX, pureY, "RELATIVE", u.replace(self.pf, ""), rndname, gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+rndname+".png")])
+                                else:
+                                    self.FILE.images.append([pureX, pureY, "ABSOLUTE", u, rndname, gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+rndname+".png")])
+                                
+                                
+                                
+                                
+                        if imageNOT:
+                            try:
+                                MT = open(urllib.unquote(data.get_text().split("\n")[0])[7:], "r")
+                                lets = "    qwertyuiop[]asdfghjkl;'\\zxcvbnm,./`1234567890-=\nQWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?~!@#$%^&*()_+"
+                                MT = MT.read()
+                                for i in MT:
+                                    if i not in lets:
+                                        print i, "is wrong"
+                                        return
+                                
+                                #pureX = (x -   self.px)/self.sx  - 1
+                                pureS = 100.0
+                                #pureY = (y    - self.py   )/self.sy
+                                
+                                
+                                self.FILE.events.append([pureX, pureS, pureY, urllib.unquote(data.get_text().split("\n")[0])[urllib.unquote(data.get_text().split("\n")[0]).rfind("/")+1:], MT])
+                            
+                            except:
+                                raise
+                        
+                        
+                        ##################### TILL HERE ####################
+                        
+                        
+                        self.tool = "select"
+                        self.toolactive = False 
+                        
+                    
+                    
+                    glib.timeout_add(10, ee)
+                    
+                    self.tool = "linkingnow"
+                    self.toolactive = False
+                    self.toolXY = [mx, my]
             
+            
+            if self.tool == "linkingnow":
+                
+                x,y = self.toolXY
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
+                widget.window.draw_rectangle(xgc, False, x, y, 150, 150+22)
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
+                widget.window.draw_rectangle(xgc, False, x, y, 150, 22)
             
             
             ### EDITING EVENTS
@@ -1379,7 +1516,9 @@ class story:
                     self.event_resize = False
                 
                 
-                
+            
+            
+             
                 
                     
                     
@@ -1657,14 +1796,14 @@ class story:
             if 65507 in self.keys and 83 in self.keys:
                 saveshortcut = True
             
-            if mx in range(240,280) and my in range(5,45):
+            if mx in range(260,280) and my in range(5,45):
                 
                 
                 tooltip = "[ CTRL - S ]\n\nSave File to \n/pln/main.bos"
                 
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                widget.window.draw_rectangle(xgc, True, 240, 5, 40, 40)
+                widget.window.draw_rectangle(xgc, True, 260, 5, 40, 40)
                 
                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
                     
@@ -1681,7 +1820,7 @@ class story:
                    
                 self.FILE.save(px,py,sx,sy)
             
-            widget.window.draw_pixbuf(None, self.saveicon, 0, 0, 240, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+            widget.window.draw_pixbuf(None, self.saveicon, 0, 0, 260, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
             
             
             # EVENT BUTTON
@@ -1853,14 +1992,41 @@ class story:
             
             
             
-            
-            
-            
-            
-            
-            
-            
             widget.window.draw_pixbuf(None, self.markericon, 0, 0, 160, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            
+            # Link Item
+            
+            if 76 in self.keys or 108 in self.keys:
+                
+                
+                self.tool = "linkitem"                   # PRESS M
+                self.toolactive = False
+            
+            
+            if self.tool == "linkitem":
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
+                widget.window.draw_rectangle(xgc, True, 210, 5, 40, 40)
+            else:
+                if mx in range(210,240) and my in range(5,45):
+                    
+                    tooltip = "[ L ]\n\nLink item to the Story Editor"
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
+                    widget.window.draw_rectangle(xgc, True, 210, 5, 40, 40)
+                    
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
+                        
+                        self.tool = "linkitem"
+                        self.toolactive = False
+            
+            
+            widget.window.draw_pixbuf(None, self.item_big, 0, 0, 210, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            
+            
+            
+            
+            
+            
             
             
             
@@ -2246,59 +2412,150 @@ class story:
                 
                 
                 
-                story = story[story.replace('"', " ", 1).find('"')+1:]
+                
                 
                 
                 #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#575757"))
                 #widget.window.draw_rectangle(xgc, True, Pstart+20, 15+shotlistlength+220+self.shotsSCROLL-15, w/3-90, len(story.split("\n"))*15+5)
                 
-                    
-                    
-                    
-                for b in story.split("\n"):
-                    
-                    
-                    if len(b) < (Ppart/11):
-                    
-                        ctx2.set_source_rgb(1,1,1)
-                        ctx2.set_font_size(15)
-                        ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
-                        ctx2.show_text(b)
-                        shotlistlength = shotlistlength + 15
-                    
-                    else:
+                if "<shot>" in story:
+                    story = story[story.replace('"', " ", 1).find('"')+1:] # IDK WHAT IT DID BUT IT SEEMS LIKE IT DID NOTHING
+                
+                # DRAWING LITTLE ITEM LINKS
+                
+                itemcounts = 0 # HOW MUCH WE HAVE
+                items = [] #LIST OF ITEMS         [[startintext, endintext, url], [.....
+                for item in range(story.count("<item>")):
                         
-                        newb = ""
-                        for word in b.split(" "):
-                            
-                            
-                            if len(newb +  " " + word) < (Ppart/11):
-                                newb = newb + " " + word
-                                #print "Adding to newb"
-                            else:
-                                newb = newb + " " + word
-                                ctx2.set_source_rgb(1,1,1)
-                                ctx2.set_font_size(15)
-                                ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
-                                ctx2.show_text(newb)
-                                shotlistlength = shotlistlength + 15
-                                #print "newb = "+newb
-                                #print "word = "+word
-                                newb = ""
+                        
+                        itemcounts = itemcounts + 1
+                        
+                        startintext = story.find("<item>") # FINDING THE BEGINING OF THE ITEM
+                        story = story[:story.find("<item>")] + story[story.find("<item>")+len("<item>"):] # DELETING THE <ITEM>
+                        
+                        while story.find('"') < startintext:
+                            story = story.replace('"', " ", 1)
+                        url = story[story.find('"')+1:story.replace('"', " ", 1).find('"')] # FINDING THE URL
+                        story = story[:story.find(url)-1] + story[story.find(url)+len(url)+1:] # DELETING THE URL
+                        
+                        endintext = story.find("</item>") # FINDING THE ENDING OF THE ITEM
+                        story = story[:story.find("</item>")] + story[story.find("</item>")+len("</item>"):] # DELETING THE </ITEM>
+                        
+                    
+                        
+                        
+                        items.append([startintext, url, endintext])
+                
+                       
+                
+                # MULTILINE SEPARATION
+                
+                movex = 0
+                letter = 0
+                skipto = 0
+                for line in story.split("\n"):
+                    for word in line.split(" "):
+                        
+                        
+                        
+                        for item in items:
+                            if item[0] in range(letter, letter+len(word)):
                                 
-                        #if b.endswith(newb + word):
-                        #    newb = newb + word
                         
-                        ctx2.set_source_rgb(1,1,1)
-                        ctx2.set_font_size(15)
-                        ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
-                        ctx2.show_text(newb)
-                        shotlistlength = shotlistlength + 15    
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2b2b2b"))
+                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL, len(story[item[0]:item[2]])*9+9+22, 22)
+                                
+                                CUR = item[1][len("/dev/"):len("/dev/")+3]
+                                URL = item[1][item[1].rfind("/")+1:]
+                                
+                                
+                                # MOUSE OVER
+                                if mx in range(Pstart+20+movex-2, Pstart+20+movex-2 + len(story[item[0]:item[2]])*9+9+22) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+22):
+                                    
+                                    tooltip = self.imgAT[ind]
+                                    
+                                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL, len(story[item[0]:item[2]])*9+9+22, 22)
+                                    
+                                    # get mouse to show the hand
+                                    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                                    
+                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h) :
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        print item[1], "item[1]"
+                                        print CUR, "CUR"
+                                        print URL, "URL"
+                                        
+                                        print item[1]
+                                        self.box.destroy()
+                            
+                            
+                                        self.box = gtk.VBox(False)
+                                        self.mainbox.pack_start(self.box, True)
+                                        
+                                        assets.draw_assets(os.getcwd(), self.box, self.win, CUR, URL)
+                                        launchitem = False
+                                
+                                
+                                
+                                if CUR == "obj":
+                                    widget.window.draw_pixbuf(None, self.objicon, 0, 0, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                elif CUR == "chr":
+                                    widget.window.draw_pixbuf(None, self.chricon, 0, 0, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                elif CUR == "loc":
+                                    widget.window.draw_pixbuf(None, self.locicon, 0, 0, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                elif CUR == "veh":
+                                    widget.window.draw_pixbuf(None, self.vehicon, 0, 0, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                
+                                
+                                
+                                
+                                
+                                movex = movex + 22
+                                
+                                
+                                
+                                
+                                
+                                ctx2.set_source_rgb(1,1,1)
+                                ctx2.move_to( Pstart+20+movex, 15+shotlistlength+220+self.shotsSCROLL)
+                                ctx2.show_text(story[item[0]:item[2]])
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                
+                                movex = movex + len(story[item[0]:item[2]])*9+9
+                                
+                                skipto = letter + len(story[item[0]:item[2]])+1
+                                
                         
+                        if letter >= skipto:
+                                   
+                            ctx2.set_source_rgb(1,1,1)
+                            ctx2.set_font_size(15)
+                            ctx2.move_to( Pstart+20+movex, 15+shotlistlength+220+self.shotsSCROLL)
+                            ctx2.show_text(word)
+                            movex = movex + len(word)*9 + 9 # 9 PIXELS IS ONE LETTER
+                        letter = letter + len(word)+1
+                        
+                        
+                        if movex > Ppart-100:
+                            shotlistlength = shotlistlength + 20
+                            movex = 0
                     
-                
-                
                     
+
+                    shotlistlength = shotlistlength + 20
+                    movex = 0
                     
                     
                 if shotname:    
@@ -3495,9 +3752,9 @@ class story:
                             rndname = rndname + random.choice(rndchar)
                         
                     
-                    thumbnailer.thumbnail
+                    #thumbnailer.thumbnail
                     
-                    fromr  = open(thumbnailer.thumbnail(u, x=200, y=200), "r")
+                    fromr  = open(thumbnailer.thumbnail(u, x=150, y=150), "r")
                     saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
                     saveto.write(fromr.read())
                     saveto.close()

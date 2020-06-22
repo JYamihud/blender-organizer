@@ -1289,6 +1289,10 @@ class event:
         EXIMG = [] #IMAGES
         
         
+        #images are fucking bastards why did I do SQUARE BRACKETS to begin with OMG WTF
+        
+        text = text.replace("<image>", "[image]")
+        text = text.replace("</image>", "[/image]")
         
         # FRASES
         
@@ -1365,10 +1369,10 @@ class event:
                     
                     if notfound:
                         try:
-                            pixbufs.append([path, gtk.gdk.pixbuf_new_from_file(os.getcwd()+path)])
+                            pixbufs.append([path, gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(os.getcwd()+path, 300,300))])
                         except:
                             try:
-                                pixbufs.append([path, gtk.gdk.pixbuf_new_from_file(path)])
+                                pixbufs.append([path, gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(path, 300,300))])
                             except:
                                 pixbufs.append([path, gtk.gdk.pixbuf_new_from_file(os.getcwd()+"/py_data/icons/pic_big.png")])
                     for p in pixbufs:
@@ -1537,9 +1541,9 @@ class event:
                         if os.getcwd() in u:
                             u = u.replace(os.getcwd(), "")
                         
-                        textbuffer.insert_at_cursor("[image]"+u+"[/image]")
+                        textbuffer.insert_at_cursor("\n<image>"+u+"</image>\n")
                         
-                        si = textbuffer.get_iter_at_offset(textbuffer.get_iter_at_mark(textbuffer.get_insert()).get_offset()-len("<image>"+u+"</image>"))
+                        si = textbuffer.get_iter_at_offset(textbuffer.get_iter_at_mark(textbuffer.get_insert()).get_offset()-len(" <image>"+u+"</image> "))
                         ei = textbuffer.get_iter_at_offset(textbuffer.get_iter_at_mark(textbuffer.get_insert()).get_offset())
                         
                         
@@ -1997,7 +2001,7 @@ def markup(textbuffer):
     
     YELLOW = ["<scene>", "</scene>"]
     BLUE   = ["<shot>", "</shot>"]
-    GREY   = ["[image]", "[/image]"]
+    GREY   = ["\n<image>", "</image>\n"]
     PURPLE = ["<item>", "</item>"]
     
     grey = []
@@ -2021,17 +2025,17 @@ def markup(textbuffer):
                     
                     textbuffer.apply_tag_by_name(l[1], textbuffer.get_iter_at_offset(d1), textbuffer.get_iter_at_offset(d2))
                     
-                    try:
-                        if l[1] == "GREY":
-                            grey.append(d1)
-                            print grey, "THE GREY"
-                        
-                            textbuffer.apply_tag_by_name(l[1], textbuffer.get_iter_at_offset(grey[-2]), textbuffer.get_iter_at_offset(grey[-1]))
-                    except:
-                        
-                        
-                        
-                        print "FULL TEXT WAS NOT POSSIBLE TO DO"
+                    #try:
+                    #    if l[1] == "GREY":
+                    #        grey.append(d1)
+                    #        print grey, "THE GREY"
+                    #    
+                    #        textbuffer.apply_tag_by_name(l[1], textbuffer.get_iter_at_offset(grey[-2]), textbuffer.get_iter_at_offset(grey[-1]))
+                    #except:
+                    #   
+                    #    
+                    #   
+                    #    print "FULL TEXT WAS NOT POSSIBLE TO DO"
      
     if '"' in text:
         y = '"'

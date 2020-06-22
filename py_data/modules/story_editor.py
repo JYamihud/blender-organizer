@@ -261,10 +261,17 @@ class story:
         self.scnicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/scn_asset_undone.png")
         self.picicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/pic.png")
         
-        
+        #BIG PREVIEWS
+        self.objiconbig = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/obj_prev.png")
+        self.chriconbig = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/chr_prev.png")
+        self.vehiconbig = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/veh_prev.png")
+        self.lociconbig = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/loc_prev.png")
         
         self.scnPERCENT = get_scenes_percentage(self.FILE)
         
+        
+        
+        self.insertedimgs = []
         
         
         def framegraph(widget, event):
@@ -734,6 +741,9 @@ class story:
                 
                 tinyicon = self.picicon
                 
+                
+                previewurl = url
+                
                 if mode == "ABSOLUTE":
                     
                 
@@ -764,14 +774,19 @@ class story:
                         launchitem = False
                 
                 ctx3 = widget.window.cairo_create()
-                ctx3.set_source_rgba(0.1,0.1,0.1,0.7)
+                ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
                 ctx3.rectangle(imX-2, imY, piX+4, piY)
                 ctx3.fill()
                 
+                
+                
+                
+                
+                
                         
-                if mx in range(imX, imX+piX) and my in range(imY, imY+piY) and mx in range(0, w-w/3):
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
-                    widget.window.draw_rectangle(xgc, False, imX-2, imY, piX+4, piY)
+                if mx in range(imX, imX+piX) and my in range(imY, imY+piY) and mx in range(0, w-w/3) and my in range(50, h):
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
+                    widget.window.draw_rectangle(xgc, True, imX-2, imY, piX+4, piY)
                     
                     
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
@@ -799,7 +814,7 @@ class story:
                                 
                                 
                                 
-                elif mx in range(imX, imX+piX) and my in range(imY-22, imY) and mx in range(0, w-w/3):
+                elif mx in range(imX, imX+piX) and my in range(imY-22, imY) and mx in range(0, w-w/3) and my in range(50, h):
                      xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                      widget.window.draw_rectangle(xgc, True, imX-3, imY-23, piX+6, 22)
                      xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
@@ -820,7 +835,7 @@ class story:
                 
                 
                 
-                if mx in range(imX, imX+piX) and my in range(imY-22, imY+piY):
+                if mx in range(imX, imX+piX) and my in range(imY-22, imY+piY) and my in range(50, h):
                      
                     # DELETE EVENT SHOR KEY #
                     
@@ -861,27 +876,71 @@ class story:
                 
                 
                 
-                
+                percenttext = ""
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8a7d2c"))
                 if launchitem:
+                    
+                    
+                    
+                    itempercent = checklist.partcalculate(checklist.openckecklist(self.pf+"/dev/"+CUR+"/"+name+"/"+"/asset.progress")) #GETTING ITEMS %
+                    
+                    # THIS IS PERCENT        THIS IS ITEMS PART LENGHT           
+                    lenofsecondcube = int(round(float(piX+4) * itempercent))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
+                    widget.window.draw_rectangle(xgc, True, imX-2, imY+piY, piX+4, 10)
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                    widget.window.draw_rectangle(xgc, True, imX-2, imY+piY, lenofsecondcube, 10)
+                    
+                    
+                    percenttext = str(int(round(itempercent*100)))+"%"
+                    
+                    
+                    
+                    #LETS FIX THE GOD DAMN PREVIEWS FOR FUCK SAKE
+                    # BTW THOSE WHO WANT TO EDIT BAD WORDS OUT OF THE CODE. FUCK YOU!
+                    
+                    
+                    if not os.path.exists(self.pf+"/"+previewurl):
+                        
+                        
+                        
+                        if CUR == "chr":
+                            pixthumb = self.chriconbig
+                        elif CUR == "veh":
+                            pixthumb = self.vehiconbig
+                        elif CUR == "loc":
+                            pixthumb = self.lociconbig
+                        elif CUR == "obj":
+                            pixthumb = self.objiconbig
+                            
+                        
+                    
+                    
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6e5daf"))
+                    
                 elif mode == "ABSOLUTE":
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#af5d5d"))
-                widget.window.draw_rectangle(xgc, True, imX-2, imY-22, piX+4, 20)
+                widget.window.draw_rectangle(xgc, True, imX-2, imY-22, piX+4, 22)
                 
                 
-                widget.window.draw_pixbuf(None, tinyicon, 0, 0, imX+piX-22, imY-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                widget.window.draw_pixbuf(None, tinyicon, 0, 0, imX, imY-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
                 
                 
                 ctx.set_source_rgb(1,1,1)
-                ctx.set_font_size(10)
-                ctx.move_to( imX, imY-10)
-                if "/dev/" not in url:
-                    ctx.show_text(url[url.rfind("/")+1:])
-                else:   
-                    ctx.show_text(url)
+                ctx.set_font_size(15)
+                ctx.move_to( imX+ 24, imY-6)
+                
+                text = url[url.rfind("/")+1:]
+                
+                if len(text) > 14:
+                    text = text[:6]+"..."+text[-6:]
+                ctx.show_text(text)
+                
+                
+                
                 
                 if imX in range(-piX, w/3*2) and imY in range(-piY, h):
                     try:
@@ -891,9 +950,18 @@ class story:
                         widget.window.draw_pixbuf(None, pixthumb, 0, 0, imX + ((piX-pixthumb.get_width())/2), imY + ((piY-pixthumb.get_height())/2), -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                     except:
                         pass
-            
-            
-            
+                
+                #IN CASE IMAGE IS WHITE MAKE % READABLE
+                
+                if len(percenttext) > 0:
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
+                    widget.window.draw_rectangle(xgc, True, imX, imY+piY-5-13, len(percenttext)*6+8, 13)
+                
+                
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(10)
+                ctx.move_to( imX+2, imY+piY-8)
+                ctx.show_text(percenttext)
             
             ################# EVENT TOOL ##################
             
@@ -1270,13 +1338,22 @@ class story:
                         
                         
                          
+                        try:
+                            u = itemselector.select(self.pf)+"/renders/"
+                        except:
+                            
                         
-                        u = itemselector.select(self.pf)+"/renders/"
-                        
+                            self.tool = "select"
+                            self.toolactive = False 
+                            
+                            return
+                            
                         if os.path.exists(self.pf+"/"+u+"Preview.png"):
                             u = u+"Preview.png"
-                        else:
+                        elif os.path.exists(self.pf+"/"+u+"Preview.jpg"):
                             u = u+"Preview.jpg"
+                        else:
+                            u = u+"Preview.png"
                         
                         
                         u = self.pf+""+u
@@ -2453,7 +2530,128 @@ class story:
                 movex = 0
                 letter = 0
                 skipto = 0
+                imagefound = False
                 for line in story.split("\n"):
+                
+                    #IF LINE IMAGE
+                    
+                    line = line.replace("[image]", "<image>") #BACKWARD COMPATIBILITY
+                    line = line.replace("[/image]", "</image>") #BACKWARD COMPATIBILITY
+                    
+                    
+                    
+                    if line.startswith("<image>"):
+                        
+                        imagefound = True
+                        letter = letter + len(line)
+                        
+                        imageurl = line[7:line.find("</image>")]
+                        
+                        print imageurl, "IMAGEURL"
+                        
+                    
+                    
+                    
+                        loaded = False
+                        for i in self.insertedimgs:
+                            if i[0] == imageurl:
+                                loaded = True
+                                
+                                
+                                
+                                #image square
+                                
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) #403666   #6e5daf
+                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+220+self.shotsSCROLL+20, 154, 154)
+                                
+                                # MOUSE OVER
+                                if mx in range(Pstart+20+movex-2, Pstart+20+movex-2 + 154) and my in range(shotlistlength+220+self.shotsSCROLL+20, shotlistlength+220+self.shotsSCROLL+20+154):
+                                    
+                                    tooltip = "Open the Image \n"+imageurl
+                                    
+                                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384")) #403666   #6e5daf
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+220+self.shotsSCROLL+20, 154, 154)
+                                    
+                                    
+                                    # get mouse to show the hand
+                                    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                                    
+                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h) : 
+                                        
+                                        if os.path.exists(imageurl):
+                                            os.system("xdg-open "+imageurl)    
+                                        else:
+                                            os.system("xdg-open "+self.pf+imageurl)
+                                
+                                           
+                                
+                                
+                                
+                                
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8a7d2c"))
+                                if os.path.exists(imageurl):
+                                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#af5d5d"))
+                                
+                                
+                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+220+self.shotsSCROLL, 154, 22)
+                                
+                                widget.window.draw_pixbuf(None, self.picicon, 0, 0, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                
+                                
+                                text = imageurl[imageurl.rfind("/")+1:]
+                                
+                                if len(text) > 14:
+                                    text = text[:5]+"..."+text[:text.rfind(".")][-6:]
+                                
+                                ctx2.set_source_rgb(1,1,1)
+                                ctx2.set_font_size(15)
+                                ctx2.move_to( Pstart+20+movex + 24, 15+shotlistlength+220+self.shotsSCROLL)
+                                ctx2.show_text(text)
+                                
+                                
+                                
+                                imagex = Pstart+20+movex-2 + (150 - i[1].get_width())/2
+                                imagey = shotlistlength+220+self.shotsSCROLL+22 + (150 - i[1].get_height())/2
+                                
+                                widget.window.draw_pixbuf(None, i[1], 0, 0, imagex, imagey , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                
+                                movex = movex + 172
+                                
+                                if (movex) > Ppart-170:
+                                    shotlistlength = shotlistlength + 150 + 40
+                                    movex = 0
+                                
+                                #shotlistlength = shotlistlength + 150 + 40
+                                
+                                print i, "IMAGE DATA"
+                        
+                        if not loaded:
+                            
+                            print "NOT LOADED"
+                            
+                            if os.path.exists(imageurl):
+                                pix = gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(imageurl, 150,150))
+                            else:
+                                pix = gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(self.pf+imageurl, 150,150))
+                            
+                            
+                            self.insertedimgs.append([imageurl, pix])
+                            
+                        
+                        #self.insertedimgs
+                        
+                        
+                        
+                        
+                        continue
+                    
+                    elif line.startswith("<image>") == False and imagefound:
+                        shotlistlength = shotlistlength + 150 + 40
+                        imagefound = False
+                        movex = 0
+                
+                
+                
                     for word in line.split(" "):
                         
                         
@@ -2461,21 +2659,36 @@ class story:
                         for item in items:
                             if item[0] in range(letter, letter+len(word)):
                                 
-                        
-                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2b2b2b"))
-                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL, len(story[item[0]:item[2]])*9+9+22, 22)
+                                
+                                #ITEM COLOR
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6e5daf")) #403666   #6e5daf
+                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 20)
+                                
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0")) #403666   #6e5daf
+                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL+20, len(story[item[0]:item[2]])*9+9+22, 2)
+                                
+                                
                                 
                                 CUR = item[1][len("/dev/"):len("/dev/")+3]
                                 URL = item[1][item[1].rfind("/")+1:]
                                 
+                                itempercent = checklist.partcalculate(checklist.openckecklist(self.pf+"/"+item[1]+"/asset.progress")) #GETTING ITEMS %
+                                
+                                # THIS IS PERCENT        THIS IS ITEMS PART LENGHT           
+                                lenofsecondcube = int(round(float(len(story[item[0]:item[2]])*9+9+22) * itempercent))
+                                
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165")) #403666   #6e5daf
+                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL+20, lenofsecondcube, 2)
+                                
+                                
                                 
                                 # MOUSE OVER
-                                if mx in range(Pstart+20+movex-2, Pstart+20+movex-2 + len(story[item[0]:item[2]])*9+9+22) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+22):
+                                if mx in range(Pstart+20+movex-2, Pstart+20+movex-2 + len(story[item[0]:item[2]])*9+9+22) and my in range(shotlistlength+220+self.shotsSCROLL+2, shotlistlength+220+self.shotsSCROLL+18):
                                     
-                                    tooltip = self.imgAT[ind]
+                                    tooltip = "Go to the item"
                                     
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                                    widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL, len(story[item[0]:item[2]])*9+9+22, 22)
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 18)
                                     
                                     # get mouse to show the hand
                                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
@@ -2548,8 +2761,13 @@ class story:
                         letter = letter + len(word)+1
                         
                         
-                        if movex > Ppart-100:
+                        if movex > Ppart-120:
+                            
                             shotlistlength = shotlistlength + 20
+                            
+                            
+                            
+                            
                             movex = 0
                     
                     
@@ -4047,6 +4265,19 @@ class bos:
                 
                 self.markers.append(mark)
         
+        
+        
+        
+        
+        
+        
+        tmpopenfile = openfile
+        
+        openfile = openfile[openfile.rfind("</arrow>"):]
+        
+        
+        print openfile
+        
         #### GETTING IMAGES
         if "<image>" in openfile and "</image>" in openfile:
             
@@ -4077,6 +4308,9 @@ class bos:
         #    savefile.write('<image>'+str(imX)+',"'+str(imY)+',"'+str(mode)+',"'+str(url)+',"'+str(thumb)+'"</image>\n')
         
         
+        
+        
+        openfile = tmpopenfile
         
         #### GETTING CAMERA DIMENTIONS ####
         

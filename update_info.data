@@ -1,3 +1,16 @@
+VERSION 4.26
+FILE update_info.data
+FILE py_data/modules/analytics.py
+FILE py_data/modules/assets.py
+FILE py_data/modules/story_editor.py
+FILE py_data/modules/dialogs.py
+FILE py_data/modules/itemselector.py
+FILE py_data/icons/pic.png
+FILE py_data/icons/plus.png
+FILE py_data/icons/render.png
+FILE py_data/icons/item_big.png
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.26
+
 VERSION 4.25
 MAIN_FILE
 FILE update_info.data

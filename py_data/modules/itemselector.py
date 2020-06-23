@@ -23,6 +23,7 @@ import datetime
 # self made modules
 
 import thumbnailer
+import dialogs
 import checklist
 def select(pf, searchitem=""):
     window = gtk.Dialog("Choose Item", None, 0, (gtk.STOCK_OK,  gtk.RESPONSE_APPLY, 
@@ -86,6 +87,7 @@ def select(pf, searchitem=""):
             self.vehicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/veh_asset_undone.png")
             self.locicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/loc_asset_undone.png")
             
+            self.plus = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
             
             def framegraph(widget, event):
                                                                 
@@ -135,8 +137,17 @@ def select(pf, searchitem=""):
                 n = 0
                 i = ["", ""]
                 sett = True
+                hoti = 0
+                al = 0
+                foundsearch = False
+                
                 for n, i in enumerate(sorted(showlist)):
                     
+                    if self.search.get_text() in ["chr", "veh", "obj", "loc", i[1]]:
+                        foundsearch = True
+                        
+                        if self.search.get_text() == i[1]:
+                            self.finalname.set_text("/dev/"+i[0]+"/"+i[1])
                     
                     hoti = (20*n)+S # HEIGHT OF THIS ITEM
                     
@@ -178,12 +189,59 @@ def select(pf, searchitem=""):
                     elif i[0] == "obj":
                         widget.window.draw_pixbuf(None, self.objicon, 0, 0, 1, hoti+2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                 
+                    if n+1 == len(showlist):
                     
-                    
-                    
-                    
-                    
+                        hoti = hoti + 20
                 
+                if len(self.search.get_text()) > 0 and foundsearch == False:
+                    
+                    
+                    #mouse over
+                    if my in range(hoti+2, hoti+22) and my in range(0, h) and mx in range(0,w):
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, True, 0, hoti+2,  w, 20)
+                        
+                        
+                        if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active() and sett: #IF CLICKED
+                    
+                            def ee():
+                                self.addingnew = dialogs.AddAsset(self.pf, "chr", self.search.get_text())
+                                
+                                path = self.addingnew.getpath()
+                                
+                                if len(path) > 0:
+                                
+                                    print path, "PATH"
+                                    
+                                    CUR = path[5:path.rfind("/")]
+                                    NAME = path[path.rfind("/")+1:]
+                                    
+                                    print CUR, "CUR"
+                                    
+                                    
+                                    self.listofitems.append([CUR, NAME])
+                                    
+                                    self.search.set_text(NAME)
+
+                            glib.timeout_add(10, ee)
+                            
+                            
+                    
+                    al = al + 1    
+                    ctx.set_font_size(15)
+                    ctx.move_to( 30, hoti+17)
+                    ctx.show_text('Create item "'+self.search.get_text()+'"')
+                    
+                    widget.window.draw_pixbuf(None, self.plus, 0, 0, 1, hoti+2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
+                    
                 
                 
                 
@@ -196,8 +254,8 @@ def select(pf, searchitem=""):
                     self.scroll = self.scroll - (self.mpy-my)
                 
                 
-                if self.scroll < 0-(n*20)+h-33:
-                    self.scroll = 0-(n*20)+h-33
+                if self.scroll < 0-((n+al)*20)+h-33:
+                    self.scroll = 0-((n+al)*20)+h-33
                     
                 if self.scroll > 0:
                     self.scroll = 0

@@ -1018,7 +1018,7 @@ def choose_shot_type():
     return ret
 
 class AddAsset:
-    def __init__(self, pf, CUR):
+    def __init__(self, pf, CUR, name=""):
         
         
         self.pf = pf
@@ -1051,10 +1051,10 @@ class AddAsset:
                 
         
         fldr = gtk.combo_box_new_text()
-        fldr.append_text("chr")
-        fldr.append_text("veh")
-        fldr.append_text("obj")
-        fldr.append_text("loc")
+        fldr.append_text("Character")
+        fldr.append_text("Vehicle")
+        fldr.append_text("Object")
+        fldr.append_text("Location")
         
         if self.CUR == "chr":
             fldr.set_active(0)
@@ -1076,6 +1076,7 @@ class AddAsset:
         nm.pack_start(gtk.Label("  Name:  "), False)
         
         ne = gtk.Entry()
+        ne.set_text(name)
         nm.pack_start(ne)
         ne.grab_focus()
         
@@ -1088,19 +1089,45 @@ class AddAsset:
         
         box.show_all()
         r = dialog.run()
-        
+        self.name = ""
         if r == gtk.RESPONSE_APPLY:
         
             ne.set_text(ne.get_text().replace("/","_").replace(" ", "_").replace('"',"_").replace("(","_").replace(")","_").replace("'","_").replace("[","_").replace("]","_").replace("{","_").replace("}","_")   )
-        
-            os.mkdir(self.pf+"/dev/"+fldr.get_active_text()+"/"+ne.get_text())
-        
-        self.name = ne.get_text()
+            
+            
+            curname = fldr.get_active_text()
+            CUR = "obj"
+            if curname == "Character":
+                CUR = "chr"
+            elif curname == "Vehicle":
+                CUR = "veh"
+            elif curname == "Location":
+                CUR = "veh"
+            
+            
+            path = self.pf+"/dev/"+CUR+"/"+ne.get_text()
+            
+            os.mkdir(path)
+            os.mkdir(path+"/renders")
+            os.mkdir(path+"/reference")
+            os.mkdir(path+"/tex")
+            
+            try:
+                o = open("py_data/new_file/"+CUR+".progress", "r")
+            except:
+                o = open("py_data/new_file/asset.progress", "r")
+            w = open(path+"/asset.progress", "w")
+            w.write(o.read())
+            w.close()
+            
+            
+         
+            self.name = "/dev/"+CUR+"/"+ne.get_text()
         dialog.destroy()
         
         
     
-    def add(self):
+    def getpath(self):
         return self.name
 
 

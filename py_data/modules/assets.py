@@ -24,6 +24,7 @@ import thumbnailer
 import checklist
 import dialogs
 import fileformats
+import linkconfig
 
 from subprocess import *
 
@@ -208,6 +209,9 @@ class draw_assets:
         self.blendericon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blender.png")
         self.blendfileicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blendfile_big.png")
         self.okicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/ok.png")
+        self.vidicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/vid.png")
+        self.settingsicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/settings.png")
+        
         self.refresh = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/refresh.png")
         self.plusicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
         self.fade_01 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_01.png")
@@ -322,8 +326,8 @@ class draw_assets:
                             self.scroll = ny*200
                             self.justadded = False
                         
-                        
-                      
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646")) 
+                    widget.window.draw_rectangle(xgc, True, nx+10, ny+5, 180, 195) 
                      
                     ### MOUSE OVER
                     
@@ -352,7 +356,7 @@ class draw_assets:
                             self.iteminfo = self.loaditem(i)
                             self.screen = i
                             
-                        widget.window.draw_rectangle(xgc, True, nx, ny, 200, 200)
+                        widget.window.draw_rectangle(xgc, True, nx+10, ny+5, 180, 195)
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
                         
@@ -365,22 +369,31 @@ class draw_assets:
                        
                         
                     
+                    # top line
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6e5daf"))
+                    widget.window.draw_rectangle(xgc, True, nx+10, ny+5, 180, 20)
+                    
+                    
+                    
+                    
                     # little icon
                     # nod to the original design
                     self.donepic
                     
-                    if i.done:
-                        widget.window.draw_pixbuf(None, self.donepic, 0, 0, nx+2, ny+2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-                    else:
-                        widget.window.draw_pixbuf(None, self.undonepic, 0, 0, nx+2, ny+2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)     
+                    #if i.done:
+                    #    widget.window.draw_pixbuf(None, self.donepic, 0, 0, nx+12, ny+4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                    #else:
+                    widget.window.draw_pixbuf(None, self.undonepic, 0, 0, nx+12, ny+4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)     
                             
                     # name
                     
+                    
+                    
                     ctx.set_font_size(15)
-                    ctx.move_to( nx+33, ny+20)
+                    ctx.move_to( nx+35, ny+20)
                     ctx.show_text(i.name[:15])
-                    ctx.move_to( nx+33, ny+40)
-                    ctx.show_text(i.name[15:])
+                    #ctx.move_to( nx+33, ny+40)
+                    #ctx.show_text(i.name[15:])
                     
                     
                     # preview draw
@@ -612,7 +625,7 @@ class draw_assets:
                 raw_true_w = (w / raws)
                 raw_w = (w / raws) - (margin * 2) # getting the width of the raw
                 
-                raw_start = mmy + 145 # starting height
+                raw_start = mmy + 180 # starting height
                 raw_h = h - raw_start # height
                 
                 
@@ -633,7 +646,7 @@ class draw_assets:
                     
                     
                     # raws frames
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) ## CHOSE COLOR
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, the_raw_w_start , raw_start, raw_w, raw_h)
                     
                     
@@ -674,7 +687,7 @@ class draw_assets:
                     
                         
                         mox = ix*100 + the_raw_w_start + ix*10 + 10 
-                        moy = iy*100 + raw_start + iy*10       + 10 + self.iscroll[raw] 
+                        moy = iy*130 + raw_start + iy*10       + 10 + self.iscroll[raw] +10
                         
                         
                         imx = mox   + center_X
@@ -691,7 +704,7 @@ class draw_assets:
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
                             
                             
-                            widget.window.draw_rectangle(xgc, True, mox-5, moy-5, 110, 110)
+                            widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 122)
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
                             
                             
@@ -711,21 +724,38 @@ class draw_assets:
                         ### DRAWING
                         
                         if not mouseover:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#393939"))
-                            widget.window.draw_rectangle(xgc, True, mox, moy, 100, 100)
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
+                            widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 122)
+                            
                         
                         
-                        widget.window.draw_pixbuf(None, render[0], 0, 0, imx, imy, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                        
+                        
+                        
+                        
+                        if render[1][render[1].rfind(".")+1:] in fileformats.images:
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8a7d2c"))
+                            widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 22)
+                            widget.window.draw_pixbuf(None, self.rendericon, 0, 0, mox-2, moy, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                            
+                        elif render[1][render[1].rfind(".")+1:] in fileformats.videos: #4987af
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4987af"))
+                            widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 22)
+                            widget.window.draw_pixbuf(None, self.vidicon, 0, 0, mox-2, moy, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                        
+                        widget.window.draw_pixbuf(None, render[0], 0, 0, imx, imy+22, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                         
                         # text ( the picture filename )
                         
                         ctx.set_font_size(10)
                         
-                        if mouseover:
-                            ctx.set_font_size(20)
+                        #if mouseover:
+                        #    ctx.set_font_size(20)
                         
-                        ctx.move_to( mox, moy + 108)
-                        ctx.show_text(render[2][:15])
+                        ctx.move_to( mox+22, moy+12)
+                        ctx.show_text(render[2][:12])
                         
                         
                         # TO THE NEXT FRAME
@@ -750,7 +780,7 @@ class draw_assets:
                             self.iscroll[raw] = self.iscroll[raw] - (self.mpy-my) 
                         
                         
-                    Yinpix = raw_h+(iy*100 + iy*10)*-1-120
+                    Yinpix = raw_h+(iy*130 + iy*10)*-1-120
                         
                     if self.iscroll[raw] < Yinpix:
                         self.iscroll[raw] = Yinpix
@@ -764,11 +794,11 @@ class draw_assets:
                     
                     # fade 03
                     
-                    if self.iscroll[raw] < 0:
-                        widget.window.draw_pixbuf(None, self.fade_03, 0, 0, the_raw_w_start, raw_start, raw_w, 40, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                    
-                    if (iy*100 + iy*10)+130 > raw_h and Yinpix != self.iscroll[raw]:
-                        widget.window.draw_pixbuf(None, self.fade_04, 0, 0, the_raw_w_start, h-40, raw_w, 40, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    #if self.iscroll[raw] < 0:
+                    #    widget.window.draw_pixbuf(None, self.fade_03, 0, 0, the_raw_w_start, raw_start, raw_w, 40, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    #
+                    #if (iy*100 + iy*10)+130 > raw_h and Yinpix != self.iscroll[raw]:
+                    #    widget.window.draw_pixbuf(None, self.fade_04, 0, 0, the_raw_w_start, h-40, raw_w, 40, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
                     
@@ -783,19 +813,19 @@ class draw_assets:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2b2b2b")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, raw_true_w*raw, 50, raw_true_w, raw_start-50)
                     
-                    # tab thingy
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) ## CHOSE COLOR
+                    ## tab thingy
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, the_raw_w_start , raw_start-30, raw_w, 30)
                     
                     
                     # tab icons
                     
-                    widget.window.draw_pixbuf(None, self.rendericon, 0, 0, the_raw_w_start+5, raw_start-28, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    #widget.window.draw_pixbuf(None, self.rendericon, 0, 0, the_raw_w_start+5, raw_start-28, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
                     # teb name
                     
-                    ctx.set_font_size(20)
+                    ctx.set_font_size(15)
                     ctx.set_source_rgb(1,1,1)
                     ctx.move_to( the_raw_w_start+14+30, raw_start-10)
                     ctx.show_text(rawnames[raw])
@@ -803,7 +833,7 @@ class draw_assets:
                 
                     # foldrer button
                     
-                    icon_x = the_raw_w_start+raw_w-25
+                    icon_x = the_raw_w_start+2
                     icon_y = raw_start-28
                     icon_s = 22
                     
@@ -854,24 +884,24 @@ class draw_assets:
                 tmp_mmy = mmy # I'm Redesigning the UI and trying to bring the blendfiles up.
                 mmy = 105 # comment this setting to see how low they were originally
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, mmx-15, mmy-45, w, 100)
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 0, mmy-15, w, 115)
+                #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) ## CHOSE COLOR
+                #widget.window.draw_rectangle(xgc, True, mmx-15, mmy-45, w, 100)
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, True, 0, mmy-15-30, w, 115+30)
                 
                 #blender icon
-                widget.window.draw_pixbuf(None, self.blendericon, 0, 0, mmx+105, mmy-41, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                #widget.window.draw_pixbuf(None, self.blendericon, 0, 0, mmx+105, mmy-41, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
-                ctx.set_font_size(20)
-                ctx.set_source_rgb(1,1,1)
-                ctx.move_to( mmx+130, mmy-24)
-                ctx.show_text("Blender Files")
+                #ctx.set_font_size(20)
+                #ctx.set_source_rgb(1,1,1)
+                #ctx.move_to( mmx+130, mmy-24)
+                #ctx.show_text("Blender Files")
                 
                 
                 
                 
-                
+                #526969 undone blend color
                 
                 
                 #### SCROLL OF BLEN FILES ####
@@ -901,6 +931,12 @@ class draw_assets:
                 
                 for num, blend in enumerate(self.blends):
                 
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#526969"))
+                    widget.window.draw_rectangle(xgc, True, mmx + 115+110 +(num*110)+self.blscroll, mmy-14-22, 104, 22)
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
+                    widget.window.draw_rectangle(xgc, True, mmx + 115+110 +(num*110)+self.blscroll, mmy-14, 104, 104)
                     
                     
                     ### MOUSE OVER
@@ -940,9 +976,11 @@ class draw_assets:
                     
                     ctx.set_font_size(10)
                         
-                    ctx.move_to(mmx + 117+110 +(num*110)+self.blscroll,mmy-12+109  )
+                    ctx.move_to(mmx + 117+110 +(num*110)+self.blscroll+22,mmy-12-22+12  )
                     ctx.show_text(blend[2][:15])
-                
+                    
+                    #blender icon
+                    widget.window.draw_pixbuf(None, self.blendericon, 0, 0, mmx + 117+110 +(num*110)+self.blscroll, mmy-12-24, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
                 
@@ -960,16 +998,26 @@ class draw_assets:
                 if (w-(mmx+117+110)) < (len(self.blends)*110+60):
                     widget.window.draw_pixbuf(None, self.fade_02, 0, 0, w-38 , mmy-12, -1, 111, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
-                if self.blscroll < -10:
+                #if self.blscroll < -10:
                     
                     
                     
-                    widget.window.draw_pixbuf(None, self.fade_01, 0, 0, mmx+217 , mmy-22, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                #    widget.window.draw_pixbuf(None, self.fade_01, 0, 0, mmx+217 , mmy-22, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                 
                 if self.screen.done:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
                     widget.window.draw_rectangle(xgc, True, mmx , mmy-12,217,110)
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6e5daf"))
+                    widget.window.draw_rectangle(xgc, True, mmx + 117-2, mmy-14-22, 104, 22)
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
+                    widget.window.draw_rectangle(xgc, True, mmx + 117-2, mmy-14, 104, 104)
+                    
+                    
+                    
+                    
                     if mx > mmx + 117 and mx < mmx + 117 + 100 and my > mmy-12 and my < mmy-12 + 100:
                         
                         mouseoverany = True
@@ -1001,15 +1049,27 @@ class draw_assets:
                     
                     
                     widget.window.draw_pixbuf(None, self.screen.ast[0], 0, 0, mmx + 117 , mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    ctx.set_font_size(10)
+                        
+                    ctx.move_to(mmx + 117+20,mmy-12-22+12  )
+                    ctx.show_text(self.screen.name[:15])
+                    
+                    #blender icon
+                    widget.window.draw_pixbuf(None, self.blendericon, 0, 0, mmx + 117-2, mmy-12-24, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                
+                
+                    
+                    
                     
                     # OK ICON
-                    widget.window.draw_pixbuf(None, self.okicon, 0, 0, mmx + 117 +85 , mmy-12-5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    #widget.window.draw_pixbuf(None, self.okicon, 0, 0, mmx + 117 +85 , mmy-12-5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
                     
                 else:
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
                     widget.window.draw_rectangle(xgc, True, mmx , mmy-12,217,110)
                     widget.window.draw_pixbuf(None, self.blendfileicon, 0, 0, mmx + 117 , mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     widget.window.draw_rectangle(xgc, True, mmx + 117, mmy-12+75,100,25)
@@ -1036,7 +1096,7 @@ class draw_assets:
                 
                 
                 ### MAIN MENU  ####
-                mmy = tmp_mmy
+                mmy = tmp_mmy + 22
                 
                 
                 
@@ -1044,7 +1104,7 @@ class draw_assets:
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636"))
                 widget.window.draw_rectangle(xgc, True, 40, 60, mmx+50, mmy+20)
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
                 widget.window.draw_rectangle(xgc, True, 40, 60, mmx+18, mmy+20)
                 
                 
@@ -1141,6 +1201,39 @@ class draw_assets:
                         
                     
                 widget.window.draw_pixbuf(None, self.plusicon, 0, 0, mmx+60, 115, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                
+                
+                # CONFIGURE ASSET
+                
+                if mx in range (mmx+60, mmx+60+20) and my in range (115+22, 110+20+22):
+                    mouseoverany = True
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, mmx+60, 115+22, 20, 20)
+                    
+                    # TOOLTIP
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))   
+                    widget.window.draw_rectangle(xgc, True, mx+20, my+5, 300, 20)
+                    ctx.set_font_size(15)
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.move_to( mx+30, my+20)
+                    ctx.show_text("Configure item as linkable asset")
+                    
+                    
+                    # IF CLICKED
+                    if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
+                        
+                        def ee():
+                                    
+                            print "BUTTON WAS CLICKED"
+                                    
+                            linkconfig.config(self.pf, self.screen.CUR+"/"+self.screen.name )
+                                    
+                        glib.timeout_add(10, ee) 
+                        
+                    
+                widget.window.draw_pixbuf(None, self.settingsicon, 0, 0, mmx+60, 115+22, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
                 
                 
                 
@@ -1292,7 +1385,11 @@ class draw_assets:
     def call_add_dialog(self):
                
         self.newitem = dialogs.AddAsset(self.pf, self.CUR)
-        self.newitem = self.newitem.add()
+        
+        
+        
+        self.newitem = self.newitem.getpath()
+        self.newitem = self.newitem[self.newitem.rfind("/")+1:]
         
         print self.newitem
         

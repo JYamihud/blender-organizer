@@ -208,7 +208,7 @@ class story:
         self.split_event = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/split_event.png")
         self.split_action = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/split_action.png")
         self.item_big = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/item_big.png")
-        
+        self.blendericon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blender.png")
         self.node_link = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/node_link.png")
         
         #start end
@@ -882,8 +882,10 @@ class story:
                     
                     
                     
-                    itempercent = checklist.partcalculate(checklist.openckecklist(self.pf+"/dev/"+CUR+"/"+name+"/"+"/asset.progress")) #GETTING ITEMS %
-                    
+                    try:
+                        itempercent = checklist.partcalculate(checklist.openckecklist(self.pf+"/dev/"+CUR+"/"+name+"/"+"/asset.progress")) #GETTING ITEMS %
+                    except:
+                        itempercent = 0
                     # THIS IS PERCENT        THIS IS ITEMS PART LENGHT           
                     lenofsecondcube = int(round(float(piX+4) * itempercent))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
@@ -1928,16 +1930,16 @@ class story:
             
             # ADD SCENE BUTTON
             addscenenowshortcut = False
-            if 83 in self.keys and self.win.is_active() and 65507 not in self.keys and not saveshortcut:
-                if 83 in self.keys:
-                    self.keys.remove(83)
+            if 110 in self.keys and self.win.is_active() and 65505 not in self.keys and not saveshortcut:
+                if 110 in self.keys:
+                    self.keys.remove(110)
                 #addscenenowshortcut = True
                 self.tool = "event"
                 self.toolactive = False
-            if 115 in self.keys and self.win.is_active() and 65507 not in self.keys and not saveshortcut:
+            if 110 in self.keys and self.win.is_active() and 65507 not in self.keys and not saveshortcut:
                 
-                if 115 in self.keys:
-                    self.keys.remove(115)
+                if 110 in self.keys:
+                    self.keys.remove(110)
                 #addscenenowshortcut = True
                 self.tool = "event"
                 self.toolactive = False
@@ -1949,7 +1951,7 @@ class story:
             
             if mx in range(10,50) and my in range(5,45):
                 
-                tooltip = "[ S ]\nCreate a new scene"
+                tooltip = "[ N ]\nCreate a new scene"
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
                 widget.window.draw_rectangle(xgc, True, 10, 5, 40, 40)
@@ -2672,8 +2674,11 @@ class story:
                                 CUR = item[1][len("/dev/"):len("/dev/")+3]
                                 URL = item[1][item[1].rfind("/")+1:]
                                 
-                                itempercent = checklist.partcalculate(checklist.openckecklist(self.pf+"/"+item[1]+"/asset.progress")) #GETTING ITEMS %
                                 
+                                try:
+                                    itempercent = checklist.partcalculate(checklist.openckecklist(self.pf+"/"+item[1]+"/asset.progress")) #GETTING ITEMS %
+                                except:
+                                    itempercent = 0
                                 # THIS IS PERCENT        THIS IS ITEMS PART LENGHT           
                                 lenofsecondcube = int(round(float(len(story[item[0]:item[2]])*9+9+22) * itempercent))
                                 
@@ -3315,22 +3320,34 @@ class story:
                             if shotlistlength+220+self.shotsSCROLL+20+cellsize-40 > 220 and shotlistlength+220+self.shotsSCROLL+20 < h: # IF IN FRAME
                                 
                                 
+                                
+                                
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
+                                widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
+                                
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#526969"))
+                                widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15, cellsize-50, 22)
+                                
+                                
                                 ctx.set_source_rgb(1,1,1)
                                 ctx.set_font_size(10)
-                                ctx.move_to( Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+cellsize-20)
+                                ctx.move_to( Pstart+20+(cellsize*xstep)+15+22, shotlistlength+220+self.shotsSCROLL+15+15)
                                 ctx.show_text(BName)
                                 
                                 
+                                
+                                widget.window.draw_pixbuf(None, self.blendericon, 0, 0, Pstart+20+(cellsize*xstep)+17, shotlistlength+220+self.shotsSCROLL+15 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)   
+                                
                                 # MOUSE OVER BLENDFILE
-                                if mx in range(Pstart+20+(cellsize*xstep)+20, Pstart+20+(cellsize*xstep)+20+cellsize-60) and my in range(shotlistlength+220+self.shotsSCROLL+20, shotlistlength+220+self.shotsSCROLL+20+cellsize-60):
+                                if mx in range(Pstart+20+(cellsize*xstep)+20, Pstart+20+(cellsize*xstep)+20+cellsize-60) and my in range(shotlistlength+220+self.shotsSCROLL+20, shotlistlength+220+self.shotsSCROLL+20+cellsize-60+22):
                                     
                                     tooltip = "Open Blendfile\n"+BName
                                     
                                     # get mouse to show the hand
                                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                     
-                                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
-                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15, cellsize-50, cellsize-50)
+                                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
                             
                                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                         
@@ -3392,7 +3409,7 @@ class story:
                                 ##### COPY BUTTON ####
                                 
                                 # MOUSE OVER
-                                if mx in range(Pstart+20+(cellsize*xstep)+20+110, Pstart+20+(cellsize*xstep)+20+130) and my in range(shotlistlength+220+self.shotsSCROLL+50, shotlistlength+220+self.shotsSCROLL+90):
+                                if mx in range(Pstart+20+(cellsize*xstep)+20+110, Pstart+20+(cellsize*xstep)+20+130) and my in range(shotlistlength+220+self.shotsSCROLL+50, shotlistlength+220+self.shotsSCROLL+50+22):
                                     
                                     tooltip = "Copy Blendfile to ClipBoard"
                                     
@@ -3415,7 +3432,7 @@ class story:
                                 ############    L    O    G   O  ################
                                 
                                 
-                                
+                                shotlistlength = shotlistlength + 22
                                 
                                 
                                 

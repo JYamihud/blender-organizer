@@ -1,3 +1,20 @@
+VERSION 4.28
+FILE update_info.data
+FILE py_data/modules/assets.py
+FILE py_data/modules/dialogs.py
+FILE py_data/modules/analytics.py
+FILE py_data/modules/get_linkdata.py
+FILE py_data/modules/linkconfig.py
+FILE py_data/modules/itemselector.py
+FILE py_data/modules/story_editor.py
+FILE py_data/icons/collection.png
+FILE py_data/icons/link.png
+FILE py_data/icons/mesh.png
+FILE py_data/icons/settings.png
+FILE py_data/icons/vid.png
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.28
+
+
 VERSION 4.27
 FILE update_info.data
 FILE py_data/modules/analytics.py

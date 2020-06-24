@@ -1213,11 +1213,11 @@ class draw_assets:
                     
                     # TOOLTIP
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))   
-                    widget.window.draw_rectangle(xgc, True, mx+20, my+5, 300, 20)
+                    widget.window.draw_rectangle(xgc, True, mx+20, my+5, 150, 20)
                     ctx.set_font_size(15)
                     ctx.set_source_rgb(1,1,1)
                     ctx.move_to( mx+30, my+20)
-                    ctx.show_text("Configure item as linkable asset")
+                    ctx.show_text("Configure item")
                     
                     
                     # IF CLICKED

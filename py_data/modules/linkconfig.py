@@ -91,35 +91,42 @@ def config(pf, path):
             
             
             
-            # LET'S PREPARE ALL THE ITEMS
-            
-            self.listofitems = []
-            
-            for CUR in ["chr", "veh", "loc", "obj"]:
-                
-                print self.pf+"/dev/"+CUR
-                
-                for i in os.walk(self.pf+"/dev/"+CUR).next()[1]:
-                    self.listofitems.append([CUR,i])
-            
-            
             
             self.objicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/obj_asset_undone.png")
             self.chricon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/chr_asset_undone.png")
             self.vehicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/veh_asset_undone.png")
             self.locicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/loc_asset_undone.png")
-            
+            self.settingsicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/settings.png")
             self.collectionicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/collection.png")
             self.meshicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/mesh.png")
             
-            
+            self.blendericon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blender.png")
             self.plus = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
             
             self.blenddata = []
             
             
+            # FOR THE CREATOR OF THE AST
+            self.itemblends = []
+            self.itemblendsselect = 0
             
+            l = 0
+            for FILE in os.walk(self.pf+"/dev/"+self.path).next()[2]:
             
+                if FILE.endswith(".blend"):
+                
+                    self.itemblends.append(FILE)
+                    
+                    print FILE, "BLENDFILE "
+                    
+                    
+                    if FILE == self.path[4:]+".blend":
+                        
+                        
+                        self.itemblendsselect = l
+                        print FILE, "THIS IS THE ONE", self.itemblendsselect
+                    
+                    l = l + 1
             
             
             def framegraph(widget, event):
@@ -199,7 +206,10 @@ def config(pf, path):
                                     
                                         
                                     colname = coln
-                              
+                                if collection.startswith("VERSION"):
+                                    self.blenddata.append([[False, colname], currentcollection])
+                                
+                                
                             self.blenddata = self.blenddata[1:]
                             self.load()
                             #print self.blenddata
@@ -317,13 +327,88 @@ def config(pf, path):
                 
                 else:
                     
-                    #test
-                    ctx.set_font_size(15)
-                    ctx.move_to( 20,20)
-                    ctx.show_text("Finish the item first") 
-                
-                
-                
+                    
+                    percent = checklist.partcalculate(checklist.openckecklist(self.pf+"/dev/"+self.path+"/asset.progress"))
+                    
+                    
+                    # IF CHECKLIST IF NOT YET FULLY DONE
+                    if percent < 0.99:
+                        
+                        #test
+                        ctx.set_font_size(15)
+                        ctx.move_to( 20,20)
+                        ctx.show_text("Checklist is at "+str(percent*100)+"%") 
+                    
+                        ctx.set_font_size(15)
+                        ctx.move_to( 20,40)
+                        ctx.show_text("Please return when this asset is fully created.") 
+                    
+                    if percent > 0.98:
+                        
+                        ctx.set_font_size(15)
+                        ctx.move_to( 20,20+self.scroll)
+                        ctx.show_text("You are ready to create the /AST/ BLEND FILE") 
+                        
+                        ctx.set_font_size(15)
+                        ctx.move_to( 20,40+self.scroll)
+                        ctx.show_text("If changes will be nessesary you will need")
+                        
+                        ctx.set_font_size(15)
+                        ctx.move_to( 20,60+self.scroll)
+                        ctx.show_text("to edit /ast/"+self.path+".blend manually.")
+                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, True, 0, 80+self.scroll,  w/3*2, h-self.scroll)
+                        #self.itemblends
+                        #self.itemblendsselect
+                        
+                        for n, i in enumerate(self.itemblends):
+                            
+                            # IF THIS BLENDFILE SELECTED
+                            if n == self.itemblendsselect:
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384")) ## CHOSE COLOR
+                                widget.window.draw_rectangle(xgc, True, 0, 100+self.scroll+n*20-18,  w/3*2, 20)
+                                
+                                #mouse over blendfile
+                                if my in range(100+self.scroll+n*20-18, 100+self.scroll+n*20-18+20) and my in range(0, h) and mx in range(w/3*2, w):
+                                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) ## CHOSE COLOR
+                                    widget.window.draw_rectangle(xgc, True, w/3*2, 100+self.scroll+n*20-18,  w/3*2, 20)
+                                    
+                                    
+                                    if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): #IF CLICKED
+                                        
+                                        print "BEFORECHECK"
+                                        checkframes = Popen([cblndr+"blender", "-b", self.pf+"/dev/"+self.path+"/"+i , "-P", self.pf+"/py_data/modules/makeast.py"],stdout=PIPE, universal_newlines=True)
+
+                                        checkframes.wait()
+                                        checkstring = checkframes.stdout.read()
+                                        print checkstring, "CHECKSTRING"
+                                
+                                
+                                
+                                widget.window.draw_pixbuf(None, self.settingsicon, 0, 0, w/3*2+2, 100+self.scroll+n*20-18, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                ctx.set_font_size(15)
+                                ctx.move_to( w/3*2+30,100+self.scroll+n*20)
+                                ctx.show_text("Make /AST/")
+                                
+                            #mouse over blendfile
+                            if my in range(100+self.scroll+n*20-18, 100+self.scroll+n*20-18+20) and my in range(0, h) and mx in range(0,w/3*2):
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) ## CHOSE COLOR
+                                widget.window.draw_rectangle(xgc, True, 0, 100+self.scroll+n*20-18,  w/3*2, 20)
+                                
+                                
+                                if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): #IF CLICKED
+                                    self.itemblendsselect = n
+                                        
+                            
+                            ctx.set_font_size(15)
+                            ctx.move_to( 30,100+self.scroll+n*20)
+                            ctx.show_text(i)
+                            
+                            widget.window.draw_pixbuf(None, self.blendericon, 0, 0, 2, 100+self.scroll+n*20-18, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                            
+                            
+                        
                 
                 
                 # SCROLLING IT SELF

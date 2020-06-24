@@ -29,6 +29,7 @@ import dialogs
 import fileformats
 import render_lists
 import assets # SO I COULD LINK TO ITEMS
+import linkconfirm #AUTOMATIC LINKING WTF
 
 import copy # OMG OPTIMIZATION HACKS OMG I HOPE IT'S GOING TO WORK
 
@@ -260,6 +261,7 @@ class story:
         self.locicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/loc_asset_undone.png")
         self.scnicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/scn_asset_undone.png")
         self.picicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/pic.png")
+        self.linkicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/link.png")
         
         #BIG PREVIEWS
         self.objiconbig = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/obj_prev.png")
@@ -2780,6 +2782,12 @@ class story:
                     shotlistlength = shotlistlength + 20
                     movex = 0
                     
+                
+                
+                
+                    
+                    
+                
                     
                 if shotname:    
                     
@@ -2800,6 +2808,34 @@ class story:
                         if os.path.exists(self.pf+"/"+shotname+"/extra") == False:
                             os.mkdir(self.pf+"/"+shotname+"/extra")
                     
+                    
+                    
+                        # NOW LETS CREATE THE AUUTOLINK.DATA 
+                
+                        if items: #IF ANY ITEMS ARE IN THE SCENE
+                            #print items, "ITEMS BEFORE"
+                    
+                            #clearing items. we already got them to the screen we don't nee all the data.
+                            tmp = []
+                            for i in items:
+                                i = i[1]
+                                if i not in tmp:
+                                    tmp.append(i)
+                            items = tmp
+                            
+                            #print items, "ITEMS AFTER"
+                            
+                            # CHECKING IF THE FILE IS NOT THERE
+                            if not os.path.exists(self.pf+"/"+shotname+"/extra/autolink.data"):
+                                
+                                print "FILE NOT THERE"
+                                
+                                autolink = open(self.pf+"/"+shotname+"/extra/autolink.data", "w")
+                                for i in items:
+                                    autolink.write("Link : "+i+"\n")
+                                    
+                                autolink.close()
+                            
                     else:
                         
                         self.shotsDATA[ind][2] = "None"
@@ -3429,9 +3465,39 @@ class story:
                                 
                                 
                                 
+                                #### LINK CONFRIM BUTTON ####
+                                
+                                # MOUSE OVER
+                                if mx in range(Pstart+20+(cellsize*xstep)+20+110, Pstart+20+(cellsize*xstep)+20+130) and my in range(shotlistlength+220+self.shotsSCROLL+50+30, shotlistlength+220+self.shotsSCROLL+50+22+30):
+                                    
+                                    tooltip = "Link assets to the blendfile"
+                                    
+                                    # get mouse to show the hand
+                                    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                                    
+                                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+220+self.shotsSCROLL+50+30, 20, 20)
+                                    
+                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                                        
+                                        def ee(shotname, BName):
+                                            
+                                            print "OPENING THE WINDOW"
+                                            
+                                            linkconfirm.config(self.pf,  self.pf+"/"+shotname+"/extra/autolink.data", self.pf+"/"+shotname+"/"+BName)
+                                        glib.timeout_add(10, ee, shotname, BName)
+                                
+                                widget.window.draw_pixbuf(None, self.linkicon, 0, 0, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+220+self.shotsSCROLL+50+30 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)   
+                                   
+                                
+                                
+                                
+                                
+                                
+                                
                                 ############    L    O    G   O  ################
                                 
-                                
+                                tmp = shotlistlength
                                 shotlistlength = shotlistlength + 22
                                 
                                 
@@ -3462,11 +3528,16 @@ class story:
                                     
                                     widget.window.draw_pixbuf(None, BPic, 0, 0, Pstart+20+(cellsize*xstep)+20, shotlistlength+220+self.shotsSCROLL+20 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                                 
-                            
+                                
+                                shotlistlength = tmp
+                                
                             xstep = xstep + 1
                             
                             if xstep > xcells:
                                 xstep = 0
+                                
+                                
+                                
                                 shotlistlength = shotlistlength + cellsize
                         
                         

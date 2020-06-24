@@ -328,10 +328,10 @@ def config(pf, path):
                 
                 # SCROLLING IT SELF
                 # the scroll is done with the middle mouse button
-                if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf):
+                if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and mx in range(0, w):
                     self.scroll = self.scroll + (my-self.mpy)
                     
-                if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf):
+                if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and mx in range(0, w):
                     self.scroll = self.scroll - (self.mpy-my)
                 
                 

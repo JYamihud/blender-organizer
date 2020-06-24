@@ -4,6 +4,7 @@ FILE py_data/modules/linkconfig.py
 FILE py_data/modules/story_editor.py
 FILE py_data/modules/autolink.py
 FILE py_data/modules/linkconfirm.py
+FILE py_data/new_file/empty.blend
 UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.29
 
 VERSION 4.28

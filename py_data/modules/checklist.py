@@ -305,12 +305,16 @@ class checkwindow:
                 xmove = line.find("[")*20
                 ymove = ind*40+self.offset
                 
+                gpos = ((len(self.grab_text)*12)+35+35)-35
+                
+                
+                
                 #every even darker
                 if (ind % 2) == 0 and self.tool != "grab":    
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#262626")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, 0, ymove,  w, 39)
                 
-                gpos = ((len(self.grab_text)*12)+35+35)-35
+                
                 
                 
                 
@@ -809,7 +813,7 @@ class checkwindow:
                         print i
                         s.write(i+"\n")
                     s.close()
-                    self.highlight = None
+                    #self.highlight = None
                 except Exception as e:
                     print e
                 

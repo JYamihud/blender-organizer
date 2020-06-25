@@ -630,28 +630,28 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             self.enddateval = avrgval * ( self.alltime - passed ) + thepercent
             
-            
-            xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
-            
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
-            widget.window.draw_line(xgc,prevW+2, prevH, w, int(  h /2 / 100 * self.enddateval  )*-1+h)
-            
-            xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
-            
-            # a little thing to show the estimated percentage by the deadline
-            
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
-            widget.window.draw_rectangle(xgc, False, w-260, int(  h /2 / 100 * self.enddateval  )*-1+h-20, 250, 10)
-            
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-            widget.window.draw_rectangle(xgc, True, w-260+2, int(  h /2 / 100 * self.enddateval  )*-1+h-20+2, int(250*self.enddateval/100), 10-4)
-            
-            ctx.set_source_rgb(1,1,1)
-            ctx.set_font_size(12)
-            ctx.move_to( w-260, int(  h /2 / 100 * self.enddateval  )*-1+h-20-10)
-            ctx.show_text(str(int(self.enddateval))+"% by the deadline")
-            
-            
+            if self.enddateval < 100:
+                xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+                
+                #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
+                #widget.window.draw_line(xgc,prevW+2, prevH, w, int(  h /2 / 100 * self.enddateval  )*-1+h)
+                
+                xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+                
+                # a little thing to show the estimated percentage by the deadline
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
+                widget.window.draw_rectangle(xgc, True, w-160, int(  h /2 / 100 * self.enddateval  )*-1+h-20, 150, 10)
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                widget.window.draw_rectangle(xgc, True, w-160, int(  h /2 / 100 * self.enddateval  )*-1+h-20, int(150*self.enddateval/100), 10)
+                
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(12)
+                ctx.move_to( w-160, int(  h /2 / 100 * self.enddateval  )*-1+h-20-10)
+                ctx.show_text("Deadline "+str(int(self.enddateval))+"%")
+                
+                
             
             # let's get the w of each thing
             

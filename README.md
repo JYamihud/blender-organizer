@@ -41,7 +41,7 @@
 ## FUNCTIONS TO DEVELOP
 - [x] New way to calculate percentages, based on the new system of scenes
 - [x] The Deadline editor
-- [ ] The Deadline Capability for assests
+- [x] The Deadline Capability for assests
 - [x] The Shooting Scedual
 - [x] The Shot type
 - [x] The VFX Layers list

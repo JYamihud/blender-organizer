@@ -1313,7 +1313,7 @@ class draw_assets:
                      
                 
                 
-                
+                self.screen.percent = checklist.partcalculate(checklist.openckecklist(self.screen.path+"/asset.progress"))
                 
                 # BIG PERCENTAGE BAR 
                 ctx.set_source_rgb(1,1,1)

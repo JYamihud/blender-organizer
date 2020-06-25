@@ -205,10 +205,14 @@ class draw_analytics:
                 
                 psdate = "0000/00/00"
                 ypos = 0
+                over = True
+                daystring = " Today"
+                
                 for task in schedulefile:   
                     
                     
                     today = False
+                    under = False
                     xpos = 0
                     done = False
                     taskstring = "Task"
@@ -216,23 +220,53 @@ class draw_analytics:
                     
                     try:
                         sdate = task[:task.find(" ")]
-                        if psdate == sdate:
-                            ypos = ypos + 1
-                        else:
-                            ypos = 0
-                            psdate = sdate
-                        
+                        #if psdate == sdate:
+                        #    ypos = ypos + 1
+                        #else:
+                        #    ypos = 0
+                        #    psdate = sdate
+                        ypos = ypos + 1
                         print ypos    
                         print sdate
                         
                         if sdate == datetime.datetime.today().strftime(schedule_date_format):
                             today = True
+                            over = False
+                        
+                        if not today:
+                            a = datetime.datetime.today()
+                            b = datetime.datetime.strptime(sdate, schedule_date_format)
+                            delta = b - a
+                        
+                        
+                            s = ""
+                            
+                            
+                            if delta.days < 0:
+                                
+                                if not (delta.days)*-1-1 > 1:
+                                    daystring = "Yesterday"
+                                else:
+                                    daystring = str((delta.days)*-1-1)+" Days Ago"
+                            
+                                under = True
+                            
+                            else:
+                                if not delta.days+1 > 1:
+                                    daystring = "Tomorrow"
+                                else:
+                                    daystring = "In "+str(delta.days+1)+" Days"
+                                
+                        print daystring, "DAYSTRING"
+                        
                         
                         a = datetime.datetime.strptime(self.startdate, date_format)
                         b = datetime.datetime.strptime(sdate, schedule_date_format)
                         delta = b - a
                         
                         xpos = float(delta.days)/self.alltime
+                        
+                        
                         
                         print xpos, sdate
                         
@@ -241,7 +275,10 @@ class draw_analytics:
                         taskstring = task[task.replace(" ", ".", 2).find(" "):].replace("=:>", " >")
                         print taskstring
                         
-                        self.schedule.append([today, xpos, ypos, done, taskstring, taskfile, task])
+                        print
+                        print
+                        
+                        self.schedule.append([today, over, under, xpos, ypos, done, taskstring, taskfile, task, daystring])
                         
                     except Exception as exception:
                         print exception
@@ -861,17 +898,32 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             # self.schedule  [today, xpos, ypos, done, taskstring, taskfile]
             showtooltip = True
+            
+            # TRYING TO GET IF TODAY WAS
+            
+            underwas = False
             for task in self.schedule:  
             
-                today, xpos, ypos, done, taskstring, taskfile, rawline = task
+                today, over, under, xpos, ypos, done, taskstring, taskfile, rawline, daystring = task
+            
+                if under:
+                    underwas = True
+            
+            
+            for task in self.schedule:  
+            
+                today, over, under, xpos, ypos, done, taskstring, taskfile, rawline, daystring = task
             
                 xpos = 20 #int(w*xpos)-5
                 
                 ypos = h - (ypos*30) - 20 -h/5    
                 
+                draw = True
+                if underwas and over and not under:
+                    
+                    draw = False
                 
-                
-                if today:
+                if today or over and draw:
                     
                     
                 #else:
@@ -908,11 +960,24 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     ctx3 = widget.window.cairo_create()
                     ctx3.set_source_rgba(0.1,0.1,0.1,0.75)
+                    if under:
+                        ctx3.set_source_rgba(0.3,0.1,0.1,0.75)
+                    if over and not under:
+                        ctx3.set_source_rgba(0.1,0.1,0.3,0.75)
                     ctx3.rectangle(xpos-1, ypos, isty+22, 22)
                     ctx3.fill()
                     
                     ctx3.rectangle(xpos+isty+44, ypos, isty2+22, 22)
                     ctx3.fill()
+                    
+                    if over:
+                        ctx3.rectangle(xpos+isty+isty2+44+44, ypos, len(daystring)*9+22, 22)
+                        ctx3.fill()
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(15)
+                        ctx.move_to( xpos+isty+isty2+44+44+4, ypos+16)
+                        ctx.show_text(daystring)
                     
                     if mx in range(xpos-1, xpos+isty+22) and my in range(ypos, ypos+22):
                         

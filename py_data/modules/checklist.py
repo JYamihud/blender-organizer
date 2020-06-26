@@ -284,6 +284,10 @@ class checkwindow:
         if self.grabbed:
             self.tool = "select"
             self.grabbed = False
+            
+            self.open()
+            
+            
         if "GDK_BUTTON3" in str(fx) and "GDK_BUTTON3" not in str(self.mpf) and self.win.is_active():
             self.tool = "select"
         
@@ -371,7 +375,7 @@ class checkwindow:
                     
                     
                 
-                print line, checkpercent
+                #print line, checkpercent
                 
                 
                 
@@ -416,13 +420,18 @@ class checkwindow:
                     # IF RELESED
                     if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.win.is_active():
                         
+                         
+                        
                         self.FILE[self.grab+9] = "!!!DELETE!!!"
                         self.FILE.insert(ind+9, " "*((int(float(mx - gpos)/80)*80)/20)+self.grab_text)
                         self.FILE.remove("!!!DELETE!!!")
                         
+                        
                         # refrashing the file
-                        self.save()
-                        self.open()
+                                    
+                        self.save()            
+                        
+                        
                         
                         self.grabbed = True
                         
@@ -489,6 +498,7 @@ class checkwindow:
                         # refrashing the file
                         self.save()
                         self.open()
+                        
                     
                 if not checkedhigher:    
                     
@@ -513,8 +523,8 @@ class checkwindow:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+5+self.offset-2, 22, 22)
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 160, 30)
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 160, 27)
                     
                     
                     ctx.set_source_rgb(1,1,1)
@@ -557,13 +567,13 @@ class checkwindow:
                     
                 # ACTIVATE GRAB BUTTON
                 
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select" and not checkedhigher:
+                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+5+self.offset-2, 22, 22)
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 160, 30)
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 160, 27)
                     
                     
                     ctx.set_source_rgb(1,1,1)
@@ -607,8 +617,8 @@ class checkwindow:
                             
                             
                             
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                            widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 130, 27)
                             
                             ctx.set_source_rgb(1,1,1)
                             ctx.set_font_size(20)
@@ -624,8 +634,8 @@ class checkwindow:
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                                 widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
                                 
-                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                                widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                                widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 27)
                                 
                                 
                                 ctx.set_source_rgb(1,1,1)
@@ -644,8 +654,8 @@ class checkwindow:
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                         widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                        widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 30)
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                        widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 27)
                         
                         
                         ctx.set_source_rgb(1,1,1)
@@ -759,8 +769,8 @@ class checkwindow:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, w-42, ind*40+5+self.offset-2, 22, 22)
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                    widget.window.draw_rectangle(xgc, True, w-210, ind*40+5+self.offset-2, 160, 30)
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                    widget.window.draw_rectangle(xgc, True, w-210, ind*40+5+self.offset-2, 160, 27)
                     
                     
                     ctx.set_source_rgb(1,1,1)

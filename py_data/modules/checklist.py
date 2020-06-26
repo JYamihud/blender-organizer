@@ -34,7 +34,7 @@ import dialogs
 ### READ FILE ####
 
 
-def openckecklist(filepath):
+def openckecklist(filepath, rang=[9,-1], minus=0):
     
     # open file
     
@@ -42,22 +42,28 @@ def openckecklist(filepath):
     File = File.read()
     # black placeholder for the checklist LIST
     checklist = ["[ ]"]
+    
+    if rang[1] == -1:
+        rang[1] = len(File.split("\n"))+1
+
 
     for index, line in enumerate(File.split("\n")):
         
-        if line.startswith("["):
+        line = line[minus:]
+        
+        if line.startswith("[") and index in range(rang[0],rang[1]):
             #every indentation is a list
             part = [line]
-            indent = 0
+            indent = minus/4
             #recurcive method... running the function with in itself.
-            def checkindent(part, indexb, indent):
+            def checkindent(part, indexb, indent, minus):
                 indentb = indent + 1
                 for index, line in enumerate(File.split("\n")): 
-                    if line.startswith("    "*indentb+"[") and index > indexb:
+                    if line.startswith("    "*indentb+"[") and index > indexb:# and index in range(rang[0],rang[1]):
                         
-                        
+                        #line = line[minus:]
                         partb = [line[line.find("["):]]
-                        partb = checkindent(partb, index, indentb) #here
+                        partb = checkindent(partb, index, indentb, minus) #here
                         part.append(partb)
                     
                     if line.startswith("    "*(indent)+"[") and index > indexb:
@@ -65,7 +71,7 @@ def openckecklist(filepath):
                 
                 return part
 
-            part = checkindent(part, index, indent) # and here
+            part = checkindent(part, index, indent, minus) # and here
             checklist.append(part)        
     return checklist # returning checklist
 
@@ -290,7 +296,7 @@ class checkwindow:
         
         for ind, line in enumerate(self.FILE[9:]):
             
-            checked = False
+            
                 
                 
                 
@@ -304,10 +310,32 @@ class checkwindow:
                 # IF THIS TASK GRABBED
                 xmove = line.find("[")*20
                 ymove = ind*40+self.offset
-                
+                put = " "
                 gpos = ((len(self.grab_text)*12)+35+35)-35
                 
                 
+                checkedhigher = False #THIS WILL BE IF IT'S CHECKED HIGHER IN THE HIRACHY
+                
+                checked = False # ONLY FOR VISUAL CONFORMATION
+                
+                # getting checkedhigher
+                if "[ ]" in line and not "[V]" in line:
+                    lastupline = ""
+                    if line.startswith("    "):
+                        for l in self.FILE[9:ind+9]:
+                            if line.find("[") > l.find("["):
+                                lastupline = l
+                    
+                    #print line, lastupline, "L"
+                    if "[v]" in lastupline or "[V]" in lastupline:
+                        checkedhigher = True
+                        checked = True
+                    
+                    
+                        self.FILE[ind+9] = line[:line.find("[")+1]+"V"+line[line.find("]"):]
+                        self.save()
+                        self.open()
+                        pass
                 
                 #every even darker
                 if (ind % 2) == 0 and self.tool != "grab":    
@@ -315,10 +343,35 @@ class checkwindow:
                     widget.window.draw_rectangle(xgc, True, 0, ymove,  w, 39)
                 
                 
+                ### LETS TRY TO FIND THE % OF EACH PART IN THE CHECKLIST
+                if "[V]" in line:
+                    checkpercent = 1.0
+                    checkedhigher = True
+                    checked = True
+                else:
+                    checkpercent = 0.0
                 
+                try:
+                    if "[ ]" in line and "[V]" not in line and line.find("[") < self.FILE[9+ind+1].find("[") and ind*40+self.offset in range(0, h):
+                    
+                        nextline = ""
+                        fn = -1
+                        then = -1
+                        for n, l in enumerate(self.FILE[ind+9:]):
+                            if line.find("[") == l.find("["):
+                                fn = fn + 1
+                                if fn == 1:  
+                                    then = n
+                            if line.find("[") > l.find("["):
+                                break
+                        
+                        checkpercent = partcalculate(openckecklist(self.FILENAME, [ind+9, then+ind+9], line.find("[")))
+                except:
+                    pass
+                    
+                    
                 
-                
-                
+                print line, checkpercent
                 
                 
                 
@@ -346,14 +399,14 @@ class checkwindow:
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c7c7c")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20, ind*40+self.offset,  w, 39)
-                    
+                    self.FILE[ind+9] = line[:line.find("[")+1]+put+line[line.find("]"):]
                     widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
                     
                 
                 
                 # IF GRABBING IS ABOVE THIS TASK
                     
-                if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "grab":
+                if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "grab" :
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, int(float(mx - gpos)/80)*80, ind*40+self.offset-7,  w, 5)
@@ -375,7 +428,7 @@ class checkwindow:
                         
                     
                     
-                if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "select":
+                if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "select" :
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
@@ -384,18 +437,11 @@ class checkwindow:
                 
                 # IF IT ALREADY WAS CHECK OFF AT EARLIER STAGE
                 
-                if prevline.find("[") < line.find("["):
-                    
-                    if prevline[prevline.find("[")+1:].startswith("V") or prevline[prevline.find("[")+1:].startswith("v"): 
-                        sofar = [True, line.find("[")]
-                        
-                if sofar[1] > line.find("["):
-                    sofar = [False, line.find("[")]
                 
                 
                 ctx.set_source_rgb(1,1,1)
-                if sofar[0]:
-                    ctx.set_source_rgb(0.4,0.54,0.85) #395384
+                if checkedhigher or "[V]" in line or checkpercent == 1.0:
+                    ctx.set_source_rgb(0.7,0.4,0.2) #395384
                 ctx.set_font_size(20)
                 
                 
@@ -403,7 +449,20 @@ class checkwindow:
                 ctx.move_to(  xmove+30, ymove+25)
                 ctx.show_text(line[line.find("]")+1:])
                 
-                
+                if "[ ]" in line and not "[V]" in line and checkpercent > 0.0 and checkpercent < 1.0:
+                    ctx.set_source_rgb(0.7,0.7,0.7)
+                    ctx.set_font_size(10)
+                    ctx.move_to(  xmove+2+40, ymove+37)
+                    ctx.show_text(str(int(checkpercent*100))+"%")
+                    
+                    #d0d0d0
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, xmove+75, ymove+31, h-30-(xmove+75)-40, 5)
+                    
+                    #cb9165
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, xmove+75, ymove+31, int(round((h-30-(xmove+75)-40)*checkpercent)), 5)
+                    
                 
                 # CHECK BUTTON
                 
@@ -431,9 +490,9 @@ class checkwindow:
                         self.save()
                         self.open()
                     
+                if not checkedhigher:    
                     
-                    
-                widget.window.draw_rectangle(xgc, True, xmove+5, ymove+5, 20, 20)
+                    widget.window.draw_rectangle(xgc, True, xmove+5, ymove+5, 20, 20)
                 
                 
                 if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v"): # IF THE LINE IS CHECKED
@@ -449,7 +508,7 @@ class checkwindow:
                 # ADD SUBTASK
                 
                 
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select":
+                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select" and not checkedhigher:
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+5+self.offset-2, 22, 22)
@@ -492,13 +551,13 @@ class checkwindow:
                 
                 
                 
-                if self.tool == "select":
+                if self.tool == "select" and not checkedhigher:
                     widget.window.draw_pixbuf(None, self.plus, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
                 # ACTIVATE GRAB BUTTON
                 
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select":
+                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select" and not checkedhigher:
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+5+self.offset-2, 22, 22)
@@ -521,7 +580,7 @@ class checkwindow:
                         
                         
                         
-                if self.tool == "select":       
+                if self.tool == "select" and not checkedhigher:       
                     widget.window.draw_pixbuf(None, self.move, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
@@ -800,10 +859,11 @@ class checkwindow:
                     o = o[:-1]
                 
                 try:
-                    print removing
+                    #print removing, "REMOVING"
+                    #print self.FILENAME.replace(self.pf, ""), "FILEPATH"
                     
                     for i in o:
-                        if i.endswith(removing):
+                        if i.endswith(removing) and self.FILENAME.replace(self.pf, "") in i:
                             o.remove(i)
                     
                     

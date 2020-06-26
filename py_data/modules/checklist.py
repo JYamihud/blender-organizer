@@ -457,11 +457,11 @@ class checkwindow:
                     
                     #d0d0d0
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, xmove+75, ymove+31, h-30-(xmove+75)-40, 5)
+                    widget.window.draw_rectangle(xgc, True, xmove+75, ymove+31, w-30-(xmove+75)-40, 5)
                     
                     #cb9165
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, xmove+75, ymove+31, int(round((h-30-(xmove+75)-40)*checkpercent)), 5)
+                    widget.window.draw_rectangle(xgc, True, xmove+75, ymove+31, int(round((w-30-(xmove+75)-40)*checkpercent)), 5)
                     
                 
                 # CHECK BUTTON

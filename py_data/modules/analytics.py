@@ -79,7 +79,7 @@ class draw_analytics:
         self.editicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/edit.png")
         self.scheduleicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/schedule.png")
         self.checklist  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/checklist.png")
-        
+        self.deleteicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/delete.png")
         
         
         #getting icons into place OMG WHY????
@@ -914,7 +914,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
                 today, over, under, xpos, ypos, done, taskstring, taskfile, rawline, daystring = task
             
-                xpos = 20 #int(w*xpos)-5
+                xpos = 33 #int(w*xpos)-5
                 
                 ypos = h - (ypos*30) - 20 -h/5    
                 
@@ -1066,6 +1066,47 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     showtooltip = False
                     
+                    
+                    if mx in range(4, 30) and my in range(ypos, ypos+22): #IF MOUSE OVER
+                            
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
+                        widget.window.draw_rectangle(xgc, True, 2, ypos, 22, 22 )
+                            
+                        
+                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                            
+                            print "TRYING TO DELETE", rawline
+                            removing = rawline
+                            
+                            o = open(self.pf+"/schedule.data","r")
+                            o = o.read().split("\n")
+                            
+                            if o[-1] == "":
+                                o = o[:-1]
+                            
+                            try:
+                                #print removing, "REMOVING"
+                                #print self.FILENAME.replace(self.pf, ""), "FILEPATH"
+                                
+                                for i in o:
+                                    if i.endswith(removing):
+                                        o.remove(i)
+                                
+                                
+                                
+                                s = open(self.pf+"/schedule.data","w")
+                                for i in o:
+                                    #print i
+                                    s.write(i+"\n")
+                                s.close()
+                                #self.highlight = None
+                            except Exception as e:
+                                pass
+                    
+                    
+                    
+                    
+                    widget.window.draw_pixbuf(None, self.deleteicon, 0, 0, 4, ypos+1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                     
                     
                     

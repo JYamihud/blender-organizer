@@ -26,6 +26,8 @@ import cairo
 import glib
 import datetime
 
+import itemselector
+
 # self made modules
 import dialogs
 
@@ -152,10 +154,15 @@ class checkwindow:
         self.edit = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/edit.png")
         self.schedule = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/schedule.png")
         
+        self.closed = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/closed.png")
+        self.openicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/open.png")
+        self.pasteicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/paste.png")
+        
+        
         # FOR GRAB FEATURE
         
         self.tool = "select"
-        self.grab = 0
+        self.grab = [-1]
         self.grab_text = ""
         self.grabbed = False
         self.initframe = True
@@ -169,8 +176,7 @@ class checkwindow:
         
         
         
-        
-        
+            
         
         
         
@@ -184,11 +190,18 @@ class checkwindow:
     def open(self):
         self.FILE = open(self.FILENAME, "r")
         self.FILE = self.FILE.read().split("\n")
+        print "\nOPENNED\n"
+        for i in self.FILE:
+            print i
+        
+        self.colapsed = []
+        for n, i in enumerate(self.FILE):
+            self.colapsed.append(False)
         
     def save(self):
         
         n = []
-        
+         
         for i in self.FILE:
             
             if i != "":  
@@ -202,8 +215,12 @@ class checkwindow:
         if self.FILE[-1] == "":
             self.FILE = self.FILE[:-1]
         
-        for i in self.FILE:
         
+        
+        
+        print "\nSAVING\n"
+        for i in self.FILE:
+            print i
             save.write(i+"\n")
         
         save.close()
@@ -214,7 +231,7 @@ class checkwindow:
         
         p = ""
         if line.startswith("["):
-            p = line[line.find("]")+1:]
+            p = line[line.find("]")+2:]
         else:
             
             parts = []
@@ -241,7 +258,7 @@ class checkwindow:
                 
             for i in parts[::-1]:
                 p = p+i+sep
-            p = p + line[line.find("]")+1:]
+            p = p + line[line.find("]")+2:]
         return p
     
     #### THIS FUNCTION DRAWS THE PIXELS IN THE WINDOW ####
@@ -285,7 +302,7 @@ class checkwindow:
             self.tool = "select"
             self.grabbed = False
             
-            self.open()
+            #self.open()
             
             
         if "GDK_BUTTON3" in str(fx) and "GDK_BUTTON3" not in str(self.mpf) and self.win.is_active():
@@ -298,53 +315,91 @@ class checkwindow:
         sofar = [False, 0]
         foundhightlight = False
         
+        yline = -40
+        
+        
+        
         for ind, line in enumerate(self.FILE[9:]):
             
             
                 
                 
-                
+            #reloadfile = False
             
             if "[ ]" in line or "[V]" in line or "[v]" in line:
                 
+                try:
+                    if self.colapsed[ind+9]:                    
+                        continue
+                except:
+                    pass
+                yline = yline + 40
                 
                 
-                
-                
-                # IF THIS TASK GRABBED
-                xmove = line.find("[")*20
-                ymove = ind*40+self.offset
+                xmove = line.find("[")*20 + 50
+                ymove = yline+self.offset
                 put = " "
-                gpos = ((len(self.grab_text)*12)+35+35)-35
+                
+                
+                gpos = ((len(self.grab_text[:self.grab_text.find("\n")])*12)+35+35)-35
                 
                 
                 checkedhigher = False #THIS WILL BE IF IT'S CHECKED HIGHER IN THE HIRACHY
                 
                 checked = False # ONLY FOR VISUAL CONFORMATION
                 
-                # getting checkedhigher
-                if "[ ]" in line and not "[V]" in line:
-                    lastupline = ""
-                    if line.startswith("    "):
-                        for l in self.FILE[9:ind+9]:
-                            if line.find("[") > l.find("["):
-                                lastupline = l
-                    
-                    #print line, lastupline, "L"
-                    if "[v]" in lastupline or "[V]" in lastupline:
-                        checkedhigher = True
-                        checked = True
-                    
-                    
-                        self.FILE[ind+9] = line[:line.find("[")+1]+"V"+line[line.find("]"):]
-                        self.save()
-                        self.open()
-                        pass
                 
+                
+                
+                 
                 #every even darker
-                if (ind % 2) == 0 and self.tool != "grab":    
+                if (yline/40 % 2) == 0 and self.tool != "grab":    
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#262626")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, 0, ymove,  w, 39)
+                
+                
+                if my in range(ymove, ymove+35) and self.tool == "select" :
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, xmove-50, ymove,  w, 39)
+                
+                colapsed = False
+                
+                
+                
+                
+                try:
+                    if self.FILE[ind+10].find("[") > line.find("["):
+                        
+                        if my in range(ymove, ymove+35) and mx in range(xmove-30, xmove-10) and self.tool == "select" :
+                    
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c")) ## CHOSE COLOR
+                            widget.window.draw_rectangle(xgc, True, xmove-30, ymove+5,  20, 20)
+                        
+                            # IF CLICKED
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                                
+                                put = "."
+                                if line[line.find("]")+1:].startswith("."):
+                                    put = " "
+                                    
+                                
+                                 
+                                self.FILE[ind+9] = line[:line.find("]")+1]+put+line[line.find("]")+2:]
+                                
+                                
+                                self.save()
+                                self.open()
+                        
+                        
+                        if not line[line.find("]")+1:].startswith("."):
+                            widget.window.draw_pixbuf(None, self.openicon, 0, 0, xmove-30, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                        else:
+                            widget.window.draw_pixbuf(None, self.closed, 0, 0, xmove-30, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                            colapsed = True
+                except:
+                    print "DRAWING COLLAPSIBLE ICON ERROR"        
+                    
                 
                 
                 ### LETS TRY TO FIND THE % OF EACH PART IN THE CHECKLIST
@@ -355,12 +410,16 @@ class checkwindow:
                 else:
                     checkpercent = 0.0
                 
+                s_ind = ind
+                
                 try:
-                    if "[ ]" in line and "[V]" not in line and line.find("[") < self.FILE[9+ind+1].find("[") and ind*40+self.offset in range(0, h):
+                    if  line.find("[") < self.FILE[9+ind+1].find("[") :#and ymove in range(0, h):
                     
                         nextline = ""
                         fn = -1
                         then = -1
+                        
+                        
                         for n, l in enumerate(self.FILE[ind+9:]):
                             if line.find("[") == l.find("["):
                                 fn = fn + 1
@@ -368,21 +427,48 @@ class checkwindow:
                                     then = n
                             if line.find("[") > l.find("["):
                                 break
-                        
-                        checkpercent = partcalculate(openckecklist(self.FILENAME, [ind+9, then+ind+9], line.find("[")))
+                        fn = fn + 1
+                        if fn == 1:  
+                            then = n
+                        s_ind = then
+                        if "[ ]" in line and "[V]" not in line:
+                            checkpercent = partcalculate(openckecklist(self.FILENAME, [ind+9, then+ind+9], line.find("[")))
                 except:
                     pass
                     
-                    
+                
+                if checkpercent > 0.98:
+                    checkpercent = 1.0
                 
                 #print line, checkpercent
                 
                 
                 
+                
+                
+                
+                if colapsed:
+                    
+                    try:
+                        
+                        for i in range(ind+10, s_ind+ind+9):
+                            self.colapsed[i] = True
+                    
+                    except:
+                        pass
+                else:
+                    for i in range(ind+10, s_ind+ind+9):
+                        try:
+                            self.colapsed[i] = False
+                        except:
+                            pass
+                        
+                        
+                
+                
                 ## HIGLIGHT
                 if self.highlight:
                     if self.highlight.endswith(self.get_line_path(ind, line)):
-                        
                         foundhightlight = True
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384")) ## CHOSE COLOR
@@ -396,40 +482,65 @@ class checkwindow:
                     
                 
                 
-                if self.tool == "grab" and self.grab == ind:
+                #if self.tool == "grab" and ind in self.grab:
+                #    
+                #    xmove = mx - gpos
+                #    ymove = my - 10
                     
-                    xmove = mx - gpos
-                    ymove = my - 10
-                    
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c7c7c")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20, ind*40+self.offset,  w, 39)
-                    self.FILE[ind+9] = line[:line.find("[")+1]+put+line[line.find("]"):]
-                    widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
+                    #xgc.line_width = 1
+                    #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c7c7c")) ## CHOSE COLOR
+                    #widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
+                    #self.FILE[ind+9] = line[:line.find("[")+1]+put+line[line.find("]"):]
+                    #widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
                     
                 
                 
                 # IF GRABBING IS ABOVE THIS TASK
                     
-                if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "grab" :
+                if my in range(ymove, ymove+35) and self.tool == "grab" :
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, int(float(mx - gpos)/80)*80, ind*40+self.offset-7,  w, 5)
-                    widget.window.draw_line(xgc, int(float(mx - gpos)/80)*80, 0, int(float(mx - gpos)/80)*80, h )
+                    widget.window.draw_rectangle(xgc, True, int(float(mx - gpos)/80)*80+50, ymove-7,  w, 2)
+                    widget.window.draw_line(xgc, int(float(mx - gpos)/80)*80+50, 0, int(float(mx - gpos)/80)*80+50, h )
                     
                     
                     # IF RELESED
-                    if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.win.is_active():
+                    if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.win.is_active() and not self.grabbed:
                         
                          
+                        for i in self.grab:
+                            
+                            print "DELETING : ", self.FILE[i+9]
+                            self.FILE[i+9] = "!!!DELETE!!!"
+                            
+                        for i in self.grab_text.split("\n")[::-1]:
+                            print "TEXT GRABBED : ", i, "BEFORE TEXT : ", self.FILE[ind+9]
+                            self.FILE.insert(ind+9, " "*((int(float(mx - gpos)/80)*80)/20)+i)
                         
-                        self.FILE[self.grab+9] = "!!!DELETE!!!"
-                        self.FILE.insert(ind+9, " "*((int(float(mx - gpos)/80)*80)/20)+self.grab_text)
-                        self.FILE.remove("!!!DELETE!!!")
+                        
+                        print "\nFINISHED\n"
+                        for i in self.FILE:
+                            print i
                         
                         
+                        
+                        for i in self.grab:
+                            self.FILE.remove("!!!DELETE!!!")
+                        
+                        print "\nDELETED\n"
+                        for i in self.FILE:
+                            print i
+                        
+                        
+                        print
                         # refrashing the file
                                     
-                        self.save()            
+                        self.grab_text = ""
+                        self.grab = [-1]
+                        
+                        #reloadfile = True
+                        self.save()
+                        self.open()         
                         
                         
                         
@@ -437,10 +548,7 @@ class checkwindow:
                         
                     
                     
-                if my in range(ind*40+self.offset, ind*40+self.offset+35) and self.tool == "select" :
-                    
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
+                
                     
                 
                 
@@ -455,8 +563,10 @@ class checkwindow:
                 
                 
                 
-                ctx.move_to(  xmove+30, ymove+25)
-                ctx.show_text(line[line.find("]")+1:])
+                ctx.move_to(  xmove+40, ymove+25)
+                
+                if ind not in self.grab:
+                    ctx.show_text(line[line.find("]")+2:])
                 
                 if "[ ]" in line and not "[V]" in line and checkpercent > 0.0 and checkpercent < 1.0:
                     ctx.set_source_rgb(0.7,0.7,0.7)
@@ -480,7 +590,7 @@ class checkwindow:
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
                 # IF MOUSE OVER
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+5, line.find("[")*20+5+20) and self.tool == "select":
+                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+5, xmove+5+20) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     
@@ -488,24 +598,32 @@ class checkwindow:
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         
                         put = "V"
-                        if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v"):
+                        if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v") or checkpercent == 1.0:
                             put = " "
                             
                         
                          
                         self.FILE[ind+9] = line[:line.find("[")+1]+put+line[line.find("]"):]
                         
+                        if self.FILE[ind+10].find("[") > line.find("["):
+                             for n, i in enumerate(self.FILE):
+                                if n in range(ind+10, ind+s_ind+9):
+                                    self.FILE[n] = i[:i.find("[")+1]+put+i[i.find("]"):]
+                            
+                             self.FILE[ind+9] = line[:line.find("[")+1]+" "+line[line.find("]"):]
+                        
+                        
+                        
                         # refrashing the file
+                        #reloadfile = True
                         self.save()
                         self.open()
                         
                     
-                if not checkedhigher:    
-                    
-                    widget.window.draw_rectangle(xgc, True, xmove+5, ymove+5, 20, 20)
+                widget.window.draw_rectangle(xgc, True, xmove+5, ymove+5, 20, 20)
                 
                 
-                if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v"): # IF THE LINE IS CHECKED
+                if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v") or checkpercent == 1.0: # IF THE LINE IS CHECKED
                     
                     widget.window.draw_pixbuf(None, self.ok, 0, 0, xmove+7, ymove , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
@@ -518,18 +636,18 @@ class checkwindow:
                 # ADD SUBTASK
                 
                 
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select" and not checkedhigher:
+                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35, xmove+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select" and not checkedhigher:
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+5+self.offset-2, 22, 22)
+                    widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35, ymove+5-2, 22, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 160, 27)
+                    widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+30+35+35, ymove+5-2, 160, 27)
                     
                     
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(20)
-                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
+                    ctx.move_to(  xmove+(len(line[line.find("]")+1:])*12)+35+35+35+35, ymove+5+20)
                     ctx.show_text("Add Subtask")
                     
                     
@@ -550,6 +668,7 @@ class checkwindow:
                                 
                                 
                                 # refrashing the file
+                                #reloadfile = True
                                 self.save()
                                 self.open()
                             
@@ -562,36 +681,43 @@ class checkwindow:
                 
                 
                 if self.tool == "select" and not checkedhigher:
-                    widget.window.draw_pixbuf(None, self.plus, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    widget.window.draw_pixbuf(None, self.plus, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
                 # ACTIVATE GRAB BUTTON
                 
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select":
+                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+5+self.offset-2, 22, 22)
+                    widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+35, ymove+5-2, 22, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
-                    widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 160, 27)
+                    widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+30+35+35, ymove+5, 160, 27)
                     
                     
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(20)
-                    ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
+                    ctx.move_to(  xmove+(len(line[line.find("]")+1:])*12)+35+35+35+35, ymove+5+20)
                     ctx.show_text("Move Task")
                     
                     # IF CLICKED
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         
                         self.tool = "grab"
-                        self.grab = ind
+                        self.grab = [ind]
                         self.grab_text = line[line.find("["):]
                         
+                        if self.FILE[ind+10].find("[") > line.find("["):
+                        
+                            for n, i in enumerate(self.FILE):
+                                if n in range(ind+10, ind+s_ind+9):
+                                    self.grab_text = self.grab_text + "\n" + i[line.find("["):]
+                                    self.grab.append(n-9)
+                                
                         
                         
                 if self.tool == "select" and not checkedhigher:       
-                    widget.window.draw_pixbuf(None, self.move, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    widget.window.draw_pixbuf(None, self.move, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
                 ## ADD TO SCHEDULE
@@ -618,49 +744,49 @@ class checkwindow:
                             
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
-                            widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 130, 27)
+                            widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+30+35+35, ymove+5-2, 130, 27)
                             
                             ctx.set_source_rgb(1,1,1)
                             ctx.set_font_size(20)
-                            ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
+                            ctx.move_to(  xmove+(len(line[line.find("]")+1:])*12)+35+35+35+35, ymove+5+20)
                             ctx.show_text(task[:task.find(" ")])
                             
                             alreadyexist = True
                             
                             
                             
-                            if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select":
+                            if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select":
                                 widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                                widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
+                                widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+35+35, ymove+5, 22, 22)
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
-                                widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 27)
+                                widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+30+35+35, ymove+5, 200, 27)
                                 
                                 
                                 ctx.set_source_rgb(1,1,1)
                                 ctx.set_font_size(20)
-                                ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
+                                ctx.move_to(  xmove+(len(line[line.find("]")+1:])*12)+35+35+35+35, ymove+5+20)
                                 ctx.show_text("Remove Schedule")
                                 
                                 # IF CLICKED
                                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                                     
                                     removestring.append(self.get_line_path(ind, line))
-                                    print removestring
+                                    #print removestring
                     
-                    if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist:
+                    if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist:
                         widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                        widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+5+self.offset-2, 22, 22)
+                        widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+35+35, ymove+5, 22, 22)
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
-                        widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30+35+35, ind*40+5+self.offset-2, 200, 27)
+                        widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+30+35+35, ymove+5, 200, 27)
                         
                         
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(20)
-                        ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35+35, ind*40+25+self.offset)
+                        ctx.move_to(  xmove+(len(line[line.find("]")+1:])*12)+35+35+35+35, ymove+5+20)
                         ctx.show_text("Add To Schedule")
                         
                         # IF CLICKED
@@ -705,7 +831,7 @@ class checkwindow:
                                 
                                 schstr = schstr+" "+p
                                 
-                                print schstr
+                                #print schstr
                                 
                                 
                                 # OPENING EXISTANT FILE
@@ -730,10 +856,10 @@ class checkwindow:
                         
                         
                     if self.tool == "select":       
-                        widget.window.draw_pixbuf(None, self.schedule, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                        widget.window.draw_pixbuf(None, self.schedule, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35+35+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
-                if mx in range(line.find("[")*20+25,  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35) and my in range(ind*40+self.offset+5, ind*40+self.offset+5+25):
+                if mx in range(xmove+25,  xmove+(len(line[line.find("]")+1:])*12)+35) and my in range(ymove+5, ymove+5+25):
                     #widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.display_get_default(), self.edit, 1,20))
                     
                     widget.window.draw_pixbuf(None, self.edit, 0, 0, mx+2, my-24 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
@@ -743,14 +869,15 @@ class checkwindow:
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         
                         def ee(ind, line):
-                            newtext = dialogs.PickName(line[line.find("]")+1:])
+                            newtext = dialogs.PickName(line[line.find("]")+2:])
                             
                             if newtext != "": # if returned something (if pressed ok and has text)
                                 
                                 
-                                self.FILE[ind+9] = line[:line.find("]")+1]+newtext
+                                self.FILE[ind+9] = line[:line.find("]")+2]+newtext
                                 
                                 # refrashing the file
+                                #reloadfile = True
                                 self.save()
                                 self.open()
                                 
@@ -764,18 +891,18 @@ class checkwindow:
                 
                 
                 # IF MOUSE OVER
-                if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(w-40, w-40+20) and self.tool == "select":
+                if my in range(ymove+5, ymove+5+20) and mx in range(w-40, w-40+20) and self.tool == "select":
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                    widget.window.draw_rectangle(xgc, True, w-42, ind*40+5+self.offset-2, 22, 22)
+                    widget.window.draw_rectangle(xgc, True, w-42, ymove+5-2, 22, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
-                    widget.window.draw_rectangle(xgc, True, w-210, ind*40+5+self.offset-2, 160, 27)
+                    widget.window.draw_rectangle(xgc, True, w-210, ymove+5-2, 160, 27)
                     
                     
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(20)
-                    ctx.move_to(  w-200, ind*40+25+self.offset)
+                    ctx.move_to(  w-200, ymove+20+5)
                     ctx.show_text("Delete Task")
                     
                     
@@ -783,14 +910,32 @@ class checkwindow:
                     # IF CLICKED
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         
-                        del self.FILE[ind+9]
-                
+                        print "CLICKED TO DELETE : ", self.FILE[ind+9]
+                        
+                        if self.FILE[ind+10].find("[") > line.find("["):
+                            for i in range(ind, ind+s_ind):
+                                print "DELETING : ", self.FILE[i+9]
+                                removestring.append(self.get_line_path(i, self.FILE[i+9]))
+                                self.FILE[i+9] = "!!!DELETE!!!"
+                            for i in range(ind, ind+s_ind):     
+                                self.FILE.remove("!!!DELETE!!!")
+                        else:
+                            
+                            removestring.append(self.get_line_path(ind, line))
+                            self.FILE[ind+9] = "!!!DELETE!!!"
+                            self.FILE.remove("!!!DELETE!!!")
+                            
+                        print
+                            
                         # refrashing the file
+                        #reloadfile = True
                         self.save()
                         self.open()
                         
+                        
+                        
                 if self.tool == "select":
-                    widget.window.draw_pixbuf(None, self.delete, 0, 0, w-40, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    widget.window.draw_pixbuf(None, self.delete, 0, 0, w-40, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
                 
@@ -801,24 +946,25 @@ class checkwindow:
         
             
             
-            
-            
-            
-        # ADD SUBTASK
+        yline = yline + 40    
+        ymove = yline+self.offset
+        
+        
+        # ADD TASK
                 
                 
-        if my in range(ind*40+5+self.offset, ind*40+5+self.offset+20) and mx in range(line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select":
+        if my in range(ymove+5, ymove+5+20) and mx in range(50, 50+20) and self.tool == "select":
             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-            widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+5+self.offset-2, 22, 22)
+            widget.window.draw_rectangle(xgc, True, 50, ymove+5+self.offset-2, 22, 22)
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-            widget.window.draw_rectangle(xgc, True, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+30, ind*40+5+self.offset-2, 160, 30)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+            widget.window.draw_rectangle(xgc, True, 50+30+32, ymove+5, 160, 30)
             
             
             ctx.set_source_rgb(1,1,1)
             ctx.set_font_size(20)
-            ctx.move_to(  line.find("[")*20+(len(line[line.find("]")+1:])*12)+35+35, ind*40+25+self.offset)
+            ctx.move_to(  50+32+32, ymove+25)
             ctx.show_text("Add Task")
             
             
@@ -839,6 +985,7 @@ class checkwindow:
                         
                         
                         # refrashing the file
+                        #reloadfile = True
                         self.save()
                         self.open()
                     
@@ -851,14 +998,56 @@ class checkwindow:
         
         
         
-        widget.window.draw_pixbuf(None, self.plus, 0, 0, line.find("[")*20+(len(line[line.find("]")+1:])*12)+35, ind*40+self.offset+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+        widget.window.draw_pixbuf(None, self.plus, 0, 0, 50, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
         
         
         
+        # IF ASSET COPY CHECKLIST FROM ASSET
+        if self.FILENAME.replace(self.pf, "").startswith("/dev/"):
+            
+            if my in range(ymove+5, ymove+5+20) and mx in range(50+32, 50+32+20) and self.tool == "select":
+                widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                widget.window.draw_rectangle(xgc, True, 50+32, ymove+5+self.offset-2, 22, 22)
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                widget.window.draw_rectangle(xgc, True, 50+30+32, ymove+5, 160+50, 30)
+                
+                
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(20)
+                ctx.move_to(  50+32+32, ymove+25)
+                ctx.show_text("Import Checklist")
+                
+                
+                
+                # IF CLICKED
+                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+            
+                    def ee(ind, line):
+                        
+                        importing =  self.pf+itemselector.select(self.pf)+"/asset.progress"
+                        if os.path.exists(importing):
+                            importing = open(importing, "r")
+                            importing = importing.read().split("\n")
+                            for n, i in enumerate(importing[9:]):
+                                if "[ ]" in i or "[V]" in i:
+                                    self.FILE.append(i.replace("[V]", "[ ]"))
+                                    
+                            self.save()
+                            self.open()
+                                    
+                        
+                    glib.timeout_add(10, ee, ind, line)
+                    
+                    
+            widget.window.draw_pixbuf(None, self.pasteicon, 0, 0, 50+32, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
         
-        if not foundhightlight and self.highlight:
-            #print "PROBLEMATIC", self.highlight
-            removestring.append(self.highlight)
+        
+        
+        #if not foundhightlight and self.highlight:
+        #    #print "PROBLEMATIC", self.highlight
+        #    removestring.append(self.highlight)
         if removestring:
             
             for removing in removestring:
@@ -880,12 +1069,13 @@ class checkwindow:
                     
                     s = open(self.pf+"/schedule.data","w")
                     for i in o:
-                        print i
+                        #print i
                         s.write(i+"\n")
                     s.close()
                     #self.highlight = None
                 except Exception as e:
-                    print e
+                    pass
+                    #print e
                 
             
         
@@ -900,15 +1090,18 @@ class checkwindow:
             self.offset = self.offset - (self.mpy-my)
         
         
-        if self.offset < 0-(ind*40+40-h):
-            self.offset = 0-(ind*40+40-h)
+        if self.offset < 0-(yline+40-h):
+            self.offset = 0-(yline+40-h)
             
         if self.offset > 0:
             self.offset = 0
         
         
         
-        
+        #if reloadfile:
+        #    print "IF RELOADFILE IS TRUE"
+        #    self.save()
+        #    self.open()
         
         #############################################################################
         ############################# UNTIL HERE ####################################

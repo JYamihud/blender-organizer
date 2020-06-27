@@ -72,31 +72,34 @@ if os.path.exists(folder+"/extra/autolink.data"):
                         
                         
                         print("ATTEMPTING TO LINK : "+collection)
-                        
-                        with bpy.data.libraries.load(astblend, link=True) as (data_from, data_to):
-                            data_to.collections = [c for c in data_from.collections if c.startswith(collection)]
-                        
-                        for new_coll in data_to.collections:
-                            if new_coll.name:
-                                instance = bpy.data.objects.new(new_coll.name, None)
-                                instance.instance_type = 'COLLECTION'
-                                instance.instance_collection = new_coll
-                                bpy.context.scene.collection.objects.link(instance)
-                                bpy.data.objects[collection].location[1] = movey
-                                
-                                for proxymake in proxydata:
-                                
-                                    armature = proxymake
-                                    ob = bpy.context.scene.objects[new_coll.name]
-                                    ob.select_set(True)
-                                    bpy.context.view_layer.objects.active = ob
-                                    bpy.ops.object.proxy_make(object=armature)
+                        try:
+                            with bpy.data.libraries.load(astblend, link=True) as (data_from, data_to):
+                                data_to.collections = [c for c in data_from.collections if c.startswith(collection)]
+                            
+                            for new_coll in data_to.collections:
+                                if new_coll.name:
+                                    instance = bpy.data.objects.new(new_coll.name, None)
+                                    instance.instance_type = 'COLLECTION'
+                                    instance.instance_collection = new_coll
+                                    bpy.context.scene.collection.objects.link(instance)
+                                    bpy.data.objects[collection].location[1] = movey
                                     
-                                #if len(proxymake) > 0:
-                                #    bpy.data.objects[collection].hide_select = True
-                                
-                                bpy.ops.wm.save_mainfile()
-                                
+                                    for proxymake in proxydata:
+                                        
+                                        try:
+                                            armature = proxymake
+                                            ob = bpy.context.scene.objects[new_coll.name]
+                                            ob.select_set(True)
+                                            bpy.context.view_layer.objects.active = ob
+                                            bpy.ops.object.proxy_make(object=armature)
+                                        except:
+                                            raise
+                                    #if len(proxymake) > 0:
+                                    #    bpy.data.objects[collection].hide_select = True
+                                    
+                                    bpy.ops.wm.save_mainfile()
+                        except:
+                            raise
                                 
                                 
                 else:

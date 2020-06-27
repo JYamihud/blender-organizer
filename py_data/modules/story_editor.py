@@ -3055,7 +3055,7 @@ class story:
                             widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                             shotstatussidepanel = 1
                         # MOUSE OVER
-                        if mx in range(Pstart, w-Ppart/2) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w-Ppart/2-60) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
                             
                             
@@ -3129,7 +3129,7 @@ class story:
                             widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
                             shotstatussidepanel = 2
                         # MOUSE OVER
-                        if mx in range(Pstart, w-Ppart/2) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w-Ppart/2-60) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
                             
                             

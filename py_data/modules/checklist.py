@@ -227,6 +227,8 @@ class checkwindow:
     
     def get_line_path(self, ind, line):
         
+        line = line.replace("].", "] ")
+        
         sep = "=:>"
         
         p = ""
@@ -258,7 +260,7 @@ class checkwindow:
                 
             for i in parts[::-1]:
                 p = p+i+sep
-            p = p + line[line.find("]")+2:]
+            p = p + line[line.find("]")+1:]
         return p
     
     #### THIS FUNCTION DRAWS THE PIXELS IN THE WINDOW ####

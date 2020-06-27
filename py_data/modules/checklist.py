@@ -231,7 +231,7 @@ class checkwindow:
         
         p = ""
         if line.startswith("["):
-            p = line[line.find("]")+2:]
+            p = line[line.find("]")+1:]
         else:
             
             parts = []

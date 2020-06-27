@@ -1,12 +1,23 @@
+VERSION 4.34
+FILE update_info.data
+FILE py_data/modules/checklist.py
+FILE py_data/modules/analytics.py
+FILE py_data/modules/story_editor.py
+FILE py_data/modules/autolink.py
+FILE py_data/icons/closed.png
+FILE py_data/icons/open.png
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.34
+
+
 VERSION 4.33
 FILE update_info.data
 FILE py_data/modules/checklist.py
+FILE py_data/modules/analytics.py
 UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.33
 
 VERSION 4.32
 FILE update_info.data
 FILE py_data/modules/checklist.py
-FILE py_data/modules/analytics.py
 UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.32
 
 VERSION 4.31

@@ -703,8 +703,11 @@ class checkwindow:
                             
                             if Pname != "":
                                 self.FILE[theline+9] = line[:line.find("[")+1]+" "+line[line.find("]"):]
-                                self.FILE.insert(theline+p_line+9,  line[:line.find("[")]+"    [ ] "+Pname)
                                 
+                                if self.FILE[theline+10].find("[") > line.find("["):
+                                    self.FILE.insert(theline+p_line+9,  line[:line.find("[")]+"    [ ] "+Pname)
+                                else:
+                                    self.FILE.insert(theline+10,  line[:line.find("[")]+"    [ ] "+Pname)
                                 
                                 # refrashing the file
                                 #reloadfile = True

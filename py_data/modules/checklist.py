@@ -331,15 +331,17 @@ class checkwindow:
             if "[ ]" in line or "[V]" in line or "[v]" in line:
                 
                 try:
-                    if self.colapsed[ind+9]:                    
+                    if self.colapsed[ind+9] and not self.grabbed:                    
                         continue
                 except:
                     pass
-                yline = yline + 40
                 
+                if ind not in self.grab:
+                    yline = yline + 40
+                ymove = yline+self.offset
                 
                 xmove = line.find("[")*20 + 50
-                ymove = yline+self.offset
+                
                 put = " "
                 
                 
@@ -365,42 +367,7 @@ class checkwindow:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, xmove-50, ymove,  w, 39)
                 
-                colapsed = False
-                
-                
-                
-                
-                try:
-                    if self.FILE[ind+10].find("[") > line.find("["):
-                        
-                        if my in range(ymove, ymove+35) and mx in range(xmove-30, xmove-10) and self.tool == "select" :
-                    
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c")) ## CHOSE COLOR
-                            widget.window.draw_rectangle(xgc, True, xmove-30, ymove+5,  20, 20)
-                        
-                            # IF CLICKED
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
-                                
-                                put = "."
-                                if line[line.find("]")+1:].startswith("."):
-                                    put = " "
-                                    
-                                
-                                 
-                                self.FILE[ind+9] = line[:line.find("]")+1]+put+line[line.find("]")+2:]
-                                
-                                
-                                self.save()
-                                self.open()
-                        
-                        
-                        if not line[line.find("]")+1:].startswith("."):
-                            widget.window.draw_pixbuf(None, self.openicon, 0, 0, xmove-30, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                        else:
-                            widget.window.draw_pixbuf(None, self.closed, 0, 0, xmove-30, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                            colapsed = True
-                except:
-                    print "DRAWING COLLAPSIBLE ICON ERROR"        
+                      
                     
                 
                 
@@ -445,31 +412,80 @@ class checkwindow:
                 #print line, checkpercent
                 
                 
+                    
+                    
+                   # CHECKING COLAPSED
                 
-                
-                
-                
-                if colapsed:
+                def checkcolapsed():
+                    colapsed = False 
                     
                     try:
+                        if self.FILE[ind+10].find("[") > line.find("["):
+                            
+                            if my in range(ymove, ymove+35) and mx in range(xmove-30, xmove-10) and self.tool == "select" :
                         
-                        for i in range(ind+10, s_ind+ind+9):
-                            self.colapsed[i] = True
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c")) ## CHOSE COLOR
+                                widget.window.draw_rectangle(xgc, True, xmove-30, ymove+5,  20, 20)
+                            
+                                # IF CLICKED
+                                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                                    
+                                    put = "."
+                                    if line[line.find("]")+1:].startswith("."):
+                                        put = " "
+                                        
+                                    
+                                     
+                                    self.FILE[ind+9] = line[:line.find("]")+1]+put+line[line.find("]")+2:]
+                                    
+                                    
+                                    self.save()
+                                    self.open()
+                                
+                         
+                    
+                    
+                
+                
+                    
+                            try:
+                                if not line[line.find("]")+1:].startswith("."):
+                                    
+                                    if self.tool == "select":
+                                        widget.window.draw_pixbuf(None, self.openicon, 0, 0, xmove-30, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                                else:
+                                    if self.tool == "select":
+                                        widget.window.draw_pixbuf(None, self.closed, 0, 0, xmove-30, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                                    colapsed = True
+                            except:
+                                print "DRAWING COLLAPSIBLE ICON ERROR"  
+                    
                     
                     except:
-                        pass
-                else:
-                    for i in range(ind+10, s_ind+ind+9):
+                        print "CLOAPSE BUTTON"    
+                    
+                    
+                    if colapsed:
+                        
                         try:
-                            self.colapsed[i] = False
+                            
+                            for i in range(ind+10, s_ind+ind+9):
+                                self.colapsed[i] = True
+                        
                         except:
                             pass
+                    else:
+                        for i in range(ind+10, s_ind+ind+9):
+                            try:
+                                self.colapsed[i] = False
+                            except:
+                                pass
                         
-                        
+                checkcolapsed()      
                 
                 
                 ## HIGLIGHT
-                if self.highlight:
+                if self.highlight and self.tool == "select":
                     if self.highlight.endswith(self.get_line_path(ind, line)):
                         foundhightlight = True
                         
@@ -484,25 +500,33 @@ class checkwindow:
                     
                 
                 
-                #if self.tool == "grab" and ind in self.grab:
-                #    
-                #    xmove = mx - gpos
-                #    ymove = my - 10
-                    
-                    #xgc.line_width = 1
-                    #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#7c7c7c")) ## CHOSE COLOR
-                    #widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
-                    #self.FILE[ind+9] = line[:line.find("[")+1]+put+line[line.find("]"):]
-                    #widget.window.draw_rectangle(xgc, True, xmove, ymove,  w, 39)
-                    
                 
                 
                 # IF GRABBING IS ABOVE THIS TASK
                     
                 if my in range(ymove, ymove+35) and self.tool == "grab" :
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, int(float(mx - gpos)/80)*80+50, ymove-7,  w, 2)
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, int(float(mx - gpos)/80)*80+50, ymove,  w, 40)
+                    
+                    gl = self.grab_text.split("\n")[0]
+                    
+                    ctx.set_source_rgb(1,1,1)
+                    if checkedhigher or "[V]" in gl:
+                        ctx.set_source_rgb(0.7,0.4,0.2) #395384
+                    ctx.set_font_size(20)
+                    ctx.move_to(  int(float(mx - gpos)/80)*80+50+40, ymove+25)
+                    ctx.show_text(gl[gl.find("]")+2:])
+                    
+                    
+                    
+                    yline = yline + 40
+                    ymove = yline+self.offset
+                    
+                    
+                    
+                    
                     widget.window.draw_line(xgc, int(float(mx - gpos)/80)*80+50, 0, int(float(mx - gpos)/80)*80+50, h )
                     
                     
@@ -515,10 +539,16 @@ class checkwindow:
                             print "DELETING : ", self.FILE[i+9]
                             self.FILE[i+9] = "!!!DELETE!!!"
                             
-                        for i in self.grab_text.split("\n")[::-1]:
+                        for n, i in enumerate(self.grab_text.split("\n")[::-1]):
+                            
+                            #if n == -1:
+                            #i = i[:i.find("]")+1]+" "+i[i.find("]")+2:]
+                            
+                            
                             print "TEXT GRABBED : ", i, "BEFORE TEXT : ", self.FILE[ind+9]
                             self.FILE.insert(ind+9, " "*((int(float(mx - gpos)/80)*80)/20)+i)
-                        
+                            
+                            
                         
                         print "\nFINISHED\n"
                         for i in self.FILE:
@@ -548,8 +578,11 @@ class checkwindow:
                         
                         self.grabbed = True
                         
+                        self.colapsed = []
+                        for n, i in enumerate(self.FILE):
+                            self.colapsed.append(False)
                     
-                    
+                        checkcolapsed()
                 
                     
                 
@@ -638,7 +671,7 @@ class checkwindow:
                 # ADD SUBTASK
                 
                 
-                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35, xmove+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select" and not checkedhigher:
+                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35, xmove+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select":# and not checkedhigher:
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35, ymove+5-2, 22, 22)
@@ -657,7 +690,10 @@ class checkwindow:
                     # IF CLICKED
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         
-                        def ee(theline, line):
+                        
+                        
+                        
+                        def ee(theline, p_line, line):
                                 
                             Pname = ""
                             Pname = dialogs.PickName("New Subtask")
@@ -666,7 +702,8 @@ class checkwindow:
                             
                             
                             if Pname != "":
-                                self.FILE.insert(theline+10,  line[:line.find("[")]+"    [ ] "+Pname)
+                                self.FILE[theline+9] = line[:line.find("[")+1]+" "+line[line.find("]"):]
+                                self.FILE.insert(theline+p_line+9,  line[:line.find("[")]+"    [ ] "+Pname)
                                 
                                 
                                 # refrashing the file
@@ -677,12 +714,12 @@ class checkwindow:
                             
                         
                         
-                        glib.timeout_add(10, ee, ind, line)
+                        glib.timeout_add(10, ee, ind, s_ind , line)
                 
                 
                 
                 
-                if self.tool == "select" and not checkedhigher:
+                if self.tool == "select":# and not checkedhigher:
                     widget.window.draw_pixbuf(None, self.plus, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
@@ -718,7 +755,7 @@ class checkwindow:
                                 
                         
                         
-                if self.tool == "select" and not checkedhigher:       
+                if self.tool == "select":# and not checkedhigher:       
                     widget.window.draw_pixbuf(None, self.move, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 

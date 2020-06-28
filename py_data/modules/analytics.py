@@ -1021,7 +1021,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 
                 thisypos = gypos
                 
-                gxpos = int(w/2*xpos) + w/2
+                gxpos = int(float(w)/2*xpos) + w/2
                 gypos = h - int(float(h/4)/highestypos*gypos) - h/4
                 
                 
@@ -1040,7 +1040,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e13d3d"))
                 elif not today:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
-                widget.window.draw_rectangle(xgc, True, gxpos, gypos-12, int(w/2/self.alltime), int(float(h/4)/highestypos) )
+                widget.window.draw_rectangle(xgc, True, gxpos, gypos-12, int(float(w)/2/self.alltime)+1, int(float(h/4)/highestypos) )
                 
                 
                 #Lines to separate each task's number 

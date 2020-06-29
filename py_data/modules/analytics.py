@@ -527,7 +527,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             widget.window.draw_line(xgc, w/2, h/4*3, todayongrapth, h/4*3)    
             xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER) 
             
-            
+            ctx.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             
             for dln, date in enumerate(perhys):
                 if date.startswith("DATE"):
@@ -608,9 +608,9 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     if True:#nowW - prevLB > 20:
                         
                         # MOUSE OVER AND INFRO REVEAL
-                        if mx > nowW-10 and mx < nowW+10 and toshowwidget and my in range(h/2, h):
+                        if mx in range( nowW, nowW+int(float(w)/2/self.alltime)+1) and toshowwidget and my in range(h/2, h):
                             toshowwidget = False
-                            pointshouldbe = int(float(h/4)/self.alltime*pos)*-1+h
+                            pointshouldbe = int(float(h/2)/self.alltime*pos)*-1+h
                             
                         
                             
@@ -618,11 +618,11 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
                             xgc.line_width = 1
                             widget.window.draw_line(xgc, nowW, h/2, nowW, nowH)    
-                            xgc.line_width = 4
+                            #xgc.line_width = 4
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#0f0"))
                             if thepercent < shouldbepercent:
-                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#00f"))
                                 widget.window.draw_line(xgc, nowW, pointshouldbe-2, nowW, nowH)    
                                 #widget.window.draw_rectangle(xgc, True , nowW-2, pointshouldbe-2, 5, pointshouldbe-nowH)  
                             
@@ -634,8 +634,15 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             
                             
                             tmp = nowW
-                            if nowW + 100 > todayongrapth:
-                                nowW = nowW -100
+                            if nowW + 120 > todayongrapth:
+                                nowW = nowW -120
+                                if nowW + 180 > w:
+                                    nowW = nowW - 180
+                                   
+                            #box
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                            widget.window.draw_rectangle(xgc, True , nowW+2, h/2, 104+10, h/2+17+40-h/2)  
+                            
                             
                             # PROGRESS BAR WIDGET
                             
@@ -667,7 +674,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                                 ctx.set_source_rgb(0.2, 1 ,0.2)
                             ctx.set_font_size(10)
                             ctx.move_to( nowW+5, h/2+17+20)
-                            ctx.show_text("Delivered : "+str(thepercent)+"%")
+                            ctx.show_text("Delivered : "+str(int(thepercent))+"%")
                             
                             ctx.set_font_size(10)
                             ctx.move_to( nowW+5, h/2+17+30)
@@ -698,20 +705,34 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             
              # avarage
-        
+            
+            
+            tmp = mx
+            movedmx = 0
+            if mx + 61 > todayongrapth:
+                mx = mx - 61
+                movedmx = 61
+            
+                if mx + movedmx + 180 > w:
+                    mx = mx - 180
+                    movedmx = movedmx + 180
+            
+                
             # IF MISSING DATA
-            if mx in range(w/2, w) and toshowwidget and my in range(h/2, h):
+            if mx + movedmx in range(w/2, todayongrapth) and toshowwidget and my in range(h/2, h):
                 ctx.set_source_rgb(1 ,0.2, 0.2)
                 ctx.set_font_size(10)
                 ctx.move_to( mx+2, h/2+10)
-                ctx.show_text("Missing Data")
+                ctx.show_text("No Activity")
                 
                 # VERTICAL LINE
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
                 xgc.line_width = 1
-                widget.window.draw_line(xgc, mx-2, h/2, mx-2, h)    
+                widget.window.draw_line(xgc, mx-2+movedmx, h/2, mx-2+movedmx, h)    
                 xgc.line_width = 4
                 
+            
+            mx = tmp
             
             self.enddateval = avrgval * ( self.alltime - passed ) + thepercent
             
@@ -1040,7 +1061,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 #    ctx3.fill()
                 
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#203762"))
                 
                 if under:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e13d3d"))
@@ -1065,15 +1086,25 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 
                 # outputting data if mouse over the dategrapth
                 
-                if my in range(h/2, h) and mx in range(gxpos-10, gxpos+10) and draw_date_data:
+                if my in range(h/2, h) and mx in range(gxpos, gxpos+int(float(w)/2/self.alltime)+1) and draw_date_data:
+                    
+                    tmp = gxpos
+                    movedmx = 0
+                    if gxpos + 180 > w:
+                        gxpos = gxpos - 180
+                        movedmx = 180
+                    
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                    widget.window.draw_rectangle(xgc, True , gxpos+2, h/2, 180+4, 50) 
                     
                     
                     
                     busyness =  1.0 / highestypos * gyposdata[tind] 
                     
                     #Busyness Percentage progress bar
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
-                    widget.window.draw_rectangle(xgc, True, gxpos, h/2-10, 1, h )
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                    widget.window.draw_rectangle(xgc, True, gxpos+movedmx, h/2, 1, h )
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
                     widget.window.draw_rectangle(xgc, True, gxpos+4, h/2+2, 100, 5 )
@@ -1091,29 +1122,42 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     else:
                         ctx.show_text("Today")
                     
-                    # how busy
-                    ctx.set_source_rgb(1,1,1)
-                    ctx.set_font_size(10)
-                    ctx.move_to( gxpos+4, h/2+2+25)
-                    ctx.show_text("Activity : "+str(int(busyness*100))+"%")
                     
                     #how many
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(10)
-                    ctx.move_to( gxpos+4, h/2+2+35)
+                    ctx.move_to( gxpos+4, h/2+2+25)
                     ctx.show_text("Scheduled : "+str(gyposdata[tind] )+" tasks")
                     
                     #how many
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(10)
-                    ctx.move_to( gxpos+4, h/2+2+45)
+                    ctx.move_to( gxpos+4, h/2+2+35)
                     ctx.show_text("Maximum Scheduled : "+str(highestypos)+" tasks")
                     
+                    # how busy
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.set_font_size(10)
+                    ctx.move_to( gxpos+4, h/2+2+45)
+                    ctx.show_text("From maximum : "+str(int(busyness*100))+"%")
                     
                     
-                    draw_date_data = False
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                    widget.window.draw_rectangle(xgc, True , gxpos+2, h/2+2+35+(thisypos*10), 10+(len("Task : "+taskstring)*6), 10) 
+                    
+                    # Tasks themselfs
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.set_font_size(10)
+                    ctx.move_to( gxpos+4, h/2+2+45+(thisypos*10))
+                    ctx.show_text("Task : "+taskstring)
+                    
+                    
+                    if gyposdata[tind] == thisypos:
+                    
+                    
+                        draw_date_data = False
                 
-                
+                    gxpos = tmp
                 
                 xpos = 33 #int(w*xpos)-5
                 ypos = h - (ypos*30) - 20
@@ -1310,8 +1354,15 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     widget.window.draw_pixbuf(None, self.deleteicon, 0, 0, 4, ypos+1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                     
             
+            
+            tmp = mx
+            movedmx = 0
+            if mx + 80 > w:
+                mx = mx - 80
+                movedmx = 80
+            
             # IF MISSING DATA
-            if mx in range(todayongrapth, w) and draw_date_data and my in range(h/2, h):
+            if mx + movedmx in range(todayongrapth, w) and draw_date_data and my in range(h/2, h):
                 ctx.set_source_rgb(1 ,1, 1)
                 ctx.set_font_size(10)
                 ctx.move_to( mx+2, h/2+12)
@@ -1320,11 +1371,11 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 # VERTICAL LINE
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
                 xgc.line_width = 1
-                widget.window.draw_line(xgc, mx-2, h/2, mx-2, h)    
+                widget.window.draw_line(xgc, mx-2+ movedmx, h/2, mx-2+ movedmx, h)    
                 xgc.line_width = 4
                     
                     
-                        
+            mx = tmp           
             #if my not in range(h/2-10, h/2-10+h/4) or mx not in range(w/2, w):
                 
             #    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
@@ -1362,11 +1413,11 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             ctx.set_source_rgb(1,1,1)
             ctx.set_font_size(10)
             ctx.move_to( todayongrapth+10, h/2-10)
-            ctx.show_text("Scheduled Activity Graph")
+            ctx.show_text("Scheduled Tasks Graph")
             
             ctx.set_source_rgb(1,1,1)
             ctx.set_font_size(10)
-            ctx.move_to( todayongrapth-135, h/2-10)
+            ctx.move_to( todayongrapth-135-20, h/2-10)
             ctx.show_text("Project Completion Graph")
             
             

@@ -1040,7 +1040,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                                 widget.window.draw_pixbuf(None, self.okicon, 0, 0, stX+150-48, ypart-17-4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                             elif "Scheduled" in l:
                                 
-                                widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                             
                             else:
                                 ctx3.set_source_rgba(1,1,1,0.4)

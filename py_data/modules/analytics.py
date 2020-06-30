@@ -910,7 +910,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             hf = hf.read()
             
             ln = 0
-            for n, l in enumerate(hf.split("\n")):
+            for n, l in enumerate(hf.split("\n")[::-1]):
                 if l.startswith(self.selectdate):
                     ln = ln + 1
                     
@@ -1782,7 +1782,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
                         self.selectdate = selectingdate
-                
+                        self.hscroll = 0
                 
                 if self.selectdate == selectingdate:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))

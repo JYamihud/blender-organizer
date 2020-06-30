@@ -916,13 +916,13 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             d = ""
             hdata = []
-            needicon = self.scnicon
+            needicon = False
             for n, l in enumerate(hf.split("\n")[::-1]):
                 
                 
                 if d != l[:11]:
                     
-                    if [d, hdata] not in graphHdata:
+                    if [d, hdata] not in graphHdata :
                         graphHdata.append([d, hdata])
                     
                     d =  l[:11]
@@ -942,7 +942,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 elif ".progress" in l:
                     needicon = self.checklist
                 
-                if needicon not in hdata:
+                if needicon not in hdata and needicon:
                     hdata.append(needicon)
                 
                 if l.startswith(self.selectdate):

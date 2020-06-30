@@ -952,6 +952,21 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             ctx.move_to( stX+104, ypart)
                             ctx.show_text("Edited Story")
                         
+                        elif "Project Started" in l:
+                            
+                            ctx.set_source_rgb(1,1,1)
+                            ctx.set_font_size(15)
+                            ctx.move_to( stX+104, ypart)
+                            ctx.show_text("Hello :)")
+                        
+                        elif "Project Exited" in l:
+                            
+                            ctx.set_source_rgb(1,1,1)
+                            ctx.set_font_size(15)
+                            ctx.move_to( stX+104, ypart)
+                            ctx.show_text("Bye :(")
+                        
+                        
                         elif "[Added Asset]" in l:
                             widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                             ctx.set_source_rgb(1,1,1)
@@ -974,6 +989,10 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             widget.window.draw_pixbuf(None, self.checklist, 0, 0, stX+104-24+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                             if "[V]" in l:
                                 widget.window.draw_pixbuf(None, self.okicon, 0, 0, stX+150-48+sp, ypart-17-4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                            elif "Scheduled" in l:
+                                
+                                widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                
                             else:
                                 ctx3.set_source_rgba(1,1,1,0.4)
                                 ctx3.rectangle(stX+152-48+sp, ypart-17+6,  12, 12)
@@ -999,6 +1018,9 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             widget.window.draw_pixbuf(None, self.checklist, 0, 0, stX+104-24+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                             if "[V]" in l:
                                 widget.window.draw_pixbuf(None, self.okicon, 0, 0, stX+150-48+sp, ypart-17-4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                            elif "Scheduled" in l:
+                                
+                                widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                             else:
                                 ctx3.set_source_rgba(1,1,1,0.4)
                                 ctx3.rectangle(stX+152-48+sp, ypart-17+6,  12, 12)
@@ -1016,6 +1038,10 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             widget.window.draw_pixbuf(None, self.checklist, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                             if "[V]" in l:
                                 widget.window.draw_pixbuf(None, self.okicon, 0, 0, stX+150-48, ypart-17-4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                            elif "Scheduled" in l:
+                                
+                                widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                            
                             else:
                                 ctx3.set_source_rgba(1,1,1,0.4)
                                 ctx3.rectangle(stX+152-48, ypart-17+6,  12, 12)

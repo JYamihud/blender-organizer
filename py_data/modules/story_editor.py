@@ -1731,13 +1731,36 @@ class story:
                     if foundtimes > 0:
                         eventname = eventname + "_" + str(foundtimes+1)
                     
-                    s = "1234567890qwertyuiopasdfghjklzxcvbnm"
-                    rn = ""
-                    for i in range(12):
-                        rn = rn + random.choice(s)                    
+                    
+                    existing = os.walk(self.pf+"/rnd/").next()[1]
+                    
+                    for i in self.FILE.events:
+                        if "<scene>" in i[4] and "</scene>" in i[4]:
+                            
+                            e = i[4]
+                            
+                            ep = e[e.find("<scene>"):e.rfind("</scene>")+8]
+                            for s in ep.split("</scene>"):
+                                
+                                #s = s[s.find("<scene>")+8]
+                                s = s[s.find('"')+1:]
+                                s = s[:s.find('"')]
+                                if s not in existing:
+                                    existing.append(s)
+                        
+                    
+                    for i in existing:
+                        print i, "SCENEFOUND" 
+                    
+                    rnn = foundtimes+1
+                    rn = "Scene_"
+                    while rn + str(rnn) in  existing:
+                        rnn = rnn + 1
+                   
+                    rn = rn + str(rnn)
                     
                         
-                    storypart = "<scene>\"Scene_"+rn+"\"\n\n</scene>"    
+                    storypart = "<scene>\""+rn+"\"\n\n</scene>"    
                     
                     
                     

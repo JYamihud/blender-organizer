@@ -82,7 +82,7 @@ class draw_analytics:
         self.deleteicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/delete.png")
         self.okicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/ok.png")
         self.blendericon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blender.png")
-        
+        self.settingsicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/settings.png")
         
         #getting icons into place OMG WHY????
         self.objicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/obj_asset_undone.png")
@@ -95,6 +95,7 @@ class draw_analytics:
         self.scroll = 0
         self.ifpos = 10
         self.hscroll = 0
+        self.tscroll = 0
         
         #selecting days for analytics
         self.selectdate = "00/00/0000"
@@ -910,7 +911,40 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             hf = hf.read()
             
             ln = 0
+            
+            graphHdata = []
+            
+            d = ""
+            hdata = []
+            needicon = self.scnicon
             for n, l in enumerate(hf.split("\n")[::-1]):
+                
+                
+                if d != l[:11]:
+                    
+                    if [d, hdata] not in graphHdata:
+                        graphHdata.append([d, hdata])
+                    
+                    d =  l[:11]
+                    hdata = []
+                if "Scheduled" in l:
+                    needicon = self.scheduleicon
+                elif "/rnd/" in l:
+                    needicon = self.scnicon
+                elif "/obj/" in l:
+                    needicon = self.objicon
+                elif "/chr/" in l:
+                    needicon = self.chricon
+                elif "/loc/" in l:
+                    needicon = self.locicon
+                elif "/veh/" in l:
+                    needicon = self.vehicon
+                elif ".progress" in l:
+                    needicon = self.checklist
+                
+                if needicon not in hdata:
+                    hdata.append(needicon)
+                
                 if l.startswith(self.selectdate):
                     ln = ln + 1
                     
@@ -918,7 +952,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     ypart = (ubY-ln*22) + self.hscroll
                     
-                    if ypart < stY + ubY - 21:
+                    if ypart < stY + ubY - 21 and ypart > 15:
                         
                         
                         
@@ -967,6 +1001,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             ctx.show_text("Bye :(")
                         
                         
+                        
                         elif "[Added Asset]" in l:
                             widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                             ctx.set_source_rgb(1,1,1)
@@ -974,6 +1009,23 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             ctx.move_to( stX+104, ypart)
                             ctx.show_text("New : "+l[l.find("/dev/")+9:l.rfind("[")])
                         
+                        elif "autolink.data" in l:
+                            widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                            
+                            nameofasset = l[l.find("/dev/")+9:l.rfind("autolink.data")-1]
+                            ctx2.set_source_rgb(1,1,1)
+                            ctx2.set_font_size(15)
+                            ctx2.move_to( stX+104, ypart)
+                            ctx2.show_text(nameofasset)
+                            
+                            sp = len(nameofasset)*9 + 30
+                            
+                            widget.window.draw_pixbuf(None, self.settingsicon, 0, 0, stX+104-24+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                            
+                            ctx.set_source_rgb(1,1,1)
+                            ctx.set_font_size(10)
+                            ctx.move_to( stX+170-48+sp, ypart)
+                            ctx.show_text("Asset Configured")
                         
                         elif "/dev/" in l and ".progress" in l:
                             widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
@@ -1126,7 +1178,8 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             ctx.set_font_size(15)
                             ctx.move_to( stX+104, ypart)
                             ctx.show_text("["+l[21:]+"]")
-            
+                    
+            graphHdata.append([d, hdata])        
             
             
             
@@ -1257,12 +1310,14 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     
                     
-                    xgc.line_width = 4
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9f5036"))
-                    widget.window.draw_polygon(xgc, True, [(prevW, prevH),(nowW,nowH),(nowW,h),(prevW,h)])
-                    widget.window.draw_polygon(xgc, True, [(bprevW, bprevH),(bnowW,bnowH),(bnowW,bnowRH+bnowH),(bprevW,bnowRH+bnowH)])
                     
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                    xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+                    xgc.line_width = 1
+                    widget.window.draw_polygon(xgc, False, [(prevW, prevH),(nowW,nowH),(nowW,h),(prevW,h)])
+                    widget.window.draw_polygon(xgc, False, [(bprevW, bprevH),(bnowW,bnowH),(bnowW,bnowRH+bnowH),(bprevW,bnowRH+bnowH)])
+                    xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER) 
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
                     
                     
@@ -1362,15 +1417,20 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                         widget.window.draw_rectangle(xgc, True , prevW, prevH, int(round(float(w)/self.alltime)+1), h) 
                         prevLB = nowW
                         
-                        
                         #BIG GRAPH
+                        
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))    
                         widget.window.draw_rectangle(xgc, True , bprevW, bprevH, 20, prevbnowRH) 
                         
+                         
+                         
                     
                     # DRAWING PULSE
                     xgc.line_width = 1
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#f00"))
+                    if int(100 / shouldbepercent * (thepercent)) > 100:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#0f0"))
+                    
                     widget.window.draw_line(xgc,prevW, prevPH, nowW, nowPH)
                     widget.window.draw_line(xgc,bprevW, bprevPH, bnowW, bnowPH)
                     xgc.line_width = 4
@@ -1432,7 +1492,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             draw_date_data = True
             
-            for tind, task in enumerate(self.schedule):  
+            for tind, task in enumerate(self.schedule):
             
                 today, over, under, xpos, ypos, gypos, done, taskstring, taskfile, rawline, daystring = task
             
@@ -1562,7 +1622,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 tubY = h / elementsY - border
             
                 xpos = tstX + border / 2#int(w*xpos)-5
-                ypos = tubY - (thisypos*45) + self.hscroll
+                ypos = tubY - (thisypos*45) + self.tscroll
                 
                 
                  
@@ -1800,7 +1860,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(10)
-                    ctx.move_to( i*20+5+self.scroll, bstY+10)
+                    ctx.move_to( i*20+5+self.scroll, bstY+20)
                     if selectingdate == datetime.datetime.strftime(datetime.datetime.today(), self.schedule_date_format):
                         ctx.show_text("Today")
                     else:
@@ -1809,6 +1869,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
                         self.selectdate = selectingdate
                         self.hscroll = 0
+                        self.tscroll = 0
                 
                 if self.selectdate == selectingdate:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
@@ -1821,7 +1882,20 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     else:
                         ctx.show_text(selectingdate)
             
-            
+               
+                if  i*20-20+self.scroll in range(10, w - 10):
+                    #H DATA
+                    for d in graphHdata:
+                       
+                       
+                       if selectingdate in d[0]:
+                           
+                           for n, p in enumerate(sorted(d[1])):
+                               print "SHOWING FUCKING", p
+                               widget.window.draw_pixbuf(None, p, 0, 0, i*20-20+self.scroll, bstY+bubY-n*20-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                     
+                     
+                 
             ##### TOOLTIP
             
             
@@ -1888,10 +1962,10 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             # SCROLLING HYSTORY
             # the scroll is done with the middle mouse button
-            if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3,w):
+            if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3*2,w):
                 self.hscroll = self.hscroll + (my-self.mpy)
                 
-            if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3,w):
+            if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3*2,w):
                 self.hscroll = self.hscroll - (self.mpy-my)
             
             
@@ -1902,7 +1976,20 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 self.hscroll = 0
             
             
+            # SCROLLING TASK
+            # the scroll is done with the middle mouse button
+            if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3,w/3*2):
+                self.tscroll = self.tscroll + (my-self.mpy)
+                
+            if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3,w/3*2):
+                self.tscroll = self.tscroll - (self.mpy-my)
             
+            
+            #if self.scroll < 0-((n+al)*20)+h-33:  #THOSE VALUES HAVE TO BE REDONE
+            #    self.scroll = 0-((n+al)*20)+h-33
+                
+            if self.tscroll < 0:
+                self.tscroll = 0
             
             
             # TESTING SOMETHING

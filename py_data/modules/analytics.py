@@ -1144,7 +1144,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#202020"))
-            widget.window.draw_polygon(xgc, True, [(border, h),(todayongrapth, h-int(ubY*(1.0/self.alltime*passed))),(todayongrapth,h)])
+            #widget.window.draw_polygon(xgc, True, [(border, h),(todayongrapth, h-int(ubY*(1.0/self.alltime*passed))),(todayongrapth,h)])
             
             xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))

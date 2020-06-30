@@ -127,12 +127,13 @@ from py_data.modules import checklist
 from py_data.modules import schedule
 from py_data.modules import update_window
 from py_data.modules import blendver
+from py_data.modules import history
 
 ### FILES FOLDERS MAKE SURE
 
 # py_data bullshit
 
-
+history.write(os.getcwd(), "/", "[Project Started]")
 
 
 
@@ -524,3 +525,6 @@ mainwin.show_all()
 
 #run GTK
 gtk.main()
+
+
+history.write(os.getcwd(), "/", "[Project Exited]")

@@ -1,3 +1,16 @@
+VERSION 4.40
+MAIN_FILE
+FILE update_info.data
+FILE py_data/modules/analytics.py
+FILE py_data/modules/checklist.py
+FILE py_data/modules/assets.py
+FILE py_data/modules/dialogs.py
+FILE py_data/modules/history.py
+FILE py_data/modules/linkconfig.py
+FILE py_data/modules/linkconfirm.py
+FILE py_data/modules/story_editor.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.39
+
 VERSION 4.39
 FILE update_info.data
 FILE py_data/modules/analytics.py
@@ -144,7 +157,7 @@ FILE py_data/modules/assets.py
 FILE py_data/modules/render.py
 FILE py_data/modules/render_lists.py
 FILE py_data/modules/update_window.py
-FILE py_data/modules/analytics.py
+FILE py_data/modules/anMAIN_FILEalytics.py
 FILE py_data/modules/checklist.py
 FILE py_data/modules/fileformats.py
 FILE py_data/modules/story_editor.py

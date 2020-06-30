@@ -25,7 +25,7 @@ from subprocess import *
 import thumbnailer
 import dialogs
 import checklist
-
+import history
 
 
 
@@ -475,6 +475,8 @@ def config(pf, path):
                             st.write("Proxy : "+obj[1]+"\n")
             st.close()
             
+            #WRITTING TO HYSTORY
+            history.write(self.pf ,"/dev/"+self.path+"/autolink.data", "[Updated]")
         
         def load(self):
             

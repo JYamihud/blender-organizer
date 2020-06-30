@@ -25,6 +25,7 @@ import checklist
 import dialogs
 import fileformats
 import linkconfig
+import history
 
 from subprocess import *
 
@@ -71,7 +72,9 @@ class asset:
             w = open(path+"/"+name+".blend", "w")
             w.write(o.read())
             w.close()
-        
+            
+            #WRITTING TO HYSTORY
+            history.write(self.pf , path+"/"+name+".blend", "[Added]")
         
         
         
@@ -264,7 +267,25 @@ class draw_assets:
                 
                 #widget.set_size_request(500,500)
                 
+                # BANNER IMAGE FOR INSPIRATION
+            
+                # updating the image if let's say we changed it
+                if self.dW == 0 and self.DH == 0:
+                    self.banner = self.pf+"/py_data/banner.png"
+                    self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.banner)
                 
+                #lets get how much to scale H
+                scaleimageH =  int( float(self.pixbuf.get_height()) / self.pixbuf.get_width() * w)
+                #scaling image to the frame
+                drawpix = self.pixbuf.scale_simple(w, scaleimageH, gtk.gdk.INTERP_NEAREST) 
+                #drawing image
+                widget.window.draw_pixbuf(None, drawpix, 0, 0, 0, (h - drawpix.get_height()) / 2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                
+                #UI Backdrop
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0.2,0.2,0.2,0.8)
+                ctx3.rectangle(0, 0, w, h)
+                ctx3.fill()
                 
                 
                 
@@ -970,7 +991,11 @@ class draw_assets:
                                 pass
                             Popen([cblndr+"blender", blend[1]])
                             #os.system(cblndr+"blender "+blend[1])
-                
+                            
+                            #WRITTING TO HYSTORY
+                            history.write(self.pf ,blend[1], "[Openned]")
+                            
+                            
                     #BLEND PREVIEW 
                     widget.window.draw_pixbuf(None, blend[0], 0, 0, mmx + 117 +110 +(num*110)+self.blscroll, mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
@@ -1046,7 +1071,9 @@ class draw_assets:
                                 pass
                             Popen([cblndr+"blender", self.screen.ast[1]])
                             #os.system(cblndr+"blender "+self.screen.ast[1])
-                    
+                            
+                            #WRITTING TO HYSTORY
+                            history.write(self.pf ,self.screen.ast[1], "[Openned]")
                     
                     widget.window.draw_pixbuf(None, self.screen.ast[0], 0, 0, mmx + 117 , mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     ctx.set_font_size(10)
@@ -1195,7 +1222,8 @@ class draw_assets:
                                     to.close()
                                     self.blends = self.loadBlendFiles(self.screen)
                                     
-                                    
+                                    #WRITTING TO HYSTORY
+                                    history.write(self.pf , self.screen.path+"/"+str(Pname), "[Added]")
                                     
                         glib.timeout_add(10, ee) 
                         

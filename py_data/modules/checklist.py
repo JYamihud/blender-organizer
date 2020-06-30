@@ -30,7 +30,7 @@ import itemselector
 
 # self made modules
 import dialogs
-
+import history
 
 
 ### READ FILE ####
@@ -190,9 +190,9 @@ class checkwindow:
     def open(self):
         self.FILE = open(self.FILENAME, "r")
         self.FILE = self.FILE.read().split("\n")
-        print "\nOPENNED\n"
-        for i in self.FILE:
-            print i
+        #print "\nOPENNED\n"
+        #for i in self.FILE:
+            #print i
         
         self.colapsed = []
         for n, i in enumerate(self.FILE):
@@ -218,9 +218,9 @@ class checkwindow:
         
         
         
-        print "\nSAVING\n"
+        #print "\nSAVING\n"
         for i in self.FILE:
-            print i
+            #print i
             save.write(i+"\n")
         
         save.close()
@@ -536,7 +536,7 @@ class checkwindow:
                          
                         for i in self.grab:
                             
-                            print "DELETING : ", self.FILE[i+9]
+                            #print "DELETING : ", self.FILE[i+9]
                             self.FILE[i+9] = "!!!DELETE!!!"
                             
                         for n, i in enumerate(self.grab_text.split("\n")[::-1]):
@@ -550,18 +550,14 @@ class checkwindow:
                             
                             
                         
-                        print "\nFINISHED\n"
-                        for i in self.FILE:
-                            print i
+                        
                         
                         
                         
                         for i in self.grab:
                             self.FILE.remove("!!!DELETE!!!")
                         
-                        print "\nDELETED\n"
-                        for i in self.FILE:
-                            print i
+                        
                         
                         
                         print
@@ -647,6 +643,8 @@ class checkwindow:
                             
                              self.FILE[ind+9] = line[:line.find("[")+1]+" "+line[line.find("]"):]
                         
+                        #WRITTING TO HYSTORY
+                        history.write(self.pf ,self.FILENAME, self.get_line_path(ind, line)+" ["+put+"]")
                         
                         
                         # refrashing the file
@@ -866,7 +864,15 @@ class checkwindow:
                                 
                                 schstr = newdate+" "+self.FILENAME.replace(self.pf, "")
                                 
+                                #WRITTING TO HYSTORY
+                                history.write(self.pf ,self.FILENAME, self.get_line_path(ind, line)+" [Scheduled] "+newdate)
+                                
+                                
+                                
                                 # GETTING THE PATH WITH IN 
+                                
+                                
+                                
                                 
                                 
                                 p = self.get_line_path(ind, line)
@@ -892,7 +898,9 @@ class checkwindow:
                                     s.write(i+"\n")
                                 
                                 s.close()
-                            
+                                
+                                
+                                            
                             
                             glib.timeout_add(10, ee, ind, line)
                         
@@ -952,11 +960,11 @@ class checkwindow:
                     # IF CLICKED
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         
-                        print "CLICKED TO DELETE : ", self.FILE[ind+9]
+                       # print "CLICKED TO DELETE : ", self.FILE[ind+9]
                         
                         if self.FILE[ind+10].find("[") > line.find("["):
                             for i in range(ind, ind+s_ind):
-                                print "DELETING : ", self.FILE[i+9]
+                                #print "DELETING : ", self.FILE[i+9]
                                 removestring.append(self.get_line_path(i, self.FILE[i+9]))
                                 self.FILE[i+9] = "!!!DELETE!!!"
                             for i in range(ind, ind+s_ind):     

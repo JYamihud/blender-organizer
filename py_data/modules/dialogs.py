@@ -22,6 +22,7 @@ import datetime
 
 import thumbnailer
 import itemselector
+import history
 import checklist
 import quick
 import fileformats
@@ -1128,6 +1129,10 @@ class AddAsset:
         
     
     def getpath(self):
+        
+        #WRITTING TO HYSTORY
+        history.write(self.pf ,self.name, "[Added Asset]")
+        
         return self.name
 
 

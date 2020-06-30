@@ -23,6 +23,7 @@ import datetime
 # self made modules
 
 import thumbnailer
+import history
 import itemselector
 import checklist
 import dialogs
@@ -290,6 +291,28 @@ class story:
             
 
             
+            # BANNER IMAGE FOR INSPIRATION
+            
+            # updating the image if let's say we changed it
+            if self.dW == 0 and self.DH == 0:
+                self.banner = self.pf+"/py_data/banner.png"
+                self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.banner)
+            
+            #lets get how much to scale H
+            scaleimageH =  int( float(self.pixbuf.get_height()) / self.pixbuf.get_width() * w)
+            #scaling image to the frame
+            drawpix = self.pixbuf.scale_simple(w, scaleimageH, gtk.gdk.INTERP_NEAREST) 
+            #drawing image
+            widget.window.draw_pixbuf(None, drawpix, 0, 0, 0, (h - drawpix.get_height()) / 2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            
+            #UI Backdrop
+            ctx3 = widget.window.cairo_create()
+            ctx3.set_source_rgba(0.2,0.2,0.2,0.9)
+            ctx3.rectangle(0, 0, w, h)
+            ctx3.fill()
+            
+            
+            
             #######   LINKCHAINED   ######
             
             
@@ -339,7 +362,7 @@ class story:
             
             # BACKGROUND COLOR
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME    
+            #widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME    
             
             
             ctx2 = widget.window.cairo_create()
@@ -3402,7 +3425,8 @@ class story:
                                             pass
                                             
                                         
-                                        
+                                        #WRITTING TO HYSTORY
+                                        history.write(self.pf ,"/"+shotname+"/"+BName, "[Openned]")
                                         Popen([cblndr+"blender", self.pf+"/"+shotname+"/"+BName])
                                         #os.system(cblndr+"blender "+self.pf+"/"+shotname+"/"+BName)
                                     
@@ -3595,7 +3619,8 @@ class story:
                                                 to.write(fr.read())
                                                 to.close()
                                                 
-                                                
+                                                #WRITTING TO HYSTORY
+                                                history.write(self.pf ,"/"+shotname+"/"+str(Pname), "[Added]")
                                                 
                                                 #REFRASHING
                                                 
@@ -3655,6 +3680,10 @@ class story:
                                             to = open(self.pf+"/"+shotname+"/"+str(Pname), "w")
                                             to.write(fr.read())
                                             to.close()
+                                            
+                                            
+                                            #WRITTING TO HYSTORY
+                                            history.write(self.pf ,"/"+shotname+"/"+str(Pname), "[Added]")
                                             
                                             
                                             
@@ -4576,6 +4605,9 @@ class bos:
         savefile.close()
         
         print "SAVED TOO  "+self.filename
+        
+        #WRITTING TO HYSTORY
+        history.write(os.getcwd() ,self.filename, "[Edited]")
         
         return
 

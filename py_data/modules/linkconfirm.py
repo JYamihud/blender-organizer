@@ -28,7 +28,7 @@ import checklist
 
 import itemselector
 import linkconfig
-
+import history
 
 
 
@@ -365,7 +365,8 @@ def config(pf, path, blend):
         
         
         
-        
+        #WRITTING TO HYSTORY
+        history.write(pf ,blend, "[Linked]")
         
         ret = finalname.get_text()
         

@@ -451,7 +451,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             border = 10 #pixels between elements
             elementsX = 3
             elementsY = 2
-            todayongrapth = int(round(float(w-border-border/2)/self.alltime*passed))+border+border/2
+            todayongrapth = int(round(float(w)/self.alltime*passed))
             
             
             
@@ -912,38 +912,11 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             ln = 0
             
-            graphHdata = []
             
-            d = ""
-            hdata = []
-            needicon = False
             for n, l in enumerate(hf.split("\n")[::-1]):
                 
                 
-                if d != l[:11]:
-                    
-                    if [d, hdata] not in graphHdata :
-                        graphHdata.append([d, hdata])
-                    
-                    d =  l[:11]
-                    hdata = []
-                if "Scheduled" in l:
-                    needicon = self.scheduleicon
-                elif "/rnd/" in l:
-                    needicon = self.scnicon
-                elif "/obj/" in l:
-                    needicon = self.objicon
-                elif "/chr/" in l:
-                    needicon = self.chricon
-                elif "/loc/" in l:
-                    needicon = self.locicon
-                elif "/veh/" in l:
-                    needicon = self.vehicon
-                elif ".progress" in l:
-                    needicon = self.checklist
                 
-                if needicon not in hdata and needicon:
-                    hdata.append(needicon)
                 
                 if l.startswith(self.selectdate):
                     ln = ln + 1
@@ -988,17 +961,17 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                         
                         elif "Project Started" in l:
                             
-                            ctx.set_source_rgb(1,1,1)
+                            ctx.set_source_rgb(0,1,0)
                             ctx.set_font_size(15)
                             ctx.move_to( stX+104, ypart)
-                            ctx.show_text("Hello :)")
+                            ctx.show_text("Ready for work ; )")
                         
                         elif "Project Exited" in l:
                             
-                            ctx.set_source_rgb(1,1,1)
+                            ctx.set_source_rgb(1,0,0)
                             ctx.set_font_size(15)
                             ctx.move_to( stX+104, ypart)
-                            ctx.show_text("Bye :(")
+                            ctx.show_text("Where are you going :`(")
                         
                         
                         
@@ -1179,16 +1152,16 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             ctx.move_to( stX+104, ypart)
                             ctx.show_text("["+l[21:]+"]")
                     
-            graphHdata.append([d, hdata])        
+            
             
             
             
             
             ######## UI Box 4 ######## BIG GRAPH ##########
             
-            bstX = border / 4 * 3
+            bstX = 0
             bstY = h / elementsY + border / 4
-            bubX = w - border - border / 4
+            bubX = w
             bubY = h / elementsY - border - ( h / elementsY / 4)
             
             ctx3 = widget.window.cairo_create()
@@ -1203,9 +1176,9 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             ######## UI Box 4 ######## SMALL GRAPH ##########
             
-            stX = border / 4 * 3
+            stX = 0
             stY = h / elementsY + border / 4 + ( h / elementsY - border - ( h / elementsY / 4) ) + border
-            ubX = w - border - border / 4
+            ubX = w
             ubY = h / elementsY / 4
             
             ctx3 = widget.window.cairo_create()
@@ -1228,8 +1201,8 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
             xgc.line_width = 1
-            widget.window.draw_line(xgc, border, ubY/2+stY, todayongrapth, ubY/2+stY)    
-            widget.window.draw_line(xgc, border, bubY/2+bstY, w-border, bubY/2+bstY) 
+            widget.window.draw_line(xgc, 0, ubY/2+stY, todayongrapth, ubY/2+stY)    
+            widget.window.draw_line(xgc, 0, bubY/2+bstY, w, bubY/2+bstY) 
             
             xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER) 
             
@@ -1884,16 +1857,37 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
                
                 if  i*20-20+self.scroll in range(10, w - 10):
-                    #H DATA
-                    for d in graphHdata:
+                    
+                    needicon = False
+                    hdata = []
+                    for n, l in enumerate(hf.split("\n")[::-1]):
+                        
+                        if l.startswith(selectingdate):
+                            if "Scheduled" in l:
+                                needicon = self.scheduleicon
+                            elif "/rnd/" in l:
+                                needicon = self.scnicon
+                            elif "/obj/" in l:
+                                needicon = self.objicon
+                            elif "/chr/" in l:
+                                needicon = self.chricon
+                            elif "/loc/" in l:
+                                needicon = self.locicon
+                            elif "/veh/" in l:
+                                needicon = self.vehicon
+                            elif ".progress" in l:
+                                needicon = self.checklist
+                            
+                            if needicon not in hdata and needicon:
+                                hdata.append(needicon)
                        
                        
-                       if selectingdate in d[0]:
-                           
-                           for n, p in enumerate(sorted(d[1])):
-                               print "SHOWING FUCKING", p
-                               widget.window.draw_pixbuf(None, p, 0, 0, i*20-20+self.scroll, bstY+bubY-n*20-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                     
+                    
+                       
+                    for n, p in enumerate(hdata):
+                        print "SHOWING FUCKING", p
+                        widget.window.draw_pixbuf(None, p, 0, 0, i*20-20+self.scroll, bstY+bubY-n*20-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+             
                      
                  
             ##### TOOLTIP

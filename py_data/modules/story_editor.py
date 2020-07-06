@@ -67,6 +67,7 @@ class story:
         
         self.allowed = True
         
+        self.nothing = True
         
         
         self.keys = []
@@ -1002,6 +1003,12 @@ class story:
             start_active = False
             end_active = False
             
+            if self.nothing:
+                ex = 0
+                ey = 0
+                esx = 0
+                esy = 0
+                self.nothing = False
             
             for ind, event in enumerate(self.FILE.events):
                 

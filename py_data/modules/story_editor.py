@@ -2011,7 +2011,7 @@ class story:
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
                 widget.window.draw_rectangle(xgc, True, 10, 5, 40, 40)
                 
-                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and len(self.FILE.events):
+                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():# and len(self.FILE.events):
                     
                     self.tool = "event"
                     self.toolactive = False
@@ -2293,14 +2293,16 @@ class story:
             
             # THE NEW START WIDGET THAT LOOKS LIKE A NODE
             
+            
+            
             #ctx3 = widget.window.cairo_create()
             ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
-            ctx3.rectangle(5, 55, 50, int(esy))
+            ctx3.rectangle(5, 55, 50, 50)
             ctx3.fill()
             
             # TOP PART
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9e343e"))
-            widget.window.draw_rectangle(xgc, True, 5,55,50,int(esy)/3)
+            widget.window.draw_rectangle(xgc, True, 5,55,50,50/3)
             
             #TEXT
             ctx.set_source_rgb(1,1,1)
@@ -2311,7 +2313,7 @@ class story:
             if mx in range(10, 50) and my in range(60, 110):
                 tooltip = "Start of the film\n\n Connect to the first scene\nwith the arrow tool [ A ]"
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
-                widget.window.draw_rectangle(xgc, False, 5,55,50,int(esy))
+                widget.window.draw_rectangle(xgc, False, 5,55,50,50)
             
             
             
@@ -2335,12 +2337,12 @@ class story:
             
             #ctx3 = widget.window.cairo_create()
             ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
-            ctx3.rectangle(w-(w)/3-55, h-120, 50, int(esy))
+            ctx3.rectangle(w-(w)/3-55, h-120, 50, 50)
             ctx3.fill()
             
             # TOP PART
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#9e343e"))
-            widget.window.draw_rectangle(xgc, True, w-(w)/3-55,h-120,50,int(esy)/3)
+            widget.window.draw_rectangle(xgc, True, w-(w)/3-55,h-120,50,50/3)
             
             #TEXT
             ctx.set_source_rgb(1,1,1)
@@ -2354,7 +2356,7 @@ class story:
                 tooltip = "End of the film\n\n Connet the ending scene to it\nwith the arrow tool [ A ]"
                 #widget.window.draw_pixbuf(None, self.end_mo, 0, 0, w-(w)/3-50, h-120 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
-                widget.window.draw_rectangle(xgc, False, w-(w)/3-55,h-120,50,int(esy))
+                widget.window.draw_rectangle(xgc, False, w-(w)/3-55,h-120,50,50)
                 
                 
                 

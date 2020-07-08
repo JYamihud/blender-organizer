@@ -441,15 +441,15 @@ class story:
             
             
             # grid
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#181818"))
-            for y,  i in enumerate(range(int(float(0 - self.py) / self.sy ), int(float(h - self.py) / self.sy ))):
+            #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#181818"))
+            #for y,  i in enumerate(range(int(float(0 - self.py) / self.sy ), int(float(h - self.py) / self.sy ))):
                 
-                widget.window.draw_line(xgc, 0, int(i*self.sy+self.py), w, int(i*self.sy+self.py))
-            p = 0
-            for x,  i in enumerate(range(int(float(0 - self.px) / self.sx ), int(float(w - self.px) / self.sx )/100)):
-                if int(i*100*self.sx+self.px) > p+20:
-                    p = int(i*100*self.sx+self.px)
-                    widget.window.draw_line(xgc, p,0, p, h)
+            #    widget.window.draw_line(xgc, 0, int(i*self.sy+self.py), w, int(i*self.sy+self.py))
+            #p = 0
+            #for x,  i in enumerate(range(int(float(0 - self.px) / self.sx ), int(float(w - self.px) / self.sx )/100)):
+            #    if int(i*100*self.sx+self.px) > p+20:
+            #        p = int(i*100*self.sx+self.px)
+            #        widget.window.draw_line(xgc, p,0, p, h)
                     
             
             

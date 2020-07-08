@@ -1018,6 +1018,12 @@ class story:
                 esx = int(event[1] * sx )
                 esy = int(sy)
                 
+                
+                if ex not in range(0-w/2, w+w/2) and ex+esx not in range(0-w/2, w+w/2) and ex+esx/2 not in range(0-w/2, w+w/2):
+                
+                    continue
+                elif ey not in range(0, h):
+                    continue
                 name = event[3]
                 story = event[4]
                 
@@ -1312,6 +1318,12 @@ class story:
                 arx, ary = dot[0]
                 tox, toy = dot[1]
                 shine    = dot[2]   
+                
+                #if arx not in range(1, w) or ary not in range(1, h) or tox not in range(1, w) or toy not in range(1, h):
+                if ary not in range(1, h) or toy not in range(1, h):
+                    continue
+                
+                
                 
                 if shine:
                     
@@ -4421,8 +4433,8 @@ class bos:
         
         
         tmpopenfile = openfile
-        
-        openfile = openfile[openfile.rfind("</arrow>"):]
+        if "</arrow>" in openfile:
+            openfile = openfile[openfile.rfind("</arrow>"):]
         
         
         print openfile

@@ -1018,12 +1018,17 @@ class story:
                 esx = int(event[1] * sx )
                 esy = int(sy)
                 
+                this_frame_events.append([ex, ey, esx, esy, event[3]])
+                
                 
                 if ex not in range(0-w/2, w+w/2) and ex+esx not in range(0-w/2, w+w/2) and ex+esx/2 not in range(0-w/2, w+w/2):
                 
                     continue
                 elif ey not in range(0, h):
                     continue
+                
+                
+                
                 name = event[3]
                 story = event[4]
                 
@@ -1304,7 +1309,7 @@ class story:
                 ctx.show_text(event[3])
                 
                 
-                this_frame_events.append([ex, ey, esx, esy, event[3]])
+                #this_frame_events.append([ex, ey, esx, esy, event[3]])
             
             
             
@@ -1511,6 +1516,13 @@ class story:
                     esx = int(event[2])
                     esy = int(sy)
                     name = event[4]
+                    
+                    if ex not in range(0-w/2, w+w/2) and ex+esx not in range(0-w/2, w+w/2) and ex+esx/2 not in range(0-w/2, w+w/2):
+                
+                        continue
+                    elif ey not in range(0, h):
+                        continue
+                    
                     
                     if mx > 0 and mx < w-(w)/3 and my > 50:
                         # if on the right side TO RESIZE

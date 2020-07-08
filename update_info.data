@@ -1,3 +1,10 @@
+VERSION 4.45
+MAIN_FILE
+FILE update_info.data
+FILE py_data/modules/analytics.py
+FILE py_data/modules/checklist.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.45
+
 VERSION 4.44
 MAIN_FILE
 FILE update_info.data

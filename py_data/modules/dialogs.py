@@ -1629,7 +1629,33 @@ class event:
                 
             textview.grab_focus()
             
+        def markdialogue(w=False):
             
+            s, e = textbuffer.get_selection_bounds()
+            
+            x = textbuffer.get_text(s, e)
+            x = len(x)
+            
+            s = s.get_offset()
+            
+            textbuffer.insert(e, " - [  ]\n")
+            
+            
+            si = textbuffer.get_iter_at_offset(s)
+            
+            textbuffer.insert(si, "\n")
+            
+            
+            
+            si = textbuffer.get_iter_at_offset(s+x+5)
+            ei = textbuffer.get_iter_at_offset(s+x+7)
+            #if com == "scene":  
+            #    ei = textbuffer.get_iter_at_offset(s+len(com)+13)
+            
+            
+            textbuffer.select_range(si, ei)
+                
+            textview.grab_focus()    
             
             
             
@@ -1659,6 +1685,10 @@ class event:
         markitembutton.connect("clicked", mark_now, "shot")
         
         
+        
+        
+        
+        # mark item
         markshotbutton = gtk.Button()
         markshotbutton.props.relief = gtk.RELIEF_NONE
         markshotbox = gtk.HBox(False)
@@ -1669,13 +1699,19 @@ class event:
         markshotbutton.add(markshotbox)
         toolbox.pack_start(markshotbutton, False)
         markshotbutton.connect("clicked", markitem)
-        
-        
-        
-        # mark item
-        
        
         
+        # mark dialogue
+        markshotbutton = gtk.Button()
+        markshotbutton.props.relief = gtk.RELIEF_NONE
+        markshotbox = gtk.HBox(False)
+        markshoticon = gtk.Image()
+        markshoticon.set_from_file("py_data/icons/dialogue.png")
+        markshotbox.pack_start(markshoticon, False)
+        markshotbox.pack_start(gtk.Label("Dialogue"))
+        markshotbutton.add(markshotbox)
+        toolbox.pack_start(markshotbutton, False)
+        markshotbutton.connect("clicked", markdialogue)
         
         
         

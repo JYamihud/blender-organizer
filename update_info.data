@@ -1,3 +1,10 @@
+VERSION 4.48
+FILE update_info.data
+FILE py_data/modules/story_editor.py
+FILE py_data/modules/dialogs.py
+FILE py_data/icons/dialogue.png
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.48
+
 VERSION 4.47
 FILE update_info.data
 FILE py_data/modules/story_editor.py

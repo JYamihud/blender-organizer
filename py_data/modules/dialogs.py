@@ -1103,7 +1103,7 @@ class AddAsset:
             elif curname == "Vehicle":
                 CUR = "veh"
             elif curname == "Location":
-                CUR = "veh"
+                CUR = "loc"
             
             
             path = self.pf+"/dev/"+CUR+"/"+ne.get_text()
@@ -1741,7 +1741,7 @@ class event:
         textview = gtk.TextView()
         #textcolors
         textview.modify_base(gtk.STATE_NORMAL, gtk.gdk.color_parse("#222222"))
-        textview.modify_base(gtk.STATE_SELECTED, gtk.gdk.color_parse("#2c2c2c"))
+        textview.modify_base(gtk.STATE_SELECTED, gtk.gdk.color_parse("#cb9165"))
         textview.modify_text(gtk.STATE_NORMAL, gtk.gdk.color_parse("#FFF"))
         fontdesc = pango.FontDescription("Monospace")
         textview.modify_font(fontdesc)

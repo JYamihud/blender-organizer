@@ -1,3 +1,8 @@
+VERSION 4.47
+FILE update_info.data
+FILE py_data/modules/story_editor.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.45
+
 VERSION 4.46
 MAIN_FILE
 FILE update_info.data
@@ -30,7 +35,6 @@ MAIN_FILE
 FILE update_info.data
 FILE py_data/modules/analytics.py
 UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.42
-
 
 VERSION 4.41
 MAIN_FILE

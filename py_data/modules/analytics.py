@@ -191,7 +191,7 @@ class draw_analytics:
             passed = int(delta.days)
             
             
-            
+            self.passed = passed
             
             
             
@@ -1224,10 +1224,10 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     prevV = lastpercent
             
-            prevW = border
+            prevW = 0
             prevH = h
             bprevH = bstY+bubY
-            bprevW = border
+            bprevW = self.scroll
             prevPH = ubY/2+stY
             prevbnowRH = 0
             
@@ -1257,7 +1257,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     nowW = int(round(float(w)/self.alltime*pos))
                     nowH = int(round( float(ubY) / 100 * thepercent ))*-1+h
                     
-                    bnowW = pos*20 + self.scroll
+                    bnowW = pos*20 + self.scroll + 20
                     bnowH = int(round( float(bubY) / 100 * thepercent ))*-1 +bstY +bubY - 20
                     bnowRH = 0-int(round( float(bubY) / 100 * thepercent ))*-1 +20
                     
@@ -1308,7 +1308,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     if True:#nowW - prevLB > 20:
                         
                         # MOUSE OVER AND INFRO REVEAL
-                        if mx in range( nowW, nowW+int(float(w)/self.alltime)+1) and toshowwidget and my in range(stY, h):
+                        if mx in range( bnowW, bnowW+20) and toshowwidget and my in range(bstY, stY):
                             toshowwidget = False
                             pointshouldbe = int(float(ubY)/self.alltime*pos)*-1+h
                             
@@ -1317,16 +1317,17 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             # VERTICAL LINE
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
                             xgc.line_width = 1
-                            widget.window.draw_line(xgc, nowW, stY, nowW, nowH)    
+                            #widget.window.draw_line(xgc, nowW, stY, nowW, nowH)  
+                            widget.window.draw_rectangle(xgc, False , nowW, stY, int(round(float(w)/self.alltime)+1), ubY)  
                             #xgc.line_width = 4
                             
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#0f0"))
-                            if thepercent < shouldbepercent:
-                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#00f"))
-                                widget.window.draw_line(xgc, nowW, pointshouldbe-2, nowW, nowH)    
-                                #widget.window.draw_rectangle(xgc, True , nowW-2, pointshouldbe-2, 5, pointshouldbe-nowH)  
-                            
-                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#f00"))
+                            #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#0f0"))
+                            #if thepercent < shouldbepercent:
+                            #    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#00f"))
+                            #    widget.window.draw_line(xgc, nowW, pointshouldbe-2, nowW, nowH)    
+                            #    #widget.window.draw_rectangle(xgc, True , nowW-2, pointshouldbe-2, 5, pointshouldbe-nowH)  
+                            # 
+                            #    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#f00"))
                             
                             
                             xgc.line_width = 1
@@ -1334,55 +1335,63 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             
                             
                             tmp = nowW
-                            if nowW + 120 > todayongrapth:
-                                nowW = nowW -120
-                                if nowW + 180 > w:
-                                    nowW = nowW - 180
+                            btmp = bnowW
+                            if nowW + 30 > todayongrapth:
+                                nowW = nowW -30
+                                if nowW + 30 > w:
+                                    nowW = nowW - 30
+                                bnowW = bnowW -150
+                                if bnowW + 150 > w:
+                                    bnowW = bnowW - 150
                                    
                             #box
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
-                            widget.window.draw_rectangle(xgc, True , nowW+2, stY, 104+10, h/2+17+40-h/2)  
                             
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                            widget.window.draw_rectangle(xgc, True , bnowW+24, bstY, 104+10, h/2+17+40-h/2)  
+                            
+                            widget.window.draw_rectangle(xgc, True , nowW+int(round(float(w)/self.alltime)+1)+1, stY, 20, 10)  
                             
                             # PROGRESS BAR WIDGET
                             
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
-                            widget.window.draw_rectangle(xgc, True , nowW+4, stY+2, 100, 5)  
+                            widget.window.draw_rectangle(xgc, True , bnowW+26, bstY+2, 100, 5)  
                             xgc.line_width = 4
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
-                            widget.window.draw_rectangle(xgc, True , nowW+4, stY+2, int(100.0*float(shouldbepercent)/100), 5)
+                            widget.window.draw_rectangle(xgc, True , bnowW+26, bstY+2, int(100.0*float(shouldbepercent)/100), 5)
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                            widget.window.draw_rectangle(xgc, True , nowW+4, stY+2, int(100.0*float(thepercent)/100), 5)
+                            widget.window.draw_rectangle(xgc, True , bnowW+26, bstY+2, int(100.0*float(thepercent)/100), 5)
                             
                             
                             
                             
                             # TEXT THINGY
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(10)
-                            ctx.move_to( nowW+5, stY+17)
-                            ctx.show_text(str(thedate))
+                            #ctx.set_source_rgb(1,1,1)
+                            #ctx.set_font_size(10)
+                            #ctx.move_to( nowW+5, stY+17)
+                            #ctx.show_text(str(thedate))
                             
                             ctx.set_source_rgb(0.4,0.5,0.8)
                             ctx.set_font_size(10)
-                            ctx.move_to( nowW+5, stY+17+10)
+                            ctx.move_to( bnowW+25, bstY+17+10+2)
                             ctx.show_text("Expected : "+str(int(shouldbepercent))+"%")
                             
                             ctx.set_source_rgb(1,0.2,0.2)
                             if thepercent > shouldbepercent:
                                 ctx.set_source_rgb(0.2, 1 ,0.2)
                             ctx.set_font_size(10)
-                            ctx.move_to( nowW+5, stY+17+20)
+                            ctx.move_to( bnowW+25, bstY+17+20+2)
                             ctx.show_text("Delivered : "+str(int(thepercent))+"%")
                             
                             ctx.set_font_size(10)
-                            ctx.move_to( nowW+5, stY+17+30)
+                            ctx.move_to( bnowW+25, bstY+17+30+2)
                             ctx.show_text("Performance : "+str(int(100 / shouldbepercent * (thepercent)))+"%")
                             
                             
                             
                             nowW = tmp
+                            bnowW = btmp
                             
                         # THOSE LITTLE SQUARES TO REPRESEND VERTICES
                          
@@ -1478,7 +1487,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 
                 
                 
-                bgxpos = int(xpos*self.alltime*20 +self.scroll) - 20
+                bgxpos = int(xpos*self.alltime*20 +self.scroll) +20
                 bgypos = bstY+bubY - int(float(bubY)/highestypos*thisypos)
                 
                 
@@ -1525,37 +1534,41 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 
                 # outputting data if mouse over the dategrapth
                 
-                if my in range(stY, h) and mx in range(gxpos, gxpos+int(float(w)/self.alltime)+1) and draw_date_data:
+                if my in range(bstY, stY) and mx in range(bgxpos, bgxpos+20) and draw_date_data:
                     
                     tmp = gxpos
+                    btmp = bgxpos
                     movedmx = 0
                     if gxpos + 180 > w:
                         gxpos = gxpos - 180
                         movedmx = 180
                     
+                    bgxpos = bgxpos + 20
+                    bstmp = bstY
+                    bstY = bstY + 30
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
-                    widget.window.draw_rectangle(xgc, True , gxpos+2, stY, 180+4, 50) 
+                    widget.window.draw_rectangle(xgc, True , gxpos+2+int(float(w)/self.alltime)+3, stY, 20, 10) 
                     
-                    
+                    widget.window.draw_rectangle(xgc, True , bgxpos+2, bstY-30, 180+4, 100) 
                     
                     busyness =  1.0 / highestypos * gyposdata[tind] 
                     
                     #Busyness Percentage progress bar
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
-                    widget.window.draw_rectangle(xgc, True, gxpos+movedmx, stY, 1, h )
+                    widget.window.draw_rectangle(xgc, False, gxpos+movedmx, stY, int(float(w)/self.alltime)+1, h )
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0"))
-                    widget.window.draw_rectangle(xgc, True, gxpos+4, stY+2, 100, 5 )
+                    widget.window.draw_rectangle(xgc, True, bgxpos+4, bstY-28, 100, 5 )
                     
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                    widget.window.draw_rectangle(xgc, True, gxpos+4, stY+2, int(100*busyness), 5 )
+                    widget.window.draw_rectangle(xgc, True, bgxpos+4, bstY-28, int(100*busyness), 5 )
                     
                     # when
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(10)
-                    ctx.move_to( gxpos+4, stY+2+15)
+                    ctx.move_to( bgxpos+4, bstY+2+15)
                     if not today:
                         ctx.show_text(daystring)
                     else:
@@ -1565,19 +1578,19 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     #how many
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(10)
-                    ctx.move_to( gxpos+4, stY+2+25)
+                    ctx.move_to( bgxpos+4, bstY+2+25)
                     ctx.show_text("Scheduled : "+str(gyposdata[tind] )+" tasks")
                     
                     #how many
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(10)
-                    ctx.move_to( gxpos+4, stY+2+35)
+                    ctx.move_to( bgxpos+4, bstY+2+35)
                     ctx.show_text("Maximum Scheduled : "+str(highestypos)+" tasks")
                     
                     # how busy
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(10)
-                    ctx.move_to( gxpos+4, stY+2+45)
+                    ctx.move_to( bgxpos+4, bstY+2+45)
                     ctx.show_text("From maximum : "+str(int(busyness*100))+"%")
                     
                     
@@ -1588,7 +1601,9 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                         draw_date_data = False
                 
                     gxpos = tmp
-                
+                    bgxpos = btmp
+                    bstY = bstmp
+                    
                 tstX = border/2 + w / elementsX
                 tstY = 0
                 tubX = w / elementsX - border
@@ -1785,78 +1800,76 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             ################################################################  OLD CODE #########################################################
             
             
-            #MIDDLE LINE
-            xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
-            xgc.line_width = 1
-            widget.window.draw_line(xgc, w/2, bstY, w/2, bstY+bubY)    
-            xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
             
-            
-            #BOTTOM SCROLLING SELECTION WIDGET
-            
-            
-            position = int((float(w)/self.alltime) * (1-float(self.scroll)/20))
-            size = int((float(w)/self.alltime) * (w/20))
-            
-            
-            #MIDDLE LINE
-            xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
-            xgc.line_width = 1
-            widget.window.draw_line(xgc, position+size/2, stY-1, position+size/2, stY-1+ubY-6)    
-            xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
-            
-            xgc.line_width = 1
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
-            widget.window.draw_rectangle(xgc, False, position, stY-1, size,ubY-6)
-            
-            if my in range(stY, h):
-                if "GDK_BUTTON2" in str(fx) and win.is_active(): ## IF DRAGGED
-                    self.scroll = int(float(20*self.alltime)/w*(mx-size/2)) * -1 
                 
             
             ### SELECTABLE DAY
             
             
-            for i in range(self.alltime+1):
+            for i in range(self.alltime+3):
                 
-                selectingdate = datetime.datetime.strftime(datetime.datetime.strptime(self.startdate, date_format)+datetime.timedelta(days=i), self.schedule_date_format)
+                #i = i + 1
                 
-                if my in range(bstY, bstY+bubY) and mx in range(i*20-20+self.scroll, i*20+self.scroll):
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
-                    widget.window.draw_rectangle(xgc, False, i*20-20+self.scroll, bstY, 20, bubY)
+                if  i*20-20+self.scroll in range(10, w - 10) and i > 1:
+                
+                    selectingdate = datetime.datetime.strftime(datetime.datetime.strptime(self.startdate, date_format)+datetime.timedelta(days=i-2), self.schedule_date_format)
                     
                     
+                    if selectingdate == datetime.datetime.strftime(datetime.datetime.strptime(self.startdate, date_format), self.schedule_date_format):
+                        
+                        ctx3 = widget.window.cairo_create()
+                        ctx3.set_source_rgba(0,0,0,0.5)
+                        ctx3.rectangle(0, bstY, i*20-20+self.scroll, bubY)
+                        ctx3.fill()
                     
+                    elif selectingdate == datetime.datetime.strftime(datetime.datetime.strptime(self.enddate, date_format), self.schedule_date_format):
+                        
+                        ctx3 = widget.window.cairo_create()
+                        ctx3.set_source_rgba(0,0,0,0.5)
+                        ctx3.rectangle(i*20+self.scroll, bstY, w-self.scroll, bubY)
+                        ctx3.fill()
                     
-                    
-                    ctx.set_source_rgb(1,1,1)
-                    ctx.set_font_size(10)
-                    ctx.move_to( i*20+5+self.scroll, bstY+20)
                     if selectingdate == datetime.datetime.strftime(datetime.datetime.today(), self.schedule_date_format):
-                        ctx.show_text("Today")
-                    else:
-                        ctx.show_text(selectingdate)
-            
-                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
-                        self.selectdate = selectingdate
-                        self.hscroll = 0
-                        self.tscroll = 0
+                        xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+                        xgc.line_width = 1
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                        widget.window.draw_rectangle(xgc, False, i*20-20+self.scroll, bstY, 20, bubY)
+                        xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+                    
+                    if my in range(bstY, bstY+bubY) and mx in range(i*20-20+self.scroll, i*20+self.scroll):
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                        widget.window.draw_rectangle(xgc, False, i*20-20+self.scroll, bstY, 20, bubY)
+                        
+                        
+                        
+                        
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(10)
+                        ctx.move_to( i*20+5+self.scroll, bstY+20)
+                        if selectingdate == datetime.datetime.strftime(datetime.datetime.today(), self.schedule_date_format):
+                            ctx.show_text("Today")
+                        else:
+                            ctx.show_text(selectingdate)
                 
-                if self.selectdate == selectingdate:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                    widget.window.draw_rectangle(xgc, False, i*20-20+self.scroll, bstY, 20, bubY)
-                    ctx.set_source_rgb(1,0.7,0.5)
-                    ctx.set_font_size(10)
-                    ctx.move_to( i*20+5+self.scroll, bstY+10)
-                    if selectingdate == datetime.datetime.strftime(datetime.datetime.today(), self.schedule_date_format):
-                        ctx.show_text("Today")
-                    else:
-                        ctx.show_text(selectingdate)
-            
-               
-                if  i*20-20+self.scroll in range(10, w - 10):
+                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                            self.selectdate = selectingdate
+                            self.hscroll = 0
+                            self.tscroll = 0
+                    
+                    if self.selectdate == selectingdate:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                        widget.window.draw_rectangle(xgc, False, i*20-20+self.scroll, bstY, 20, bubY)
+                        ctx.set_source_rgb(1,0.7,0.5)
+                        ctx.set_font_size(10)
+                        ctx.move_to( i*20+5+self.scroll, bstY+10)
+                        if selectingdate == datetime.datetime.strftime(datetime.datetime.today(), self.schedule_date_format):
+                            ctx.show_text("Today")
+                        else:
+                            ctx.show_text(selectingdate)
+                
+                   
+                
                     
                     needicon = False
                     hdata = []
@@ -1885,10 +1898,38 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                        
                     for n, p in enumerate(hdata):
-                        print "SHOWING FUCKING", p
+                        
                         widget.window.draw_pixbuf(None, p, 0, 0, i*20-20+self.scroll, bstY+bubY-n*20-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
              
-                     
+            #MIDDLE LINE
+            xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+            xgc.line_width = 1
+            #widget.window.draw_line(xgc, w/2, bstY, w/2, bstY+bubY)    
+            xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+            
+            
+            #BOTTOM SCROLLING SELECTION WIDGET
+            
+            
+            position = int((float(w)/self.alltime) * (1-float(self.scroll)/20))
+            size = int((float(w)/self.alltime) * (w/20))
+            
+            
+            #MIDDLE LINE
+            xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+            xgc.line_width = 1
+            #widget.window.draw_line(xgc, position+size/2, stY-1, position+size/2, stY-1+ubY-6)    
+            xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+            
+            xgc.line_width = 1
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+            widget.window.draw_rectangle(xgc, False, position, stY-1, size,ubY-6)
+            
+            if my in range(stY, h):
+                if "GDK_BUTTON2" in str(fx) and win.is_active(): ## IF DRAGGED
+                    self.scroll = int(float(20*self.alltime)/w*(mx-size/2)) * -1          
                  
             ##### TOOLTIP
             
@@ -1950,8 +1991,8 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             #if self.scroll < 0-((n+al)*20)+h-33:  #THOSE VALUES HAVE TO BE REDONE
             #    self.scroll = 0-((n+al)*20)+h-33
                 
-            if self.scroll > 0:
-                self.scroll = 0
+            #if self.scroll > 0:
+            #    self.scroll = 0
             
             
             # SCROLLING HYSTORY

@@ -198,6 +198,8 @@ class checkwindow:
         for n, i in enumerate(self.FILE):
             self.colapsed.append(False)
         
+        self.FILE.append("[ ] !!!LASTLINE!!!")
+        
     def save(self):
         
         n = []
@@ -221,7 +223,9 @@ class checkwindow:
         #print "\nSAVING\n"
         for i in self.FILE:
             #print i
-            save.write(i+"\n")
+            
+            if i != "[ ] !!!LASTLINE!!!":
+                save.write(i+"\n")
         
         save.close()
     
@@ -323,8 +327,10 @@ class checkwindow:
         
         for ind, line in enumerate(self.FILE[9:]):
             
-            
-                
+            notlastline = True
+            #if it's the LASTLINE BUGFIXER THINGY
+            if line == "[ ] !!!LASTLINE!!!":
+                notlastline = False
                 
             #reloadfile = False
             
@@ -362,7 +368,7 @@ class checkwindow:
                     widget.window.draw_rectangle(xgc, True, 0, ymove,  w, 39)
                 
                 
-                if my in range(ymove, ymove+35) and self.tool == "select" :
+                if my in range(ymove, ymove+35) and self.tool == "select" and notlastline:
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, xmove-50, ymove,  w, 39)
@@ -585,35 +591,35 @@ class checkwindow:
                 
                 # IF IT ALREADY WAS CHECK OFF AT EARLIER STAGE
                 
+                if notlastline:
                 
-                
-                ctx.set_source_rgb(1,1,1)
-                if checkedhigher or "[V]" in line or checkpercent == 1.0:
-                    ctx.set_source_rgb(0.7,0.4,0.2) #395384
-                ctx.set_font_size(20)
-                
-                
-                
-                ctx.move_to(  xmove+40, ymove+25)
-                
-                if ind not in self.grab:
-                    ctx.show_text(line[line.find("]")+2:])
-                
-                if "[ ]" in line and not "[V]" in line and checkpercent > 0.0 and checkpercent < 1.0:
-                    ctx.set_source_rgb(0.7,0.7,0.7)
-                    ctx.set_font_size(10)
-                    ctx.move_to(  xmove+2+40, ymove+37)
-                    ctx.show_text(str(int(checkpercent*100))+"%")
+                    ctx.set_source_rgb(1,1,1)
+                    if checkedhigher or "[V]" in line or checkpercent == 1.0:
+                        ctx.set_source_rgb(0.7,0.4,0.2) #395384
+                    ctx.set_font_size(20)
                     
-                    #d0d0d0
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, xmove+75, ymove+31, w-30-(xmove+75)-40, 5)
                     
-                    #cb9165
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, xmove+75, ymove+31, int(round((w-30-(xmove+75)-40)*checkpercent)), 5)
                     
-                
+                    ctx.move_to(  xmove+40, ymove+25)
+                    
+                    if ind not in self.grab:
+                        ctx.show_text(line[line.find("]")+2:])
+                    
+                    if "[ ]" in line and not "[V]" in line and checkpercent > 0.0 and checkpercent < 1.0:
+                        ctx.set_source_rgb(0.7,0.7,0.7)
+                        ctx.set_font_size(10)
+                        ctx.move_to(  xmove+2+40, ymove+37)
+                        ctx.show_text(str(int(checkpercent*100))+"%")
+                        
+                        #d0d0d0
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, True, xmove+75, ymove+31, w-30-(xmove+75)-40, 5)
+                        
+                        #cb9165
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165")) ## CHOSE COLOR
+                        widget.window.draw_rectangle(xgc, True, xmove+75, ymove+31, int(round((w-30-(xmove+75)-40)*checkpercent)), 5)
+                        
+                    
                 # CHECK BUTTON
                 
                 
@@ -621,7 +627,7 @@ class checkwindow:
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
                 # IF MOUSE OVER
-                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+5, xmove+5+20) and self.tool == "select":
+                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+5, xmove+5+20) and self.tool == "select" and notlastline:
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     
@@ -652,8 +658,8 @@ class checkwindow:
                         self.save()
                         self.open()
                         
-                    
-                widget.window.draw_rectangle(xgc, True, xmove+5, ymove+5, 20, 20)
+                if notlastline:
+                    widget.window.draw_rectangle(xgc, True, xmove+5, ymove+5, 20, 20)
                 
                 
                 if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v") or checkpercent == 1.0: # IF THE LINE IS CHECKED
@@ -669,7 +675,7 @@ class checkwindow:
                 # ADD SUBTASK
                 
                 
-                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35, xmove+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select":# and not checkedhigher:
+                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35, xmove+(len(line[line.find("]")+1:])*12)+35+20) and self.tool == "select" and notlastline:# and not checkedhigher:
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35, ymove+5-2, 22, 22)
@@ -720,13 +726,13 @@ class checkwindow:
                 
                 
                 
-                if self.tool == "select":# and not checkedhigher:
+                if self.tool == "select" and notlastline:# and not checkedhigher:
                     widget.window.draw_pixbuf(None, self.plus, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
                 # ACTIVATE GRAB BUTTON
                 
-                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select":
+                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35) and self.tool == "select"  and notlastline:
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+35, ymove+5-2, 22, 22)
@@ -756,7 +762,7 @@ class checkwindow:
                                 
                         
                         
-                if self.tool == "select":# and not checkedhigher:       
+                if self.tool == "select"  and notlastline:# and not checkedhigher:       
                     widget.window.draw_pixbuf(None, self.move, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
@@ -795,7 +801,7 @@ class checkwindow:
                             
                             
                             
-                            if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select":
+                            if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select"  and notlastline:
                                 widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                                 widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+35+35, ymove+5, 22, 22)
@@ -815,7 +821,7 @@ class checkwindow:
                                     removestring.append(self.get_line_path(ind, line))
                                     #print removestring
                     
-                    if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist:
+                    if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist  and notlastline:
                         widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                         widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+35+35, ymove+5, 22, 22)
@@ -905,11 +911,14 @@ class checkwindow:
                             glib.timeout_add(10, ee, ind, line)
                         
                         
-                    if self.tool == "select":       
+                    if self.tool == "select"  and notlastline:       
                         widget.window.draw_pixbuf(None, self.schedule, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35+35+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                
+                
+                # EIDTING TASK'S NAME    
                     
-                    
-                if mx in range(xmove+25,  xmove+(len(line[line.find("]")+1:])*12)+35) and my in range(ymove+5, ymove+5+25):
+                if mx in range(xmove+25,  xmove+(len(line[line.find("]")+1:])*12)+35) and my in range(ymove+5, ymove+5+25) and notlastline:
                     #widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.display_get_default(), self.edit, 1,20))
                     
                     widget.window.draw_pixbuf(None, self.edit, 0, 0, mx+2, my-24 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
@@ -941,7 +950,7 @@ class checkwindow:
                 
                 
                 # IF MOUSE OVER
-                if my in range(ymove+5, ymove+5+20) and mx in range(w-40, w-40+20) and self.tool == "select":
+                if my in range(ymove+5, ymove+5+20) and mx in range(w-40, w-40+20) and self.tool == "select"  and notlastline:
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     widget.window.draw_rectangle(xgc, True, w-42, ymove+5-2, 22, 22)
@@ -961,7 +970,7 @@ class checkwindow:
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         
                        # print "CLICKED TO DELETE : ", self.FILE[ind+9]
-                        
+                    
                         if self.FILE[ind+10].find("[") > line.find("["):
                             for i in range(ind, ind+s_ind):
                                 #print "DELETING : ", self.FILE[i+9]
@@ -974,7 +983,8 @@ class checkwindow:
                             removestring.append(self.get_line_path(ind, line))
                             self.FILE[ind+9] = "!!!DELETE!!!"
                             self.FILE.remove("!!!DELETE!!!")
-                            
+                        
+                                    
                         print
                             
                         # refrashing the file
@@ -984,7 +994,7 @@ class checkwindow:
                         
                         
                         
-                if self.tool == "select":
+                if self.tool == "select"  and notlastline:
                     widget.window.draw_pixbuf(None, self.delete, 0, 0, w-40, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 

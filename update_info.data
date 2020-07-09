@@ -1,3 +1,21 @@
+VERSION 4.50
+FILE update_info.data
+FILE py_data/new_file/asset.progress
+FILE py_data/new_file/chr.progress
+FILE py_data/new_file/loc.progress
+FILE py_data/new_file/obj.progress
+FILE py_data/new_file/shot.progress
+FILE py_data/new_file/shot_anim.progress
+FILE py_data/new_file/shot_vfx.progress
+FILE py_data/new_file/veh.progress
+FILE py_data/modules/analytics.py
+FILE py_data/modules/assets.py
+FILE py_data/modules/checklist.py
+FILE py_data/modules/render_lists.py
+FILE py_data/modules/story_editor.py
+FILE py_data/modules/update_window.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.50
+
 VERSION 4.49
 FILE update_info.data
 FILE py_data/modules/dialogs.py

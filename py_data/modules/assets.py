@@ -348,7 +348,12 @@ class draw_assets:
                             self.justadded = False
                         
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646")) 
-                    widget.window.draw_rectangle(xgc, True, nx+10, ny+5, 180, 195) 
+                    #widget.window.draw_rectangle(xgc, True, nx+10, ny+5, 180, 195) 
+                    
+                    ctx3 = widget.window.cairo_create()
+                    ctx3.set_source_rgba(0,0,0,0.4)
+                    ctx3.rectangle(nx+10, ny+5, 180, 195)
+                    ctx3.fill()
                      
                     ### MOUSE OVER
                     
@@ -609,7 +614,25 @@ class draw_assets:
                     mmy = 120
                 
                 
+                 # BANNER IMAGE FOR INSPIRATION
+            
+                # updating the image if let's say we changed it
+                if self.dW == 0 and self.DH == 0:
+                    self.banner = self.pf+"/py_data/banner.png"
+                    self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.banner)
                 
+                #lets get how much to scale H
+                scaleimageH =  int( float(self.pixbuf.get_height()) / self.pixbuf.get_width() * w)
+                #scaling image to the frame
+                drawpix = self.pixbuf.scale_simple(w, scaleimageH, gtk.gdk.INTERP_NEAREST) 
+                #drawing image
+                widget.window.draw_pixbuf(None, drawpix, 0, 0, 0, (h - drawpix.get_height()) / 2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                
+                #UI Backdrop
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0.2,0.2,0.2,0.8)
+                ctx3.rectangle(0, 0, w, h)
+                ctx3.fill()
                 
                 
                 
@@ -668,8 +691,12 @@ class draw_assets:
                     
                     # raws frames
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, the_raw_w_start , raw_start, raw_w, raw_h)
+                    #widget.window.draw_rectangle(xgc, True, the_raw_w_start , raw_start, raw_w, raw_h)
                     
+                    ctx3 = widget.window.cairo_create()
+                    ctx3.set_source_rgba(0,0,0,0.4)
+                    ctx3.rectangle(the_raw_w_start, raw_start,raw_w, raw_h)
+                    ctx3.fill()
                     
                     
                     
@@ -714,71 +741,76 @@ class draw_assets:
                         imx = mox   + center_X
                         imy = moy   + center_Y
                         
+                        if moy in range(raw_start-20, h):
                         
-                        mouseover = False
                         
-                        #### MOUSE OVER ####
-                        
-                        if mx > mox and mx < mox+100 and my > moy and my < moy+100 and mouseinraw:
-                            mouseover = True
-                            mouseoverany = True
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
+                            mouseover = False
                             
+                            #### MOUSE OVER ####
                             
-                            widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 122)
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
-                            
-                            
-                            
-                            xgc.line_width = 4
-                            #widget.window.draw_rectangle(xgc, False, mox-5, moy-5, 110, 110)
-                            xgc.line_width = 2
-                            
-                            # IF CLICKED
-                            if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
+                            if mx > mox and mx < mox+100 and my > moy and my < moy+100 and mouseinraw:
+                                mouseover = True
+                                mouseoverany = True
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
                                 
-                                os.system("xdg-open "+render[1])
-                        
-                        
-                        
-                        
-                        ### DRAWING
-                        
-                        if not mouseover:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
-                            widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 122)
+                                
+                                widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 122)
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
+                                
+                                
+                                
+                                xgc.line_width = 4
+                                #widget.window.draw_rectangle(xgc, False, mox-5, moy-5, 110, 110)
+                                xgc.line_width = 2
+                                
+                                # IF CLICKED
+                                if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
+                                    
+                                    os.system("xdg-open "+render[1])
                             
-                        
-                        
-                        
-                        
-                        
-                        
-                        if render[1][render[1].rfind(".")+1:] in fileformats.images:
                             
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8a7d2c"))
-                            widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 22)
-                            widget.window.draw_pixbuf(None, self.rendericon, 0, 0, mox-2, moy, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                             
-                        elif render[1][render[1].rfind(".")+1:] in fileformats.videos: #4987af
                             
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4987af"))
-                            widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 22)
-                            widget.window.draw_pixbuf(None, self.vidicon, 0, 0, mox-2, moy, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                        
-                        widget.window.draw_pixbuf(None, render[0], 0, 0, imx, imy+22, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                        
-                        # text ( the picture filename )
-                        
-                        ctx.set_font_size(10)
-                        
-                        #if mouseover:
-                        #    ctx.set_font_size(20)
-                        
-                        ctx.move_to( mox+22, moy+12)
-                        ctx.show_text(render[2][:12])
-                        
-                        
+                            ### DRAWING
+                            
+                            if not mouseover:
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
+                                #widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 122)
+                                
+                                ctx3 = widget.window.cairo_create()
+                                ctx3.set_source_rgba(0,0,0,0.4)
+                                ctx3.rectangle(mox-2, moy, 104, 122)
+                                ctx3.fill()
+                            
+                            
+                            
+                            
+                            
+                            if render[1][render[1].rfind(".")+1:] in fileformats.images:
+                                
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8a7d2c"))
+                                widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 22)
+                                widget.window.draw_pixbuf(None, self.rendericon, 0, 0, mox-2, moy, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                                
+                            elif render[1][render[1].rfind(".")+1:] in fileformats.videos: #4987af
+                                
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4987af"))
+                                widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 22)
+                                widget.window.draw_pixbuf(None, self.vidicon, 0, 0, mox-2, moy, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                            
+                            widget.window.draw_pixbuf(None, render[0], 0, 0, imx, imy+22, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                            
+                            # text ( the picture filename )
+                            
+                            ctx.set_font_size(10)
+                            
+                            #if mouseover:
+                            #    ctx.set_font_size(20)
+                            
+                            ctx.move_to( mox+22, moy+12)
+                            ctx.show_text(render[2][:12])
+                            
+                            
                         # TO THE NEXT FRAME
                         ix = ix + 1
                         if (ix * 100 + ix*10) > raw_w-120:
@@ -801,7 +833,7 @@ class draw_assets:
                             self.iscroll[raw] = self.iscroll[raw] - (self.mpy-my) 
                         
                         
-                    Yinpix = raw_h+(iy*130 + iy*10)*-1-120
+                    Yinpix = raw_h+(iy*130 + iy*10)*-1-200
                         
                     if self.iscroll[raw] < Yinpix:
                         self.iscroll[raw] = Yinpix
@@ -832,7 +864,7 @@ class draw_assets:
                     
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2b2b2b")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, raw_true_w*raw, 50, raw_true_w, raw_start-50)
+                    #widget.window.draw_rectangle(xgc, True, raw_true_w*raw, 50, raw_true_w, raw_start-50)
                     
                     ## tab thingy
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222")) ## CHOSE COLOR
@@ -908,7 +940,13 @@ class draw_assets:
                 #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) ## CHOSE COLOR
                 #widget.window.draw_rectangle(xgc, True, mmx-15, mmy-45, w, 100)
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 0, mmy-15-30, w, 115+30)
+                #widget.window.draw_rectangle(xgc, True, 0, mmy-15-30, w, 115+30)
+                
+                
+                ctx3.set_source_rgba(0,0,0,0.4)
+                ctx3.rectangle(mmx+110, mmy-15-30, w, 115+30)
+                ctx3.fill()
+                
                 
                 #blender icon
                 #widget.window.draw_pixbuf(None, self.blendericon, 0, 0, mmx+105, mmy-41, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
@@ -953,61 +991,70 @@ class draw_assets:
                 for num, blend in enumerate(self.blends):
                 
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#526969"))
-                    widget.window.draw_rectangle(xgc, True, mmx + 115+110 +(num*110)+self.blscroll, mmy-14-22, 104, 22)
+                    if mmx + 115+110 +(num*110)+self.blscroll in range(mmx+117+100, w):
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
-                    widget.window.draw_rectangle(xgc, True, mmx + 115+110 +(num*110)+self.blscroll, mmy-14, 104, 104)
-                    
-                    
-                    ### MOUSE OVER
-                    
-                    if mx > mmx + 117+110 and mx > mmx + 117+110 +(num*110)+self.blscroll and mx < mmx + 117+110 +(num*110)+self.blscroll+100 and my > mmy-12 and my < mmy-12+100:
-                        mouseoverany = True
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#526969"))
+                        widget.window.draw_rectangle(xgc, True, mmx + 115+110 +(num*110)+self.blscroll, mmy-14-22, 104, 22)
                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
-                        widget.window.draw_rectangle(xgc, True, mmx + 115+110 +(num*110)+self.blscroll, mmy-14, 104, 104)
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
+                        #widget.window.draw_rectangle(xgc, True, mmx + 115+110 +(num*110)+self.blscroll, mmy-14, 104, 104)
                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
+                        ctx3 = widget.window.cairo_create()
+                        ctx3.set_source_rgba(0,0,0,0.4)
+                        ctx3.rectangle(mmx + 115+110 +(num*110)+self.blscroll, mmy-14, 104, 104)
+                        ctx3.fill()
                         
-                        xgc.line_width = 4
-                        #widget.window.draw_rectangle(xgc, False, mmx + 115+110 +(num*110)+self.blscroll, mmy-14, 104, 104)
-                        xgc.line_width = 2
                         
-                        # IF CLICKED
-                        if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
+                        
+                        
+                        ### MOUSE OVER
+                        
+                        if mx > mmx + 117+110 and mx > mmx + 117+110 +(num*110)+self.blscroll and mx < mmx + 117+110 +(num*110)+self.blscroll+100 and my > mmy-12 and my < mmy-12+100:
+                            mouseoverany = True
                             
-                            cblndr = ""
-                                        
-                            try:
-                                bv = open(self.pf+"/py_data/blenderver.data", "r")
-                                bv = bv.read().split("\n")
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
+                            widget.window.draw_rectangle(xgc, True, mmx + 115+110 +(num*110)+self.blscroll, mmy-14, 104, 104)
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
+                            
+                            xgc.line_width = 4
+                            #widget.window.draw_rectangle(xgc, False, mmx + 115+110 +(num*110)+self.blscroll, mmy-14, 104, 104)
+                            xgc.line_width = 2
+                            
+                            # IF CLICKED
+                            if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
                                 
-                                print "bv", bv
+                                cblndr = ""
+                                            
+                                try:
+                                    bv = open(self.pf+"/py_data/blenderver.data", "r")
+                                    bv = bv.read().split("\n")
+                                    
+                                    print "bv", bv
+                                    
+                                    if int(bv[0]) > 0:
+                                        cblndr = bv[int(bv[0])]+"/"
+                                except:
+                                    pass
+                                Popen([cblndr+"blender", blend[1]])
+                                #os.system(cblndr+"blender "+blend[1])
                                 
-                                if int(bv[0]) > 0:
-                                    cblndr = bv[int(bv[0])]+"/"
-                            except:
-                                pass
-                            Popen([cblndr+"blender", blend[1]])
-                            #os.system(cblndr+"blender "+blend[1])
-                            
-                            #WRITTING TO HYSTORY
-                            history.write(self.pf ,blend[1], "[Openned]")
-                            
-                            
-                    #BLEND PREVIEW 
-                    widget.window.draw_pixbuf(None, blend[0], 0, 0, mmx + 117 +110 +(num*110)+self.blscroll, mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                    
-                    ctx.set_font_size(10)
+                                #WRITTING TO HYSTORY
+                                history.write(self.pf ,blend[1], "[Openned]")
+                                
+                                
+                        #BLEND PREVIEW 
+                        widget.window.draw_pixbuf(None, blend[0], 0, 0, mmx + 117 +110 +(num*110)+self.blscroll, mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                         
-                    ctx.move_to(mmx + 117+110 +(num*110)+self.blscroll+22,mmy-12-22+12  )
-                    ctx.show_text(blend[2][:15])
+                        ctx.set_font_size(10)
+                            
+                        ctx.move_to(mmx + 117+110 +(num*110)+self.blscroll+22,mmy-12-22+12  )
+                        ctx.show_text(blend[2][:15])
+                        
+                        #blender icon
+                        widget.window.draw_pixbuf(None, self.blendericon, 0, 0, mmx + 117+110 +(num*110)+self.blscroll, mmy-12-24, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
-                    #blender icon
-                    widget.window.draw_pixbuf(None, self.blendericon, 0, 0, mmx + 117+110 +(num*110)+self.blscroll, mmy-12-24, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                
-                
+                    
                 
                 
                 
@@ -1020,8 +1067,8 @@ class draw_assets:
                 
                 # little separator line if scrolled
                 
-                if (w-(mmx+117+110)) < (len(self.blends)*110+60):
-                    widget.window.draw_pixbuf(None, self.fade_02, 0, 0, w-38 , mmy-12, -1, 111, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                #if (w-(mmx+117+110)) < (len(self.blends)*110+60):
+                #    widget.window.draw_pixbuf(None, self.fade_02, 0, 0, w-38 , mmy-12, -1, 111, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 #if self.blscroll < -10:
                     
@@ -1032,14 +1079,18 @@ class draw_assets:
                 
                 if self.screen.done:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
-                    widget.window.draw_rectangle(xgc, True, mmx , mmy-12,217,110)
+                    #widget.window.draw_rectangle(xgc, True, mmx , mmy-12,217,110)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6e5daf"))
                     widget.window.draw_rectangle(xgc, True, mmx + 117-2, mmy-14-22, 104, 22)
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
-                    widget.window.draw_rectangle(xgc, True, mmx + 117-2, mmy-14, 104, 104)
+                    #widget.window.draw_rectangle(xgc, True, mmx + 117-2, mmy-14, 104, 104)
                     
+                    ctx3 = widget.window.cairo_create()
+                    ctx3.set_source_rgba(0,0,0,0.4)
+                    ctx3.rectangle(mmx + 117-2, mmy-14, 104, 104)
+                    ctx3.fill()
                     
                     
                     
@@ -1097,9 +1148,9 @@ class draw_assets:
                 else:
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
-                    widget.window.draw_rectangle(xgc, True, mmx , mmy-12,217,110)
+                    #widget.window.draw_rectangle(xgc, True, mmx , mmy-12,217,110)
                     widget.window.draw_pixbuf(None, self.blendfileicon, 0, 0, mmx + 117 , mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                    widget.window.draw_rectangle(xgc, True, mmx + 117, mmy-12+75,100,25)
+                    #widget.window.draw_rectangle(xgc, True, mmx + 117, mmy-12+75,100,25)
                     ctx.set_font_size(10)
                     ctx.move_to(mmx + 117+15, mmy-12+75+15  )
                     ctx.show_text("/ast/ Asset is")
@@ -1116,7 +1167,7 @@ class draw_assets:
                 
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2b2b2b")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 0,50, mmx+100, mmy+50) 
+                #widget.window.draw_rectangle(xgc, True, 0,50, mmx+100, mmy+50) 
                 
                 
                 
@@ -1129,10 +1180,18 @@ class draw_assets:
                 
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636"))
-                widget.window.draw_rectangle(xgc, True, 40, 60, mmx+50, mmy+20)
+                #widget.window.draw_rectangle(xgc, True, 40, 60, mmx+50, mmy+20)
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
-                widget.window.draw_rectangle(xgc, True, 40, 60, mmx+18, mmy+20)
+                
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0.2,0.2,0.2,0.8)
+                ctx3.rectangle(40+mmx+18, 60, 24, mmy+20)
+                ctx3.fill()
+                
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0,0,0,0.4)
+                ctx3.rectangle(40, 60, mmx+18, mmy+20)
+                ctx3.fill()
                 
                 
                 #folder

@@ -153,6 +153,29 @@ class main:
         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) ## CHOSE COLOR
         widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME  
         
+        # BANNER IMAGE FOR INSPIRATION
+            
+        # updating the image if let's say we changed it
+        if self.dW == 0 and self.DH == 0:
+            self.banner = self.pf+"/py_data/banner.png"
+            self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.banner)
+        
+        #lets get how much to scale H
+        scaleimageH =  int( float(self.pixbuf.get_height()) / self.pixbuf.get_width() * w)
+        #scaling image to the frame
+        drawpix = self.pixbuf.scale_simple(w, scaleimageH, gtk.gdk.INTERP_NEAREST) 
+        #drawing image
+        widget.window.draw_pixbuf(None, drawpix, 0, 0, 0, (h - drawpix.get_height()) / 2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+        
+        #UI Backdrop
+        ctx3 = widget.window.cairo_create()
+        ctx3.set_source_rgba(0.2,0.2,0.2,0.8)
+        ctx3.rectangle(0, 0, w, h)
+        ctx3.fill()
+        
+        
+        
+        
         widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW))
         #############################################################################
         ############################# DRAW HERE #####################################
@@ -219,8 +242,12 @@ class main:
             # RLIST FRAME
             
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 0, (listY*ind)+self.mainscroll+20, w, listY-20)
+            #widget.window.draw_rectangle(xgc, True, 0, (listY*ind)+self.mainscroll+20, w, listY-20)
             
+            ctx3 = widget.window.cairo_create()
+            ctx3.set_source_rgba(0,0,0,0.4)
+            ctx3.rectangle(0, (listY*ind)+self.mainscroll+20, w, listY-20)
+            ctx3.fill()
             
             
             

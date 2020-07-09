@@ -800,7 +800,7 @@ class story:
                         launchitem = False
                 
                 ctx3 = widget.window.cairo_create()
-                ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
+                ctx3.set_source_rgba(0,0,0,0.4)
                 ctx3.rectangle(imX-2, imY, piX+4, piY)
                 ctx3.fill()
                 
@@ -1035,7 +1035,7 @@ class story:
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3d3d3d"))
                 #widget.window.draw_rectangle(xgc, True, ex, ey, esx+5, int(esy))
                 ctx3 = widget.window.cairo_create()
-                ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
+                ctx3.set_source_rgba(0,0,0,0.4)
                 ctx3.rectangle(ex, ey, esx+5, int(esy))
                 ctx3.fill()
                 #526969
@@ -2320,7 +2320,7 @@ class story:
             
             
             #ctx3 = widget.window.cairo_create()
-            ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
+            ctx3.set_source_rgba(0,0,0,0.4)
             ctx3.rectangle(5, 55, 50, 50)
             ctx3.fill()
             
@@ -2360,7 +2360,7 @@ class story:
             # THE NEW END WIDGET THAT LOOKS LIKE A NODE
             
             #ctx3 = widget.window.cairo_create()
-            ctx3.set_source_rgba(0.3,0.3,0.3,0.85)
+            ctx3.set_source_rgba(0,0,0,0.4)
             ctx3.rectangle(w-(w)/3-55, h-120, 50, 50)
             ctx3.fill()
             
@@ -2489,7 +2489,7 @@ class story:
             
             
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#333333"))
-            widget.window.draw_rectangle(xgc, True, w-(w)/3, 0, (w)/3, h) 
+            widget.window.draw_rectangle(xgc, True, w-(w)/3, 0, (w)/3, 220) 
             
             
             
@@ -2517,8 +2517,14 @@ class story:
            
            
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))   #7e5349
-            widget.window.draw_rectangle(xgc, True, Pstart, 220, Ppart, h-220)
-                    
+            #widget.window.draw_rectangle(xgc, True, Pstart, 220, Ppart, h-220)
+            
+            ctx3 = widget.window.cairo_create()
+            ctx3.set_source_rgba(0.1,0.1,0.1,0.9)
+            ctx3.rectangle(Pstart, 220, Ppart, h-220)
+            ctx3.fill()
+            
+            
                     
             #mark for faster moves
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
@@ -2645,7 +2651,13 @@ class story:
                                 #image square
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) #403666   #6e5daf
-                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+220+self.shotsSCROLL+20, 154, 154)
+                                #widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+220+self.shotsSCROLL+20, 154, 154)
+                                
+                                ctx3 = widget.window.cairo_create()
+                                ctx3.set_source_rgba(0,0,0,0.4)
+                                ctx3.rectangle(Pstart+20+movex-4, shotlistlength+220+self.shotsSCROLL+20, 154, 154)
+                                ctx3.fill()
+                                
                                 
                                 # MOUSE OVER
                                 if mx in range(Pstart+20+movex-2, Pstart+20+movex-2 + 154) and my in range(shotlistlength+220+self.shotsSCROLL+20, shotlistlength+220+self.shotsSCROLL+20+154):
@@ -3438,7 +3450,14 @@ class story:
                                 
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
-                                widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
+                                #widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
+                                
+                                ctx3 = widget.window.cairo_create()
+                                ctx3.set_source_rgba(0,0,0,0.4)
+                                ctx3.rectangle(Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
+                                ctx3.fill()
+                                
+                                
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#526969"))
                                 widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15, cellsize-50, 22)
@@ -3925,7 +3944,7 @@ class story:
             
             
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#333333"))
-            widget.window.draw_rectangle(xgc, True, Pstart, 0, Ppart, 220) ##################
+            widget.window.draw_rectangle(xgc, True, w-(w)/3, 0, (w)/3, 220) ##################
             
             # loading selected event to the side panel
             
@@ -3977,7 +3996,7 @@ class story:
                     
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
-                    widget.window.draw_rectangle(xgc, True, Pstart, 0, Ppart, 220)
+                    widget.window.draw_rectangle(xgc, True, w-(w)/3, 0, (w)/3, 220)
                     
                     # IF CLICKED
                     

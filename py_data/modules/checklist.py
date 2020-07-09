@@ -91,6 +91,8 @@ def partcalculate(part):
     else:
         for i in part[1:]:
             fraction = fraction + (partcalculate(i) / len(part[1:]))
+            if fraction > 0.98:
+                fraction = 1.0
             #print i
             #print fraction
     
@@ -292,6 +294,30 @@ class checkwindow:
         widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME  
         
         
+        # BANNER IMAGE FOR INSPIRATION
+            
+        # updating the image if let's say we changed it
+        if self.dW == 0 and self.DH == 0:
+            self.banner = self.pf+"/py_data/banner.png"
+            self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.banner)
+        
+        #lets get how much to scale H
+        scaleimageH =  int( float(self.pixbuf.get_height()) / self.pixbuf.get_width() * w)
+        #scaling image to the frame
+        drawpix = self.pixbuf.scale_simple(w, scaleimageH, gtk.gdk.INTERP_NEAREST) 
+        #drawing image
+        widget.window.draw_pixbuf(None, drawpix, 0, 0, 0, (h - drawpix.get_height()) / 2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+        
+        #UI Backdrop
+        ctx3 = widget.window.cairo_create()
+        ctx3.set_source_rgba(0.1,0.1,0.1,0.95)
+        ctx3.rectangle(0, 0, w, h)
+        ctx3.fill()
+        
+        
+        
+        
+        
         
         #############################################################################
         ############################# DRAW HERE #####################################
@@ -365,8 +391,14 @@ class checkwindow:
                 #every even darker
                 if (yline/40 % 2) == 0 and self.tool != "grab":    
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#262626")) ## CHOSE COLOR
-                    widget.window.draw_rectangle(xgc, True, 0, ymove,  w, 39)
-                
+                    #widget.window.draw_rectangle(xgc, True, 0, ymove,  w, 39)
+                    
+                    ctx3 = widget.window.cairo_create()
+                    ctx3.set_source_rgba(0,0,0,0.4)
+                    ctx3.rectangle(0, ymove,  w, 39)
+                    ctx3.fill()
+                    
+                    
                 
                 if my in range(ymove, ymove+35) and self.tool == "select" and notlastline:
                     

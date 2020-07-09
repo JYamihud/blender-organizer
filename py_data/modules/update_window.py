@@ -117,9 +117,36 @@ class main:
         widget.window.draw_rectangle(xgc, True, 0, 0, w, h)  ## FILL FRAME  
         
         
+        # BANNER IMAGE FOR INSPIRATION
+            
+        # updating the image if let's say we changed it
+        if self.dW == 0 and self.DH == 0:
+            self.banner = self.pf+"/py_data/banner.png"
+            self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.banner)
+        
+        #lets get how much to scale H
+        scaleimageH =  int( float(self.pixbuf.get_height()) / self.pixbuf.get_width() * w)
+        #scaling image to the frame
+        drawpix = self.pixbuf.scale_simple(w, scaleimageH, gtk.gdk.INTERP_NEAREST) 
+        #drawing image
+        widget.window.draw_pixbuf(None, drawpix, 0, 0, 0, (h - drawpix.get_height()) / 2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+        
+        #UI Backdrop
+        ctx3 = widget.window.cairo_create()
+        ctx3.set_source_rgba(0.1,0.1,0.1,0.95)
+        ctx3.rectangle(0, 0, w, h)
+        ctx3.fill()
+        
+        
+        
+        
         #############################################################################
         #############################   POPEN   #####################################
         #############################################################################
+        
+        
+        
+        
         
         
         
@@ -212,7 +239,7 @@ class main:
             self.end = self.end + 30
             
             
-            ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            #ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             
             
             for i in self.MAINLIST:

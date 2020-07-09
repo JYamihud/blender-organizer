@@ -475,7 +475,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             ubY = h / elementsY - border
             
             ctx3 = widget.window.cairo_create()
-            ctx3.set_source_rgba(0.3,0.3,0.3,0.9)
+            ctx3.set_source_rgba(0,0,0,0.4)
             ctx3.rectangle(stX, stY, ubX, ubY)
             ctx3.fill()
             
@@ -880,7 +880,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             ubY = h / elementsY - border
             
             ctx3 = widget.window.cairo_create()
-            ctx3.set_source_rgba(0.3,0.3,0.3,0.9)
+            ctx3.set_source_rgba(0,0,0,0.4)
             ctx3.rectangle(stX, stY, ubX, ubY)
             ctx3.fill()
             
@@ -896,7 +896,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             ubY = h / elementsY - border
             
             ctx3 = widget.window.cairo_create()
-            ctx3.set_source_rgba(0.3,0.3,0.3,0.9)
+            ctx3.set_source_rgba(0,0,0,0.4)
             ctx3.rectangle(stX, stY, ubX, ubY)
             ctx3.fill()
             
@@ -1165,7 +1165,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             bubY = h / elementsY - border - ( h / elementsY / 4)
             
             ctx3 = widget.window.cairo_create()
-            ctx3.set_source_rgba(0.3,0.3,0.3,0.9)
+            ctx3.set_source_rgba(0,0,0,0.4)
             ctx3.rectangle(bstX, bstY, bubX, bubY)
             ctx3.fill()
             
@@ -1182,7 +1182,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             ubY = h / elementsY / 4
             
             ctx3 = widget.window.cairo_create()
-            ctx3.set_source_rgba(0.3,0.3,0.3,0.9)
+            ctx3.set_source_rgba(0,0,0,0.4)
             ctx3.rectangle(stX, stY, ubX, ubY)
             ctx3.fill()
             

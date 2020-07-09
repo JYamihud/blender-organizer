@@ -174,7 +174,6 @@ class draw_assets:
         
         self.folder_read()
         
-        print self.assets[0].info, "HERE #####################"
             
         
         

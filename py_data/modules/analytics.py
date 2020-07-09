@@ -574,8 +574,15 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     if arg in i:
                         newname = dialogs.PickName(i[i.find(":")+1:])
-                        if newname == "":
+                        
+                        if newname == "playsnake":
+                            import snake
+                        
+                        if newname == "" or newname == "playsnake":
                             newname = i[i.find(":")+1:]
+                        
+                        
+                        
                             
                         s[n] = arg+newname
                 

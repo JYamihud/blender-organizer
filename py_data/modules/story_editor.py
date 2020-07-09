@@ -147,7 +147,7 @@ class story:
         self.bosscroll = 0    
         
         self.event_text_scroll = 0.0
-        
+        self.showcross = True
         
         #editor features
         
@@ -382,10 +382,15 @@ class story:
             
             
             
+            # MOUSE CURSOR MAIN
+            if mx > 0 and mx < w-(w)/3 and my > 50 and self.showcross:
+                widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.CROSS))
+                
+            if self.showcross:  # IF MOUSE NOT IN EDITOR
+                widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW)) 
             
-            
-            
-            
+            print self.showcross, "SHOWCROSS"
+            self.showcross = True   
             
             
             
@@ -816,7 +821,7 @@ class story:
                     
                     
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-                    
+                    self.showcross = False
                     
                     
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
@@ -841,12 +846,16 @@ class story:
                                 
                                 
                 elif mx in range(imX, imX+piX) and my in range(imY-22, imY) and mx in range(0, w-w/3) and my in range(50, h):
+                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
+                     self.showcross = False
                      xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                      widget.window.draw_rectangle(xgc, True, imX-3, imY-23, piX+6, 22)
                      xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
                      if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         self.imageselected = count
-                               
+                
+                
+                                
                             
                 if "GDK_BUTTON1" in str(fx) and self.win.is_active() and self.imageselected == count:
                     
@@ -1036,12 +1045,12 @@ class story:
                 #widget.window.draw_rectangle(xgc, True, ex, ey, esx+5, int(esy))
                 ctx3 = widget.window.cairo_create()
                 ctx3.set_source_rgba(0,0,0,0.4)
-                ctx3.rectangle(ex, ey, esx+5, int(esy))
+                ctx3.rectangle(ex-2, ey, esx+4, int(esy))
                 ctx3.fill()
                 #526969
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#526969"))
-                widget.window.draw_rectangle(xgc, True, ex, ey, esx+5, int(esy)/3)
+                #widget.window.draw_rectangle(xgc, True, ex, ey, esx, int(esy)/3)
                 
                 
                 ############## SHOWING THE SCENES IN THE EVENT #############
@@ -1101,8 +1110,8 @@ class story:
                         dw = int(   (float(esx) / len(story) *  d2)-( float(esx) / len(story) *  d1 ))
                         
     
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4987af"))
-                        widget.window.draw_rectangle(xgc, True, ds, ey, dw+5, int(esy)/3)
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#526969"))
+                        widget.window.draw_rectangle(xgc, True, ds+1, ey, dw-2, int(esy)/3)
                         
                         
                         
@@ -1154,7 +1163,7 @@ class story:
                                 pass        
                             
                             
-                            
+                           
                         
                         
                         
@@ -1166,7 +1175,7 @@ class story:
                             tooltip = "event ["+name+"]\nscene["+scnDATA[ind][n][1]+"]"
                             
                             
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#959595"))
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                             
                             if self.tool == "arrow":
                                 
@@ -1178,7 +1187,8 @@ class story:
                                 
                                 self.arrow_selection[1] = [ind, scnDATA[ind][n][1]]
                                 
-                            #widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4987af")) 
+                            widget.window.draw_rectangle(xgc, True, ds+1, ey, dw-2, int(esy)/3)
                             
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and self.tool == "select": # IF CLICKED
@@ -1254,17 +1264,21 @@ class story:
                                 
                                 
                                 
-                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e13d3d"))
-                                #widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)        
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                                widget.window.draw_rectangle(xgc, False, ds+1, ey, dw-2, int(esy)/3)        
                                 
                                 
                         if n == self.scene_select and self.event_select == ind and self.tool != "arrow":
                             
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#959595"))
+                            #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                             
-                            #widget.window.draw_rectangle(xgc, False, ds, ey+3, dw, int(esy)-5)
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4987af"))
+                            widget.window.draw_rectangle(xgc, True, ds+1, ey, dw-2, int(esy)/3)
                             
-                
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(11)
+                        ctx.move_to( ds+2, ey+12)
+                        ctx.show_text(scnDATA[ind][n][1]) 
                 
                 
                 
@@ -1295,7 +1309,7 @@ class story:
                     # GUIDING LINES
                     xgc.line_width = 1
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
-                    widget.window.draw_rectangle(xgc, False, ex, ey, esx+5, int(esy))
+                    widget.window.draw_rectangle(xgc, False, ex-2, ey, esx+4, int(esy))
                     #widget.window.draw_rectangle(xgc, False, 0, ey, w, esy)
                     #widget.window.draw_rectangle(xgc, False, ex, -2 , esx, h+2)
                     
@@ -1304,8 +1318,8 @@ class story:
                     
                 #widget.window.draw_rectangle(xgc, False, ex, ey, esx, int(esy))
                 ctx.set_source_rgb(1,1,1)
-                ctx.set_font_size(10)
-                ctx.move_to( ex+2, ey+10)
+                ctx.set_font_size(11)
+                ctx.move_to( ex+2, ey+esy/3+12)
                 ctx.show_text(event[3])
                 
                 
@@ -1357,12 +1371,7 @@ class story:
                 
                 
             
-            # MOUSE CURSOR MAIN
-            if mx > 0 and mx < w-(w)/3 and my > 50:
-                widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.CROSS))
-                
-            else:  # IF MOUSE NOT IN EDITOR
-                widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW)) 
+            
             
             
             
@@ -1528,6 +1537,7 @@ class story:
                         # if on the right side TO RESIZE
                         if mx in range(ex-2, ex+2) and my in range(ey, ey+esy):
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.SB_H_DOUBLE_ARROW))
+                            self.showcross = False
                             if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                                 self.event_resize = [0, ind]  
                                 self.event_select = ind
@@ -1535,6 +1545,7 @@ class story:
                         # if on the left side TO RESIZE
                         elif mx in range(ex+esx-2, ex+esx+2) and my in range(ey, ey+esy):
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.SB_H_DOUBLE_ARROW))
+                            self.showcross = False
                             if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                                 self.event_resize = [1, ind]  
                                 self.event_select = ind
@@ -1545,10 +1556,10 @@ class story:
                             
                            # get mouse to show the grabber
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.FLEUR))
-                            
+                            self.showcross = False
                             # show the selection color around
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
-                            widget.window.draw_rectangle(xgc, False, ex, ey, esx+5, esy)
+                            widget.window.draw_rectangle(xgc, False, ex-2, ey, esx+4, esy)
                             
                             
                             if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
@@ -1558,6 +1569,8 @@ class story:
                                 self.marker_select = len(self.FILE.markers)+2
                     
                             
+                        
+                                
             ###### MOVING EVENTS    #####
             
             
@@ -2093,32 +2106,32 @@ class story:
             # SPLIT EVENT BETWEEN SCENES
             
             
-            if 75 in self.keys or 107 in self.keys:
-                
-                
-                self.tool = "split"                   # PRESS K
-                self.toolactive = False
-            
-            
-            if self.tool == "split":
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
-                widget.window.draw_rectangle(xgc, True, 110, 5, 40, 40)
-            else:
-                if mx in range(110,150) and my in range(5,45):
-                
-                
-                    tooltip = "[ K ]\n\nSplit events between the scenes\nlike a Knife"
-                        
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                    widget.window.draw_rectangle(xgc, True, 110, 5, 40, 40)
-                    
-                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
-                        
-                        self.tool = "split"
-                        self.toolactive = False
-                    
-                    
-            widget.window.draw_pixbuf(None, self.split_event, 0, 0, 110, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            #if 75 in self.keys or 107 in self.keys:
+            #    
+            #    
+            #    self.tool = "split"                   # PRESS K
+            #    self.toolactive = False
+            #
+            #
+            #if self.tool == "split":
+            #    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
+            #    widget.window.draw_rectangle(xgc, True, 110, 5, 40, 40)
+            #else:
+            #    if mx in range(110,150) and my in range(5,45):
+            #    
+            #    
+            #        tooltip = "[ K ]\n\nSplit events between the scenes\nlike a Knife"
+            #            
+            #        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
+            #        widget.window.draw_rectangle(xgc, True, 110, 5, 40, 40)
+            #        
+            #        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
+            #            
+            #            self.tool = "split"
+            #            self.toolactive = False
+            #        
+            #        
+            #widget.window.draw_pixbuf(None, self.split_event, 0, 0, 110, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
             
             
             
@@ -4344,12 +4357,14 @@ class bos:
                     d.append(dot)
                     dots.append(d)
                     
-                    if '"' in scene_text:
+                    if '"' in scene_text[:scene_text.find("<")]:
                         name = scene_text[scene_text.find('"')+1:scene_text.replace('"', " ", 1).find('"')]
+                        scene_text = scene_text.replace('"'+name+'"', "", 1)
                     else:
                         name = "Uknnown Scene"
                     
-                    scene_text = scene_text.replace('"'+name+'"', "", 1)
+                    name = name.replace("\n","_").replace("/","_").replace(" ", "_").replace('"',"_").replace("(","_").replace(")","_").replace("'","_").replace("[","_").replace("]","_").replace("{","_").replace("}","_")   
+                    
                     
                     eventscenes.append(  [IND, name, d, scene_text]  )
             

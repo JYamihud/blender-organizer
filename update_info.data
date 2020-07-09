@@ -1,3 +1,10 @@
+VERSION 4.51
+FILE update_info.data
+FILE py_data/modules/analytics.py
+FILE py_data/modules/snake.py
+FILE py_data/modules/story_editor.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.51
+
 VERSION 4.50
 FILE update_info.data
 FILE py_data/new_file/asset.progress

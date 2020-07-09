@@ -174,6 +174,8 @@ class draw_assets:
         
         self.folder_read()
         
+        print self.assets[0].info, "HERE #####################"
+            
         
         
         
@@ -500,6 +502,14 @@ class draw_assets:
                 
                 
                 ## top pannel
+                
+                x = []
+                for i in self.assets:
+                    x.append(i.percent)
+                
+                avarage = sum(x)/len(x)
+                
+                
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#393939")) ## CHOSE COLOR
                 widget.window.draw_rectangle(xgc, True, 0, 0, w, 50)

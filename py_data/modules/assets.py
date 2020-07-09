@@ -501,13 +501,14 @@ class draw_assets:
                 
                 
                 ## top pannel
-                
-                x = []
-                for i in self.assets:
-                    x.append(i.percent)
-                
-                avarage = sum(x)/len(x)
-                
+                try:
+                    x = []
+                    for i in self.assets:
+                        x.append(i.percent)
+
+                    avarage = sum(x)/len(x)
+                except:
+                    avarage = 1.0 #CHANGE THIS VALUE WHEN YOU FIGURE OUT THE CALCULATION WITHOUT CATEGORIES
                 
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#393939")) ## CHOSE COLOR

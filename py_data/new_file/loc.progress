@@ -7,18 +7,19 @@
 #### DO NOT USE EMPTY LINES
 STR 00/00/0000
 FIN 01/00/0000
-[ ] Concept Art
-    [ ] Concept Drawing or Photos
-    [ ] Map or a building plan
-[ ] Envirountment backdrop settings
-[ ] Modeling
-    [ ] Base Modeling
-    [ ] Populating with objects
-        [ ] Object #1
-    [ ] Populating with grass, trees or growing of other kind
-[ ] Materials
-[ ] Testing
-    [ ] Preview.jpg & Wired.jpg
-    [ ] Tuntable render for web
-    [ ] Upload Privew to Forums
-[ ] Creating ASSET in /ast Folder
+[ ].Research
+    [ ] Images or Photos gathering
+    [ ] Maps and Plans
+    [ ] Creating Objects For different Items / Plants
+[ ].Building
+    [ ] Make the Objects Assets to Populate the scene
+    [ ] Construct the scene
+    [ ] Populate with the objects
+[ ].Texturing
+    [ ] Envirountment backdrop settings
+    [ ] Ground material
+    [ ] Wall Material
+[ ].Rendering
+    [ ] Make Preview
+    [ ] Edit Preview
+[ ] Ready to configure /AST/

@@ -7,21 +7,45 @@
 #### DO NOT USE EMPTY LINES
 STR 00/00/0000
 FIN 01/00/0000
-[ ] Concept Art
-    [ ] Concept Drawing
+[ ].Concept
+    [ ] Research
+    [ ] Concept Art
     [ ] Strait Angle Reference
-[ ] Modeling
-    [ ] Base Modeling
-    [ ] Sculpting
-    [ ] Retopology
-[ ] Materials
-[ ] Rigging
-    [ ] Shape Keys Creating
-    [ ] Rig Modelign
-    [ ] Rig Assinging
-    [ ] Rig Drivers and Constrains
-[ ] Testing
-    [ ] Preview.jpg & Wired.jpg
-    [ ] Tuntable render for web
-    [ ] Upload Privew to Forums
-[ ] Creating ASSET in /ast Folder
+[ ].Modeling
+    [ ].Head
+        [ ] Sculpting
+        [ ] Retopology
+        [ ] Hair
+    [ ].Body
+        [ ] Sculpting
+        [ ] Retopology
+    [ ].Cloth
+        [ ] Modeling
+        [ ] Simulating / Sculpting Cloth Details
+[ ].Materials
+    [ ].Skin Shader
+        [ ] SSS Setup
+        [ ].Textures
+            [ ] Color
+            [ ] Bump
+            [ ] Shine
+            [ ] SSS Layers
+    [ ] Eyes
+    [ ].Cloth
+        [ ] Textures
+        [ ] Shader setup
+[ ].Rigging
+    [ ].Body
+        [ ] Making Rig
+        [ ] Assining The Rig
+        [ ].Fixing
+            [ ] Adjusting weights
+            [ ] Making corrective ShapeKeys
+    [ ].Face
+        [ ] Eyes
+        [ ] Eyebrows
+        [ ] Mouth area
+[ ].Rendering
+    [ ] Make Preview
+    [ ] Edit Preview
+[ ] Ready to configure /AST/

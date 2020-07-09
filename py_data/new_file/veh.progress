@@ -7,21 +7,21 @@
 #### DO NOT USE EMPTY LINES
 STR 00/00/0000
 FIN 01/00/0000
-[ ] Concept Art
-    [ ] Concept Drawing or Photos
+[ ].Research
+    [ ] Photos
+    [ ] Concept Drawings
     [ ] Blueprints
-[ ] Modeling
-    [ ] Base Modeling
-    [ ] Retopology
-[ ] Materials
+[ ].Modeling
+    [ ] Wheels
+    [ ] Body
+    [ ] Interiour
+    [ ] Doors Cutting
+[ ].Materials
     [ ] Car material
     [ ] Wheels Materials
-    [ ] Sits material
+    [ ] Seats material
 [ ] Rigging
-    [ ] Making a car rig
-    [ ] Make drivers for the rig
-[ ] Testing
-    [ ] Preview.jpg & Wired.jpg
-    [ ] Tuntable render for web
-    [ ] Upload Privew to Forums
-[ ] Creating ASSET in /ast Folder
+[ ].Rendering
+    [ ] Make Preview
+    [ ] Edit Preview
+[ ] Ready to configure /AST/

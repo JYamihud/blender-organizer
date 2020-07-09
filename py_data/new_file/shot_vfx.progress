@@ -8,11 +8,9 @@
 STR 00/00/0000
 FIN 01/00/0000
 [ ] Storyboarding
-[ ] Layers
+[ ].Layers
     [ ] Backdrop
     [ ] Chromakey Layers
-        [ ] Chromakey layer #1
     [ ] Vfx Layers
-        [ ] Vfx Layer #1
 [ ] Compositing
 [ ] Edtiting and sound mixing

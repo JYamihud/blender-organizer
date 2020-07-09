@@ -7,14 +7,12 @@
 #### DO NOT USE EMPTY LINES
 STR 00/00/0000
 FIN 01/00/0000
-[ ] Concept Art
-    [ ] Concept Drawing
+[ ].Research
+    [ ] Reference Images
+    [ ] Concept Art
 [ ] Modeling
-    [ ] Base Modeling
-    [ ] Retopology
 [ ] Materials
-[ ] Testing
-    [ ] Preview.jpg & Wired.jpg
-    [ ] Tuntable render for web
-    [ ] Upload Privew to Forums
-[ ] Creating ASSET in /ast Folder
+[ ].Rendering
+    [ ] Make Preview
+    [ ] Edit Preview
+[ ] Ready to configure /AST/

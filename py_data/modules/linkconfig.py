@@ -183,6 +183,8 @@ def config(pf, path):
                         
                         #self.blenddata.append(checkstring)
                         
+                        print "########## ALL THE DATA FROM BLENDER ##########\n\n", checkstring, "\n\n############## DONE ##############"
+                        
                         
                         if "VERSION = SUCCESS" in checkstring:
                             
@@ -193,20 +195,25 @@ def config(pf, path):
                                 if collection.startswith(">>>"):
                                     #print collection, "TESTING HERE"
                                     
-                                    coln = collection[4:collection.find(" <== ")]
-                                    if coln != colname:
-                                        print coln, "COLLECTION"
+                                    if " <== " in collection:
+                                        coln = collection[4:collection.find(" <== ")]
+                                        if coln != colname:
+                                            print coln, "COLLECTION"
+                                            
+                                            
+                                            self.blenddata.append([[False, colname], currentcollection])
+                                            currentcollection = []
+                                        print "    |", collection[collection.find(" <== ")+5:], "OBJECT"
                                         
-                                        
-                                        self.blenddata.append([[False, colname], currentcollection])
-                                        currentcollection = []
-                                    print "    |", collection[collection.find(" <== ")+5:], "OBJECT"
+                                        currentcollection.append([False, collection[collection.find(" <== ")+5:]])
+                                        colname = coln
+                                    else:
+                                          coln = collection[4:]
+                                          self.blenddata.append([[False, coln], []])
+                                          
+                                          #colname = coln
                                     
-                                    currentcollection.append([False, collection[collection.find(" <== ")+5:]])
-                                    
-                                        
-                                    colname = coln
-                                if collection.startswith("VERSION"):
+                                if collection.startswith("VERSION"): # GETTING THE LAST THING IN THE LIST
                                     self.blenddata.append([[False, colname], currentcollection])
                                 
                                 
@@ -487,7 +494,7 @@ def config(pf, path):
                     
                     for line in st.split("\n"):
                         
-                        if line.startswith("Link : ") and col[0][1] in line:
+                        if line.startswith("Link : ") and col[0][1] == line[7:]:
                             
                             self.blenddata[cn][0][0] = True
                             
@@ -496,7 +503,7 @@ def config(pf, path):
                                 
                                 for line in st.split("\n"):
                                     
-                                    if line.startswith("Proxy : ") and obj[1] in line:
+                                    if line.startswith("Proxy : ") and obj[1] == line[8:]:
                                         
                                         self.blenddata[cn][1][on][0] = True
                 

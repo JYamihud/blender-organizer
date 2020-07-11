@@ -252,8 +252,10 @@ def config(pf, path, blend):
                             
                             if tmp and tmp not in self.linkdata:
                                 self.linkdata.append( tmp)
+                                print "ADDING : ", tmp
                                 self.save()
-                            
+                                
+                                print self.linkdata
                         glib.timeout_add(10, ee)
                 
                 
@@ -360,7 +362,7 @@ def config(pf, path, blend):
         checkframes.wait()
         checkstring = checkframes.stdout.read()
         
-        print checkstring, "DONE"
+        print "#######################   STRING FROM BLENDER STARTING ####################\n\n", checkstring, "\n\n#######################   STRING FROM BLENDER DONE ####################"
         
         
         

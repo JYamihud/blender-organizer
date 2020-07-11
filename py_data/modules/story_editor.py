@@ -389,7 +389,7 @@ class story:
             if self.showcross:  # IF MOUSE NOT IN EDITOR
                 widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW)) 
             
-            print self.showcross, "SHOWCROSS"
+            #print self.showcross, "SHOWCROSS"
             self.showcross = True   
             
             

@@ -1,3 +1,11 @@
+VERSION 4.53
+FILE update_info.data
+MAIN_FILE
+FILE py_data/modules/troubleshooter.py
+FILE py_data/modules/analytics.py
+FILE py_data/modules/checklist.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.53
+
 VERSION 4.52
 FILE update_info.data
 FILE py_data/modules/get_linkdata.py

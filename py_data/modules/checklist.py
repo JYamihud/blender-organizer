@@ -953,6 +953,13 @@ class checkwindow:
                                             tdl = []
                                             tdl.append(i)
                                             d = i[:i.find(" ")]
+                                    
+                                    
+                                    dl.append(tdl)
+                                    tdl = []
+                                    tdl.append(i)
+                                    d = i[:i.find(" ")]
+                                    
                                             
                                     print dl, "########### BEFORE  #############"
                                     dl = sorted(dl)

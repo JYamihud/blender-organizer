@@ -2002,6 +2002,12 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                                         tdl = []
                                         tdl.append(task)
                                         d = task[:task.find(" ")]
+                                
+                                
+                                dl.append(tdl)
+                                tdl = []
+                                tdl.append(task)
+                                d = task[:task.find(" ")]
                                         
                                 print dl, "########### BEFORE  #############"
                                 dl = sorted(dl)

@@ -83,6 +83,7 @@ class draw_analytics:
         self.okicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/ok.png")
         self.blendericon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blender.png")
         self.settingsicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/settings.png")
+        self.moveicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/move.png")
         
         #getting icons into place OMG WHY????
         self.objicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/obj_asset_undone.png")
@@ -98,8 +99,10 @@ class draw_analytics:
         self.tscroll = 0
         
         #selecting days for analytics
-        self.selectdate = "00/00/0000"
+        self.selectdate = "0000/00/00"
         
+        
+        self.taskmove = -1
         
         
         #NEW STORY EDITOR CODE
@@ -1199,7 +1202,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             
             
-            ############################################################       OLD CODE      ###############################################33
+            ############################################################       GRAPH      ###############################################33
             
             
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#202020"))
@@ -1439,10 +1442,10 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             
             
-            ################################################################  OLD CODE #########################################################
+            ################################################################  END OF GRAPH #########################################################
             
             
-            ################################################################  OLD CODE #########################################################
+            ################################################################  SCHEDULES #########################################################
             # TRYING TO GET IF TODAY WAS
             
             #makingsuretodrawlasttasks
@@ -1480,6 +1483,11 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             
             draw_date_data = True
+            
+            thisposeditable  = 1
+            isty = w / elementsX - border
+            chekedmovethingidk = True
+            insersto = -1
             
             for tind, task in enumerate(self.schedule):
             
@@ -1540,6 +1548,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 
                 
                 # outputting data if mouse over the dategrapth
+                
                 
                 if my in range(bstY, stY) and mx in range(bgxpos, bgxpos+20) and draw_date_data:
                     
@@ -1615,27 +1624,54 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 tstY = 0
                 tubX = w / elementsX - border
                 tubY = h / elementsY - border
-            
+                
+                
+                
+                
+                
                 xpos = tstX + border / 2#int(w*xpos)-5
-                ypos = tubY - (thisypos*45) + self.tscroll
+                ypos = tubY - (thisposeditable*45) + self.tscroll
+                
                 
                 
                  
-                #draw = True
-                #if underwas and over and not under:
-                #   
-                #   draw = False
+                if today and ypos < tstY + tubY - 44 or self.taskmove == tind:# or over and draw:
+                    
+                    chekedmovethingidk = True
+                    
+                    # STUFF RELATED TO MOVING TASKS
+                    
+                    #RESEALE MOVING
+                    
+                    if my in range(ypos, ypos+45) and self.taskmove != -1:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                        widget.window.draw_rectangle(xgc, False, xpos-1, ypos, tubX, 45 )
+                        
+                        insersto = tind
+                        tooltip = str(insersto)
+                    
+                    
+                    #MOVING THEM UP
+                    
+                    if self.taskmove != -1 and my > ypos:
+                        ypos = ypos - 45
+                    
+                    # IF IN MOVING
+                    if self.taskmove == tind:
+                        xpos = mx - tubX+22+46
+                        ypos = my - 11
+                    else:
+                        thisposeditable = thisposeditable + 1
                 
-                if today and ypos < tstY + tubY - 44:# or over and draw:
                     
                     
-                #else:
-                #    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
-                #    widget.window.draw_rectangle(xgc, True, xpos, ypos, 5, 5 )
-            
                     
-                    #ctx.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
                     
+                    
+                    
+                    
+                    
+                    # DRAWING THE TASKS 
                     
                     istx = xpos
                     isty = tubX - border*2  - 10    #len(taskstring)*9+5
@@ -1670,7 +1706,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                         ctx.move_to( xpos+isty-130, ypos+16)
                         ctx.show_text(daystring)
                     
-                    if mx in range(xpos-1, xpos+isty+22) and my in range(ypos+22, ypos+44):
+                    if mx in range(xpos-1, xpos+isty+22) and my in range(ypos+22, ypos+44) and self.taskmove == -1:
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
                         widget.window.draw_rectangle(xgc, True, xpos-1, ypos+22, isty, 22 )
@@ -1714,10 +1750,10 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                         
                         
                     
-                        if mx in range(xpos-1, xpos+isty) and my in range(ypos, ypos+22): #IF MOUSE OVER
+                        if mx in range(xpos-1, xpos+isty-44) and my in range(ypos, ypos+22) and self.taskmove == -1: #IF MOUSE OVER
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
-                            widget.window.draw_rectangle(xgc, True, xpos-1, ypos, isty, 22 )
+                            widget.window.draw_rectangle(xgc, True, xpos-1, ypos, isty-44, 22 )
                             tooltip = "Go to Asset"
                         
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
@@ -1758,11 +1794,12 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     showtooltip = False
                     
                     
-                    if mx in range(tubX+tstX-22, tubX+tstX-22+22) and my in range(ypos, ypos+22): #IF MOUSE OVER
+                    if mx in range(tubX+tstX-24, tubX+tstX-24+22) and my in range(ypos, ypos+22) and self.taskmove == -1: #IF MOUSE OVER
                             
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
-                        widget.window.draw_rectangle(xgc, True, tubX+tstX-22, ypos, 22, 22 )
-                            
+                        widget.window.draw_rectangle(xgc, True, tubX+tstX-24, ypos, 22, 22 )
+                        
+                        tooltip = "Delete The Task"
                         
                         if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
                             
@@ -1794,19 +1831,80 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             except Exception as e:
                                 print "WTF", e
                     
+                    if self.taskmove == -1:
+                        widget.window.draw_pixbuf(None, self.deleteicon, 0, 0, tubX+tstX-21, ypos+3 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                     
                     
                     
-                    widget.window.draw_pixbuf(None, self.deleteicon, 0, 0, tubX+tstX-22, ypos+1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                    if mx in range(tubX+tstX-24-44, tubX+tstX-24-44+22) and my in range(ypos, ypos+22) and self.taskmove == -1: #IF MOUSE OVER
+                            
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
+                        widget.window.draw_rectangle(xgc, True, tubX+tstX-24-44, ypos, 22, 22 )
+                        
+                        tooltip = "Move the Task"
+                        
+                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                            self.taskmove = tind
                     
+                    if self.taskmove == -1:
+                        widget.window.draw_pixbuf(None, self.moveicon, 0, 0, tubX+tstX-22-46, ypos+1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                else:
+                             
+                    if my in range(ypos, ypos+45) and self.taskmove != -1 and chekedmovethingidk:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                        widget.window.draw_rectangle(xgc, False, xpos-1, ypos, tubX, 45 )
+                        
+                        
+                        insersto = tind
+                        tooltip = str(insersto)
+                        
+                        chekedmovethingidk = False
             
             
-            
-            
-            
+            if insersto != -1 and "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.taskmove != -1:
+                print "########### MOVIN TASKS #############\n\n"
+                print self.taskmove, "TASK NUMBER"
+                print insersto, "INSERT TO"
+                
+                o = []
+                neededline = ""
+                #get data from file
+                for tind, task in enumerate(self.schedule):
+                    today, over, under, xpos, ypos, gypos, done, taskstring, taskfile, rawline, daystring = task
+                    
+                    if self.taskmove == tind:
+                        print rawline, "RAWLINE"
+                        o.append("")
+                        neededline = rawline
+                    else:
+                        o.append(rawline)
+                print "### BEFORE  #############\n\n"
+                for i in o:
+                    print i
+                print "#############\n\n"
+                
+                o.insert(insersto, neededline)
+                
+                print "### AFTER  #############\n\n"
+                for i in o:
+                    print i
+                print "#############\n\n"
+                
+                
+                
+                
+                s = open(self.pf+"/schedule.data","w")
+                for task in o:
+                    if task != "":
+                        s.write(task+"\n")
+                
+                s.close()
+                
+                
             ################################################################  OLD CODE #########################################################
             
-            
+            #if self.taskmove != -1:
+            #    tooltip = "Moving "+str(self.taskmove)
             
                 
             
@@ -1863,7 +1961,74 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             self.selectdate = selectingdate
                             self.hscroll = 0
                             self.tscroll = 0
-                    
+                        
+                        # Moving taks around
+                        if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.taskmove != -1:
+                            
+                            print "########### MOVIN TASKS #############\n\n"
+                            print self.taskmove, "TASK NUMBER"
+                            
+                            o = []
+                            
+                            #get data from file
+                            for tind, task in enumerate(self.schedule):
+                                today, over, under, xpos, ypos, gypos, done, taskstring, taskfile, rawline, daystring = task
+                                if self.taskmove == tind:
+                                    print rawline, "RAWLINE"
+                                    newline = selectingdate + rawline[rawline.find(" "):]
+                                    print newline, "NEWLINE"
+                                    
+                                    o.append(newline)
+                                else:
+                                    o.append(rawline)
+                            
+                            
+                            #o.append(newline)
+                                
+                            # SORTING WHEN ADDING
+                            try:
+                                dl = []
+                                d = o[0][:o[0].find(" ")]
+                                tdl = []
+                                for task in o:
+                                    if task[:task.find(" ")] == d:
+                                        tdl.append(task)
+                                        print task , "#####", d
+                                    
+                                    else:
+                                        #if newline[:newline.find(" ")] == d:
+                                        #    tdl.append(newline)
+                                        dl.append(tdl)
+                                        tdl = []
+                                        tdl.append(task)
+                                        d = task[:task.find(" ")]
+                                        
+                                print dl, "########### BEFORE  #############"
+                                dl = sorted(dl)
+                                print dl ,"########### AFTER   #############"
+                                o = []
+                                for task in dl:
+                                    for b in task:
+                                        print b, " ####### B ######"
+                                        if b != "":
+                                            o.append(b)
+                                        
+                            except Exception as c:
+                                print "########## NOT GOOD ###########\n\n", c, "\n\n########################"
+                                
+                                o = sorted(o)
+                            
+                            
+                            s = open(self.pf+"/schedule.data","w")
+                            for task in o:
+                                s.write(task+"\n")
+                            
+                            s.close()
+                            
+                            
+                            
+                            print "########### MOVIN TASKS DONE #############\n\n"
+                        
                     if self.selectdate == selectingdate:
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                         widget.window.draw_rectangle(xgc, False, i*20-20+self.scroll, bstY, 20, bubY)
@@ -2000,6 +2165,12 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 
             #if self.scroll > 0:
             #    self.scroll = 0
+            
+            
+            
+            # DISABLING THE MOVEMENT IF MOUSE IS NO LONGER CLICKER   
+            if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf):
+                self.taskmove = -1
             
             
             # SCROLLING HYSTORY

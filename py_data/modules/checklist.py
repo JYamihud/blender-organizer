@@ -372,7 +372,15 @@ class checkwindow:
                     yline = yline + 40
                 ymove = yline+self.offset
                 
+                #if ymove not in range(0-40,h):
+                #    continue
+                
+                
+                
                 xmove = line.find("[")*20 + 50
+                
+                
+                
                 
                 put = " "
                 
@@ -928,7 +936,38 @@ class checkwindow:
                                 
                                 o.append(schstr)
                                 
-                                o = sorted(o)
+                                # SORTING WHEN ADDING
+                                try:
+                                    dl = []
+                                    d = o[0][:o[0].find(" ")]
+                                    tdl = []
+                                    for i in o:
+                                        if i[:i.find(" ")] == d:
+                                            tdl.append(i)
+                                            print i , "#####", d
+                                        
+                                        else:
+                                            if schstr[:schstr.find(" ")] == d:
+                                                tdl.append(schstr)
+                                            dl.append(tdl)
+                                            tdl = []
+                                            tdl.append(i)
+                                            d = i[:i.find(" ")]
+                                            
+                                    print dl, "########### BEFORE  #############"
+                                    dl = sorted(dl)
+                                    print dl ,"########### AFTER   #############"
+                                    o = []
+                                    for i in dl:
+                                        for b in i:
+                                            print b, " ####### B ######"
+                                            if b != "":
+                                                o.append(b)
+                                            
+                                except Exception as c:
+                                    print "########## NOT GOOD ###########\n\n", c, "\n\n########################"
+                                    
+                                    o = sorted(o)
                                 
                                 
                                 s = open(self.pf+"/schedule.data","w")

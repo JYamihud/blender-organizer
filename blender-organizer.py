@@ -33,6 +33,8 @@ savename.close()
 
 ### IMPORTING MODULES
 
+ER = 0
+
 try:            # GIVING THE USER ALL NEEDED INFORMATION IF MODULES ARE MISSING
     # system
     import os
@@ -44,25 +46,11 @@ try:            # GIVING THE USER ALL NEEDED INFORMATION IF MODULES ARE MISSING
     #1.0/0   # TESTER
     
 except:
+    ER = 1
+    from py_data.modules import troubleshooter
+    troubleshooter.shoot(ER)
     
-    print '''
-ERROR !!! SOME OF THE PYTHON'S
-MAIN MODULES ARE MISSING
-
-os
-socket
-datetime
-urllib2
-
-to install those better to reinstall
-python it self
-
-use:
-sudo apt-get remove python2
-sudo apt-get install python2'''
     
-    raw_input()
-    exit()
     
 try:  
   
@@ -75,21 +63,10 @@ try:
     #1.0/0
     
 except:
-    print '''
-
-ERROR !!! Py-GTK MODULES ARE MISSING
-
-To install Py-GTK module do next commands
-
-
-sudo apt-get install python-gtk2-dev
-
-
-
-'''
+    ER = 2
+    from py_data.modules import troubleshooter
+    troubleshooter.shoot(ER)
     
-    raw_input()
-    exit()
     
 try:    
     try: 
@@ -99,24 +76,13 @@ try:
 
     #1.0/0
 except:
-    print '''
-
-ERROR !!! PIL MODULE IS MISSING
-
-To install PIL module do next commands
-
-
-sudo apt-get install python-pip
-pip install pillow
-
-
-
-'''
+    ER = 3
+    from py_data.modules import troubleshooter
+    troubleshooter.shoot(ER)
 
     
-    raw_input() #IN CASE THE TERMINAL IS LIKE CMD AND WILL CLOSE AUTOMATICALLY
     
-    exit()
+    
     
 ### IMPORTING OUR EXTENDED MODULES
 

@@ -1633,9 +1633,14 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 ypos = tubY - (thisposeditable*45) + self.tscroll
                 
                 
+                #thisposeditable = thisposeditable + 1
                 
-                 
-                if today and ypos < tstY + tubY - 44 or self.taskmove == tind:# or over and draw:
+                
+                
+                if today: # or over and draw:
+                    
+                    
+                     
                     
                     chekedmovethingidk = True
                     
@@ -1662,203 +1667,205 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                         ypos = my - 11
                     else:
                         thisposeditable = thisposeditable + 1
-                
+                        pass
                     
                     
                     
                     
                     
-                    
-                    
-                    
-                    # DRAWING THE TASKS 
-                    
-                    istx = xpos
-                    isty = tubX - border*2  - 10    #len(taskstring)*9+5
-                    isty2 = len(taskfile)*9+50+22
-                    if taskfile != "project.progress" and taskfile.startswith("/dev/"):
-                        #we need to get type of the file the CUR
-                        isty2 = (len(taskfile[9:taskfile.rfind("/")]))*9+50+22
-                    
-                    if istx + len(taskstring)*9+5 > w:
-                        istx = w-(len(taskstring)*9+5)
-                    if istx + len(taskfile)*9 > w:
-                        istx = w-len(taskfile)*9
-                    
-                    
-                    ctx3.set_source_rgba(0.1,0.1,0.1,0.75)
-                    if under:
-                        ctx3.set_source_rgba(0.3,0.1,0.1,0.75)
-                    if over and not under:
-                        ctx3.set_source_rgba(0.1,0.1,0.3,0.75)
-                    ctx3.rectangle(xpos-1, ypos, isty+22, 42)
-                    ctx3.fill()
-                    
-                    #ctx3.rectangle(xpos+isty+44, ypos, isty2+22, 22)
-                    #ctx3.fill()
-                    
-                    if over:
-                        #ctx3.rectangle(xpos+isty+isty2+44+44, ypos, len(daystring)*9+22, 22)
+                    if ypos < tstY + tubY - 44 or self.taskmove == tind:
+                        
+                        
+                        # DRAWING THE TASKS 
+                        
+                        istx = xpos
+                        isty = tubX - border*2  - 10    #len(taskstring)*9+5
+                        isty2 = len(taskfile)*9+50+22
+                        if taskfile != "project.progress" and taskfile.startswith("/dev/"):
+                            #we need to get type of the file the CUR
+                            isty2 = (len(taskfile[9:taskfile.rfind("/")]))*9+50+22
+                        
+                        if istx + len(taskstring)*9+5 > w:
+                            istx = w-(len(taskstring)*9+5)
+                        if istx + len(taskfile)*9 > w:
+                            istx = w-len(taskfile)*9
+                        
+                        
+                        ctx3.set_source_rgba(0.1,0.1,0.1,0.75)
+                        if under:
+                            ctx3.set_source_rgba(0.3,0.1,0.1,0.75)
+                        if over and not under:
+                            ctx3.set_source_rgba(0.1,0.1,0.3,0.75)
+                        ctx3.rectangle(xpos-1, ypos, isty+22, 42)
+                        ctx3.fill()
+                        
+                        #ctx3.rectangle(xpos+isty+44, ypos, isty2+22, 22)
                         #ctx3.fill()
                         
-                        ctx.set_source_rgb(1,1,1)
-                        ctx.set_font_size(15)
-                        ctx.move_to( xpos+isty-130, ypos+16)
-                        ctx.show_text(daystring)
-                    
-                    if mx in range(xpos-1, xpos+isty+22) and my in range(ypos+22, ypos+44) and self.taskmove == -1:
-                        
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
-                        widget.window.draw_rectangle(xgc, True, xpos-1, ypos+22, isty, 22 )
-                        tooltip = "Open Checklist"
-                        
-                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                        if over:
+                            #ctx3.rectangle(xpos+isty+isty2+44+44, ypos, len(daystring)*9+22, 22)
+                            #ctx3.fill()
                             
-                            if taskfile == "project.progress":
-                                checklist.checkwindow(pf=self.pf, title="[ "+taskstring[taskstring.rfind("/")+1:]+" ] in ", FILE=taskfile, highlight=rawline)
-                            else:
-                                checklist.checkwindow(pf=self.pf, title="[ "+taskstring[taskstring.rfind("/")+1:]+" ] in ", FILE=self.pf+taskfile, highlight=rawline)
-                    
-                    
-                    
-                    # ICON OF THE TYPE OF ITEM OF THE CHECKLIST
-                    needicon = self.checklist
-                    
-                    if taskfile.startswith("/dev/chr"):
-                        needicon = self.chricon
-                    elif taskfile.startswith("/dev/veh"):
-                        needicon = self.vehicon
-                    elif taskfile.startswith("/dev/loc"):
-                        needicon = self.locicon
-                    elif taskfile.startswith("/dev/obj"):
-                        needicon = self.objicon
-                    
-                    # IF WE HAVE AN ITEM
-                    
-                    if taskfile != "project.progress" and taskfile.startswith("/dev/"):
-                        #we need to get type of the file the CUR
-                        CUR = taskfile[5:8]
+                            ctx.set_source_rgb(1,1,1)
+                            ctx.set_font_size(15)
+                            ctx.move_to( xpos+isty-130, ypos+16)
+                            ctx.show_text(daystring)
                         
-                        
-                        name = taskfile[9:taskfile.rfind("/")]
-                        taskfile = name
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                    
-                        if mx in range(xpos-1, xpos+isty-44) and my in range(ypos, ypos+22) and self.taskmove == -1: #IF MOUSE OVER
+                        if mx in range(xpos-1, xpos+isty+22) and my in range(ypos+22, ypos+44) and self.taskmove == -1:
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
-                            widget.window.draw_rectangle(xgc, True, xpos-1, ypos, isty-44, 22 )
-                            tooltip = "Go to Asset"
-                        
+                            widget.window.draw_rectangle(xgc, True, xpos-1, ypos+22, isty, 22 )
+                            tooltip = "Open Checklist"
+                            
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                                
+                                if taskfile == "project.progress":
+                                    checklist.checkwindow(pf=self.pf, title="[ "+taskstring[taskstring.rfind("/")+1:]+" ] in ", FILE=taskfile, highlight=rawline)
+                                else:
+                                    checklist.checkwindow(pf=self.pf, title="[ "+taskstring[taskstring.rfind("/")+1:]+" ] in ", FILE=self.pf+taskfile, highlight=rawline)
                         
-                                #CUR = "veh"
-                                 
+                        
+                        
+                        # ICON OF THE TYPE OF ITEM OF THE CHECKLIST
+                        needicon = self.checklist
+                        
+                        if taskfile.startswith("/dev/chr"):
+                            needicon = self.chricon
+                        elif taskfile.startswith("/dev/veh"):
+                            needicon = self.vehicon
+                        elif taskfile.startswith("/dev/loc"):
+                            needicon = self.locicon
+                        elif taskfile.startswith("/dev/obj"):
+                            needicon = self.objicon
+                        
+                        # IF WE HAVE AN ITEM
+                        
+                        if taskfile != "project.progress" and taskfile.startswith("/dev/"):
+                            #we need to get type of the file the CUR
+                            CUR = taskfile[5:8]
+                            
+                            
+                            name = taskfile[9:taskfile.rfind("/")]
+                            taskfile = name
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                        
+                            if mx in range(xpos-1, xpos+isty-44) and my in range(ypos, ypos+22) and self.taskmove == -1: #IF MOUSE OVER
                                 
-                                self.box.destroy()
-                                
-                                
-                                self.box = gtk.VBox(False)
-                                self.mainbox.pack_start(self.box, True)
-                                
-                                
-                                assets.draw_assets(os.getcwd(), self.box, self.win, CUR, name)
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
+                                widget.window.draw_rectangle(xgc, True, xpos-1, ypos, isty-44, 22 )
+                                tooltip = "Go to Asset"
+                            
+                                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                            
+                                    #CUR = "veh"
+                                     
+                                    
+                                    self.box.destroy()
                                     
                                     
+                                    self.box = gtk.VBox(False)
+                                    self.mainbox.pack_start(self.box, True)
+                                    
+                                    
+                                    assets.draw_assets(os.getcwd(), self.box, self.win, CUR, name)
+                                        
+                                        
+                                    
+                        if taskfile.startswith("/rnd/"):
+                            needicon = self.scnicon
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(10)
+                        ctx.move_to( istx+22, ypos+16+20)
+                        ctx.show_text(taskstring)
+                        
+                        ctx.set_font_size(15)
+                        ctx.move_to( istx+30+44, ypos+16)
+                        
+                        if taskfile == "project.progress":
+                            ctx.show_text("Main Checklist")
+                        else:
+                            ctx.show_text(taskfile)
+                        
+                        widget.window.draw_pixbuf(None, needicon, 0, 0, istx+44, ypos-1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, istx, ypos-1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        
+                        showtooltip = False
+                        
+                        
+                        if mx in range(tubX+tstX-24, tubX+tstX-24+22) and my in range(ypos, ypos+22) and self.taskmove == -1: #IF MOUSE OVER
                                 
-                    if taskfile.startswith("/rnd/"):
-                        needicon = self.scnicon
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
+                            widget.window.draw_rectangle(xgc, True, tubX+tstX-24, ypos, 22, 22 )
+                            
+                            tooltip = "Delete The Task"
+                            
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                                
+                                print "TRYING TO DELETE", rawline
+                                removing = rawline
+                                
+                                o = open(self.pf+"/schedule.data","r")
+                                o = o.read().split("\n")
+                                
+                                if o[-1] == "":
+                                    o = o[:-1]
+                                
+                                try:
+                                    #print removing, "REMOVING"
+                                    #print self.FILENAME.replace(self.pf, ""), "FILEPATH"
+                                    
+                                    for i in o:
+                                        if i.endswith(removing):
+                                            o.remove(i)
+                                    
+                                    
+                                    
+                                    s = open(self.pf+"/schedule.data","w")
+                                    for i in o:
+                                        #print i
+                                        s.write(i+"\n")
+                                    s.close()
+                                    #self.highlight = None
+                                except Exception as e:
+                                    print "WTF", e
+                        
+                        if self.taskmove == -1:
+                            widget.window.draw_pixbuf(None, self.deleteicon, 0, 0, tubX+tstX-21, ypos+3 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        
+                        
+                        if mx in range(tubX+tstX-24-44, tubX+tstX-24-44+22) and my in range(ypos, ypos+22) and self.taskmove == -1: #IF MOUSE OVER
+                                
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
+                            widget.window.draw_rectangle(xgc, True, tubX+tstX-24-44, ypos, 22, 22 )
+                            
+                            tooltip = "Move the Task"
+                            
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                                self.taskmove = tind
+                        
+                        if self.taskmove == -1:
+                            widget.window.draw_pixbuf(None, self.moveicon, 0, 0, tubX+tstX-22-46, ypos+1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                     
-                    ctx.set_source_rgb(1,1,1)
-                    ctx.set_font_size(10)
-                    ctx.move_to( istx+22, ypos+16+20)
-                    ctx.show_text(taskstring)
                     
-                    ctx.set_font_size(15)
-                    ctx.move_to( istx+30+44, ypos+16)
-                    
-                    if taskfile == "project.progress":
-                        ctx.show_text("Main Checklist")
                     else:
-                        ctx.show_text(taskfile)
-                    
-                    widget.window.draw_pixbuf(None, needicon, 0, 0, istx+44, ypos-1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                    widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, istx, ypos-1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-                    
-                    showtooltip = False
-                    
-                    
-                    if mx in range(tubX+tstX-24, tubX+tstX-24+22) and my in range(ypos, ypos+22) and self.taskmove == -1: #IF MOUSE OVER
-                            
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
-                        widget.window.draw_rectangle(xgc, True, tubX+tstX-24, ypos, 22, 22 )
-                        
-                        tooltip = "Delete The Task"
-                        
-                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
-                            
-                            print "TRYING TO DELETE", rawline
-                            removing = rawline
-                            
-                            o = open(self.pf+"/schedule.data","r")
-                            o = o.read().split("\n")
-                            
-                            if o[-1] == "":
-                                o = o[:-1]
-                            
-                            try:
-                                #print removing, "REMOVING"
-                                #print self.FILENAME.replace(self.pf, ""), "FILEPATH"
                                 
-                                for i in o:
-                                    if i.endswith(removing):
-                                        o.remove(i)
-                                
-                                
-                                
-                                s = open(self.pf+"/schedule.data","w")
-                                for i in o:
-                                    #print i
-                                    s.write(i+"\n")
-                                s.close()
-                                #self.highlight = None
-                            except Exception as e:
-                                print "WTF", e
-                    
-                    if self.taskmove == -1:
-                        widget.window.draw_pixbuf(None, self.deleteicon, 0, 0, tubX+tstX-21, ypos+3 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                    
-                    
-                    
-                    if mx in range(tubX+tstX-24-44, tubX+tstX-24-44+22) and my in range(ypos, ypos+22) and self.taskmove == -1: #IF MOUSE OVER
+                        if my in range(ypos, ypos+45) and self.taskmove != -1 and chekedmovethingidk:
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                            widget.window.draw_rectangle(xgc, False, xpos-1, ypos, tubX, 45 )
                             
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
-                        widget.window.draw_rectangle(xgc, True, tubX+tstX-24-44, ypos, 22, 22 )
-                        
-                        tooltip = "Move the Task"
-                        
-                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
-                            self.taskmove = tind
-                    
-                    if self.taskmove == -1:
-                        widget.window.draw_pixbuf(None, self.moveicon, 0, 0, tubX+tstX-22-46, ypos+1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                else:
-                             
-                    if my in range(ypos, ypos+45) and self.taskmove != -1 and chekedmovethingidk:
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
-                        widget.window.draw_rectangle(xgc, False, xpos-1, ypos, tubX, 45 )
-                        
-                        
-                        insersto = tind
-                        tooltip = str(insersto)
-                        
-                        chekedmovethingidk = False
+                            
+                            insersto = tind
+                            tooltip = str(insersto)
+                            
+                            chekedmovethingidk = False
             
             
             if insersto != -1 and "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.taskmove != -1:

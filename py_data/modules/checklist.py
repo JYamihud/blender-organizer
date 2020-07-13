@@ -947,8 +947,8 @@ class checkwindow:
                                             print i , "#####", d
                                         
                                         else:
-                                            if schstr[:schstr.find(" ")] == d:
-                                                tdl.append(schstr)
+                                            #if schstr[:schstr.find(" ")] == d:
+                                            #    tdl.append(schstr)
                                             dl.append(tdl)
                                             tdl = []
                                             tdl.append(i)

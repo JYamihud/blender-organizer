@@ -1491,8 +1491,8 @@ class event:
        
     def edit(self):
         
-        dialog = gtk.Dialog("Scene Editor", None, 0, (gtk.STOCK_OK,  gtk.RESPONSE_APPLY, 
-                                               gtk.STOCK_CANCEL, gtk.RESPONSE_CLOSE))
+        dialog = gtk.Dialog("Scene Editor", None, 0, ("Save",  gtk.RESPONSE_APPLY, 
+                                               "Discard Changes", gtk.RESPONSE_CLOSE))
         
         box = dialog.get_child() # getting the box
         

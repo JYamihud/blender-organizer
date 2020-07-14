@@ -135,7 +135,7 @@ class story:
         self.FILE = bos("pln/main.bos")
         self.px, self.py, self.sx, self.sy = self.FILE.load()
         
-        
+        self.frame = 0
         
         self.dW = 0
         self.DH = 0
@@ -290,7 +290,7 @@ class story:
             
             self.winactive = self.win.is_active()
             
-
+            self.frame = self.frame + 1
             
             # BANNER IMAGE FOR INSPIRATION
             
@@ -1961,37 +1961,37 @@ class story:
             
             #SAVE BUTTON
             
-            saveshortcut = False
-            if 65507 in self.keys and 115 in self.keys:
-                saveshortcut = True
-            if 65507 in self.keys and 83 in self.keys:
-                saveshortcut = True
-            
-            if mx in range(260,280) and my in range(5,45):
-                
-                
-                tooltip = "[ CTRL - S ]\n\nSave File to \n/pln/main.bos"
-                
-                
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-                widget.window.draw_rectangle(xgc, True, 260, 5, 40, 40)
-                
-                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
-                    
-                    saveshortcut = True
-            
-            if saveshortcut:
-                
-                
-                
-                widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
-                
-                while gtk.events_pending():
-                    gtk.main_iteration()
-                   
-                self.FILE.save(px,py,sx,sy)
-            
-            widget.window.draw_pixbuf(None, self.saveicon, 0, 0, 260, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+            #saveshortcut = False
+            #if 65507 in self.keys and 115 in self.keys:
+            #    saveshortcut = True
+            #if 65507 in self.keys and 83 in self.keys:
+            #    saveshortcut = True
+            # 
+            #if mx in range(260,280) and my in range(5,45):
+            #    
+            #    
+            #    tooltip = "[ CTRL - S ]\n\nSave File to \n/pln/main.bos"
+            #    
+            #    
+            #    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
+            #    widget.window.draw_rectangle(xgc, True, 260, 5, 40, 40)
+            #    
+            #    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
+            #        
+            #        saveshortcut = True
+            #
+            #if saveshortcut:
+            #    
+            #    
+            #    
+            #    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
+            #   
+            #    while gtk.events_pending():
+            #        gtk.main_iteration()
+            #       
+            #    self.FILE.save(px,py,sx,sy)
+            #
+            #widget.window.draw_pixbuf(None, self.saveicon, 0, 0, 260, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
             
             
             # EVENT BUTTON
@@ -4118,6 +4118,10 @@ class story:
             self.mpy = my
             self.mpf = fx
             
+            #AUTOSAVE
+            if (self.frame % 10) == 0:
+                self.FILE.save(px,py,sx,sy)
+            
             
             
             def callback():
@@ -4445,7 +4449,7 @@ class bos:
                 for i in arrow: 
                     
                     side = i.split(",")
-                    side = [ int(side[0]), side[1][side[1].find('"')+1:side[1].replace('"'," ",1).find('"') ]]
+                    side = [ int(side[0]), side[1][side[1].find('"')+1:side[1].replace('"'," ",1).find('"')   ].replace("\n","_").replace("/","_").replace(" ", "_").replace('"',"_").replace("(","_").replace(")","_").replace("'","_").replace("[","_").replace("]","_").replace("{","_").replace("}","_") ]
                     
                     arr.append(side)
                 

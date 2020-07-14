@@ -1653,7 +1653,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                         widget.window.draw_rectangle(xgc, False, xpos-1, ypos, tubX, 45 )
                         
                         insersto = tind
-                        tooltip = str(insersto)
+                        #tooltip = str(insersto)
                     
                     
                     #MOVING THEM UP
@@ -1855,17 +1855,17 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                             widget.window.draw_pixbuf(None, self.moveicon, 0, 0, tubX+tstX-22-46, ypos+1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                     
                     
-                    else:
-                                
-                        if my in range(ypos, ypos+45) and self.taskmove != -1 and chekedmovethingidk:
-                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
-                            widget.window.draw_rectangle(xgc, False, xpos-1, ypos, tubX, 45 )
+                else:
                             
-                            
-                            insersto = tind
-                            tooltip = str(insersto)
-                            
-                            chekedmovethingidk = False
+                    if my in range(ypos, ypos+45) and self.taskmove != -1 and chekedmovethingidk:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                        widget.window.draw_rectangle(xgc, False, xpos-1, ypos, tubX, 45 )
+                        
+                        
+                        insersto = tind
+                        #tooltip = str(insersto)
+                        
+                        chekedmovethingidk = False
             
             
             if insersto != -1 and "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.taskmove != -1:

@@ -57,8 +57,10 @@ def write(pf, filename, action):
     f = f.read().split("\n")
     s = open(pf+"/history.data", "w")
     w = []
+    p = ""
     for i in f:
-        if i not in w and i != "":
+        if i not in w and i != "" and i[i.replace(" ", ".", 1).find(" "):] != p[p.replace(" ", ".", 1).find(" "):]:
             w.append(i)
             s.write(i+"\n")
+        p = i
     s.close()

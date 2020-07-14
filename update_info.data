@@ -1,3 +1,8 @@
+VERSION 4.57
+FILE update_info.data
+FILE py_data/modules/history.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.56
+
 VERSION 4.56
 FILE update_info.data
 FILE py_data/modules/analytics.py

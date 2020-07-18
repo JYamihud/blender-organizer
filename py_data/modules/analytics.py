@@ -1208,13 +1208,13 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#202020"))
             #widget.window.draw_polygon(xgc, True, [(border, h),(todayongrapth, h-int(ubY*(1.0/self.alltime*passed))),(todayongrapth,h)])
             
-            xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
-            xgc.line_width = 1
-            widget.window.draw_line(xgc, 0, ubY/2+stY, todayongrapth, ubY/2+stY)    
-            widget.window.draw_line(xgc, 0, bubY/2+bstY, w, bubY/2+bstY) 
+            #xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+            #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+            #xgc.line_width = 1
+            #widget.window.draw_line(xgc, 0, ubY/2+stY, todayongrapth, ubY/2+stY)    
+            #widget.window.draw_line(xgc, 0, bubY/2+bstY, w, bubY/2+bstY) 
             
-            xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER) 
+            #xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER) 
             
             ctx.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             
@@ -1264,11 +1264,11 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     
                     pos = int(delta.days)
                     
-                    nowW = int(round(float(w)/self.alltime*pos))
+                    nowW = int(round(float(w)/self.alltime*pos)) - int(round(float(w)/self.alltime)+1)
                     nowH = int(round( float(ubY) / 100 * thepercent ))*-1+h
                     
                     bnowW = pos*20 + self.scroll + 20
-                    bnowH = int(round( float(bubY) / 100 * thepercent ))*-1 +bstY +bubY - 20
+                    bnowH = int(round( float(bubY) / 100 * thepercent ))*-1 +bstY +bubY #- 20
                     bnowRH = 0-int(round( float(bubY) / 100 * thepercent ))*-1 +20
                     
                     
@@ -1299,7 +1299,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
                     xgc.line_width = 1
                     widget.window.draw_polygon(xgc, False, [(prevW, prevH),(nowW,nowH),(nowW,h),(prevW,h)])
-                    widget.window.draw_polygon(xgc, False, [(bprevW, bprevH),(bnowW,bnowH),(bnowW,bnowRH+bnowH),(bprevW,bnowRH+bnowH)])
+                    widget.window.draw_polygon(xgc, False, [(bprevW+20, bprevH),(bnowW-1,bnowH),(bnowW-1,stY-border-1),(bprevW+20,stY-border-1)])
                     xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER) 
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
                     
@@ -1412,7 +1412,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                         #BIG GRAPH
                         
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))    
-                        widget.window.draw_rectangle(xgc, True , bprevW, bprevH, 20, prevbnowRH) 
+                        widget.window.draw_rectangle(xgc, True , bprevW, bprevH, 20, prevbnowRH-20) 
                         
                          
                          
@@ -1534,18 +1534,18 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 
                 
                 #Lines to separate each task's number 
-                xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                #xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+                #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                #xgc.line_width = 1
+                #widget.window.draw_line(xgc, todayongrapth+5, gypos, w, gypos)    
+                #xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+                
+                #ctx.set_source_rgb(1,1,1)
+                #ctx.set_font_size(10)
+                #ctx.move_to( w-10, gypos+10)
+                #ctx.show_text(str(thisypos))
+                
                 xgc.line_width = 1
-                widget.window.draw_line(xgc, todayongrapth+5, gypos, w, gypos)    
-                xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
-                
-                ctx.set_source_rgb(1,1,1)
-                ctx.set_font_size(10)
-                ctx.move_to( w-10, gypos+10)
-                ctx.show_text(str(thisypos))
-                
-                
                 
                 # outputting data if mouse over the dategrapth
                 
@@ -1916,13 +1916,15 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                 
             
             ### SELECTABLE DAY
-            
+            notfound = True
             
             for i in range(self.alltime+3):
                 
                 #i = i + 1
                 
                 if  i*20-20+self.scroll in range(10, w - 10) and i > 1:
+                    
+                    notfound = False
                 
                     selectingdate = datetime.datetime.strftime(datetime.datetime.strptime(self.startdate, date_format)+datetime.timedelta(days=i-2), self.schedule_date_format)
                     
@@ -2085,7 +2087,10 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     for n, p in enumerate(hdata):
                         
                         widget.window.draw_pixbuf(None, p, 0, 0, i*20-20+self.scroll, bstY+bubY-n*20-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-             
+            
+            
+            
+            
             #MIDDLE LINE
             xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
@@ -2097,7 +2102,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             #BOTTOM SCROLLING SELECTION WIDGET
             
             
-            position = int((float(w)/self.alltime) * (1-float(self.scroll)/20))
+            position = int((float(w)/self.alltime) * (1-float(self.scroll+40)/20))
             size = int((float(w)/self.alltime) * (w/20))
             
             
@@ -2110,7 +2115,29 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             xgc.line_width = 1
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
-            widget.window.draw_rectangle(xgc, False, position, stY-1, size,ubY-6)
+            #widget.window.draw_rectangle(xgc, False, position, stY-1, size,ubY-6)
+            
+            if notfound:
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0,0,0,0.5)
+                ctx3.rectangle(0, bstY, w, bubY)
+                ctx3.fill()
+                ctx3.set_source_rgba(0,0,0,0.5)
+                ctx3.rectangle(0, stY, w, h)
+                ctx3.fill()
+                
+                
+                
+            else:
+                
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0,0,0,0.5)
+                ctx3.rectangle(0, stY, position, h)
+                ctx3.fill()
+                ctx3.set_source_rgba(0,0,0,0.5)
+                ctx3.rectangle(size+position, stY, w, h)
+                ctx3.fill()
+            
             
             if my in range(stY, h):
                 if "GDK_BUTTON2" in str(fx) and win.is_active(): ## IF DRAGGED

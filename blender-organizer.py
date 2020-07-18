@@ -331,7 +331,7 @@ def secondarybuttonsOMGWTF():
     startsider.connect("clicked",chgCUR, "stats")
     toppannelbox.pack_end(startsider, False)
 
-    # SYNC
+    # Blender version
 
     blendverb = gtk.Button()
     blendverb.props.relief = gtk.RELIEF_NONE
@@ -345,21 +345,42 @@ def secondarybuttonsOMGWTF():
     blendverb.connect("clicked",chgCUR, "bldv")
     #blendver.set_sensitive(False)
     toppannelbox.pack_end(blendverb, False)
-
-    # SYNC
-
+    
+    # TELEGRAM
+    
+    def telegram(w):
+        os.system("xdg-open https://t.me/blenderorganizer")
+        
+    
     syncider = gtk.Button()
     syncider.props.relief = gtk.RELIEF_NONE
     syncibox = gtk.HBox(False)
     synciico = gtk.Image()
-    synciico.set_from_file("py_data/icons/sync.png")
+    synciico.set_from_file("py_data/icons/telegram.png")
     syncibox.pack_start(synciico, False)
-    syncibox.pack_start(gtk.Label("  Synchronize"))
+    syncibox.pack_start(gtk.Label("  Telegram Chat"))
     syncider.add(syncibox)
-    syncider.set_tooltip_text("Synchronize between multiple machines")
-    syncider.connect("clicked",chgCUR, "sync")
-    syncider.set_sensitive(False)
+    syncider.set_tooltip_text("Get Real Time Help On the telegram")
+    syncider.connect("clicked",telegram)
+    #syncider.set_sensitive(False)
     toppannelbox.pack_end(syncider, False)
+
+
+
+    # SYNC
+
+    #syncider = gtk.Button()
+    #syncider.props.relief = gtk.RELIEF_NONE
+    #syncibox = gtk.HBox(False)
+    #synciico = gtk.Image()
+    #synciico.set_from_file("py_data/icons/sync.png")
+    #syncibox.pack_start(synciico, False)
+    #syncibox.pack_start(gtk.Label("  Synchronize"))
+    #syncider.add(syncibox)
+    #syncider.set_tooltip_text("Synchronize between multiple machines")
+    #syncider.connect("clicked",chgCUR, "sync")
+    #syncider.set_sensitive(False)
+    #toppannelbox.pack_end(syncider, False)
 
 
     # REPORT BUG

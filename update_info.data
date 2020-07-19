@@ -1,3 +1,10 @@
+VERSION 4.59
+FILE update_info.data
+FILE py_data/modules/blendver.py
+FILE py_data/icons/settings.png
+MAIN_FILE
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.59
+
 VERSION 4.58
 FILE update_info.data
 FILE py_data/modules/analytics.py

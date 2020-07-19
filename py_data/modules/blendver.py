@@ -16,12 +16,13 @@ except:
 
 # calculational help
 import datetime
-
+from subprocess import *
 
 # self made modules
 
 import thumbnailer
 import dialogs
+import checklist
 
 class draw_blendver:
     
@@ -34,6 +35,10 @@ class draw_blendver:
         
         self.win = win
         
+        self.newfiles = os.walk(self.pf+"/py_data/new_file").next()[2]
+        self.thumbs = []
+        for i in self.newfiles:
+            self.thumbs.append(False)
         
         print "GOT HERE 1"
         
@@ -67,15 +72,20 @@ class draw_blendver:
         
         self.plusicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/plus.png")
         self.blendOSicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/OS_blendico.png")
-        self.blendicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/big_blendico.png")
+        self.blendicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/blender.png")
+        
+        self.okayicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/ok.png")
+        self.deleteicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/delete.png")
+        self.checkicon  = gtk.gdk.pixbuf_new_from_file(pf+"/py_data/icons/checklist.png")
         
         self.blendOS = ["Empty", "Empty", "Empty"]
         
         self.keys = []
         self.dell = -1
         
-        
-        self.scroll = 0        
+        self.blscroll = 0 
+        self.chscroll = 0   
+        self.bvscroll = 0        
         #making a filewith the setting storeage
         
         self.launchfolder = True # Makes sure just one folder choose dialogue is running
@@ -121,7 +131,7 @@ class draw_blendver:
             
             
             ctx = widget.window.cairo_create()
-            ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
+            #ctx.select_font_face("Sawasdee", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
             
             ctx2 = widget.window.cairo_create()
             ctx2.select_font_face("Monospace", cairo.FONT_SLANT_NORMAL, cairo.FONT_WEIGHT_NORMAL)
@@ -140,172 +150,316 @@ class draw_blendver:
             #                                                                                    #
             ######################################################################################
             
+            # BANNER IMAGE FOR INSPIRATION
+            
+            # updating the image if let's say we changed it
+            if self.dW == 0 and self.DH == 0:
+                self.banner = self.pf+"/py_data/banner.png"
+                self.pixbuf = gtk.gdk.pixbuf_new_from_file(self.banner)
+            
+            #lets get how much to scale H
+            scaleimageH =  int( float(self.pixbuf.get_height()) / self.pixbuf.get_width() * w)
+            #scaling image to the frame
+            drawpix = self.pixbuf.scale_simple(w, scaleimageH, gtk.gdk.INTERP_NEAREST) 
+            #drawing image
+            widget.window.draw_pixbuf(None, drawpix, 0, 0, 0, (h - drawpix.get_height()) / 2, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            
+            #UI Backdrop
+                    
+            
+            ctx3 = widget.window.cairo_create()
+            ctx3.set_source_rgba(0.2,0.2,0.2,0.8)
+            ctx3.rectangle(0, 0, w, h)
+            ctx3.fill()
             
             
-            space = 10
-            
-            NS = space + self.scroll
             
             
-            # OS BASED VERSION
+            # RAW 1
             
-            xgc.line_width = 5
-           
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 10, NS, w-20, 120)
-            if self.choise == 0 or my in range(NS, NS+140):
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
-                widget.window.draw_rectangle(xgc, False, 10, NS, w-20, 120)
-            
-            if my in range(NS, NS+140) and "GDK_BUTTON1" in str(fx) and self.win.is_active():
-                
-                self.choise = 0
-                save()
-            
-            widget.window.draw_pixbuf(None, self.blendOSicon, 0, 0, 20, NS+10, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            # THIS RAW IS SHOWING ALL THE BLEND FILES IN /py_data/new_file
             
             
             ctx.set_source_rgb(1,1,1)
-            ctx.set_font_size(20)
-            ctx.move_to( 150, NS+20)
-            ctx.show_text("SYSTEM INSTALLED BLENDER") 
+            ctx.set_font_size(15)
+            ctx.move_to( 10,20)
+            ctx.show_text("Starting / Recovery Blend Files") 
             
-            ctx.set_font_size(20)
-            ctx.move_to( 150, NS+45)
-            ctx.show_text("Command: ") 
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 295, NS+24, w-320, 26)
+            ctx3.set_source_rgba(0,0,0,0.4)
+            ctx3.rectangle(0, 30, w, 150)
+            ctx3.fill()
             
-            ctx2.set_source_rgb(1,1,1)
-            ctx2.set_font_size(20)
-            ctx2.move_to( 300, NS+45)
-            ctx2.show_text("blender") 
             
-            ctx.set_font_size(20)
-            ctx.move_to( 150, NS+70)
-            ctx.show_text("Blender Elements:") 
+            space = 0
+            for n, i in enumerate(self.newfiles):
+                
+                if i.endswith(".blend"):
+                    
+                    
+                    if not self.thumbs[n]:
+                        try:
+                            pic = thumbnailer.blenderthumb(self.pf+"/py_data/new_file/"+i, 130, 130)
+                            pic = gtk.gdk.pixbuf_new_from_file(pic)
+                            
+                        except:
+                            pic = self.pf+"/py_data/icons/blendfile_big.png"
+                            pic = gtk.gdk.pixbuf_new_from_file(pic)
+                        self.thumbs[n] = pic
+                    else:
+                        widget.window.draw_pixbuf(None, self.thumbs[n], 0, 0, 10+self.blscroll+space+5, 30+5+5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#526969"))
+                    widget.window.draw_rectangle(xgc, True,  10+self.blscroll+space, 30+5, 140, 20)
+                    
+                    
+                    ctx3.set_source_rgba(0,0,0,0.4)
+                    ctx3.rectangle(10+self.blscroll+space, 30+5, 140, 140)
+                    ctx3.fill()
+                    
+                    ctx2.set_source_rgb(1,1,1)
+                    ctx2.set_font_size(11)
+                    ctx2.move_to( 10+30+self.blscroll+space,30+20)
+                    ctx2.show_text(i[:i.find(".")])
+                    
+                    widget.window.draw_pixbuf(None, self.blendicon, 0, 0, 10+self.blscroll+space+5, 30+5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
             
-            # quickly checking the software
+                    if my in range(30, 30+140) and mx in range(10+self.blscroll+space, 10+self.blscroll+space+140):
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                        widget.window.draw_rectangle(xgc, False,  10+self.blscroll+space, 30+5, 140, 140)
+                        
+                        if  "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                            
+                            if self.choise == 0:
+                                Popen(["blender", self.pf+"/py_data/new_file/"+i])
+                            elif self.choise != -1:
+                                Popen([self.blendDATA[self.choise-1][0]+"/blender", self.pf+"/py_data/new_file/"+i])
+                    
+                    
+                    space = space + 150
             
-            #blender
+            # RAW 2
+            
+            #THIS RAW IS FOR ALL THE CHECKLISTS BEING CREATED WHEN YOU ADD
+            #ITEM OR SHOT CHECKLIST
+            
+            
+            ctx.set_source_rgb(1,1,1)
+            ctx.set_font_size(15)
+            ctx.move_to( 10,20+180)
+            ctx.show_text("Starting Checklists") 
+            
+            
+            ctx3.set_source_rgba(0,0,0,0.4)
+            ctx3.rectangle(0, 30+180, w, 150)
+            ctx3.fill()
+            
+            space = 0
+            for n, i in enumerate(sorted(self.newfiles)):
+                
+                if i.endswith(".progress"):
+                    
+                    
+                    self.chscroll
+                    ctx3.set_source_rgba(0,0,0,0.4)
+                    ctx3.rectangle(10+self.chscroll+space, 30+180+5, 140, 140)
+                    ctx3.fill()
+                    
+                    ctx2.set_source_rgb(1,1,1)
+                    ctx2.set_font_size(11)
+                    ctx2.move_to( 10+30+self.chscroll+space,30+180+20)
+                    ctx2.show_text(i[:i.find(".")])
+                    
+                    widget.window.draw_pixbuf(None, self.checkicon, 0, 0, 10+self.chscroll+space+5, 30+180+5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                    
+                    ct = open(self.pf+"/py_data/new_file/"+i, "r")
+                    ct = ct.read()
+                    
+                    for c, t in enumerate(ct.split("\n")[9:9+15]):
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(7)
+                        ctx2.move_to( 12+self.chscroll+space,30+180+40+c*7)
+                        ctx2.show_text(t[:34])
+                    
+                    
+                    if my in range(30+180, 30+180+140) and mx in range(10+self.chscroll+space, 10+self.chscroll+space+140):
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                        widget.window.draw_rectangle(xgc, False,  10+self.chscroll+space, 30+180+5, 140, 140)
+                        
+                        if  "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                            checklist.checkwindow(pf=self.pf, title="NEW FILE FOR "+i[:i.find(".")], FILE=self.pf+"/py_data/new_file/"+i)
+                            
+                        
+                        
+            
+                    space = space + 150
+            
+            
+            # RAW 3
+            
+            # THIS RAW IS RESPONSIBLE FOR CONFIGURATION OF DIFFERENT BLENDER VERSIONS.
+            # USERS MIGH HAVE MORE THEN 1 BLENDER INSTALLED. AND THIS IS A WAY TO 
+            # SELECT WHAT BLENDER TO USE FOR BLEND FILES, ASSET CONFIGURATION AND RENDERING.
+            
+            
+            ctx.set_source_rgb(1,1,1)
+            ctx.set_font_size(15)
+            ctx.move_to( 10,20+180+180)
+            ctx.show_text("Blender Version") 
+            
+            
+            ctx3.set_source_rgba(0,0,0,0.4)
+            ctx3.rectangle(0, 30+180+180, w, 150)
+            ctx3.fill()
+            
+            
+            
+            # add one more blenderversion
+            
+            
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
+            if my in range(30+180+180-25, 30+180+180-5) and mx in range(140, 165):
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, True, 138, 30+180+180-27,200, 25)
+                
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(15)
+                ctx.move_to( 165, 20+180+180)
+                ctx.show_text("Add Another Blender") 
+                
+                if "GDK_BUTTON1" in str(fx) and self.win.is_active():
+                    if self.launchfolder:
+                        glib.timeout_add(10, selfolder)
+                        self.launchfolder = False
+            
+            widget.window.draw_pixbuf(None, self.plusicon, 0, 0, 140, 30+180+180-25, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+            
+            space = 0
+            
+            NS = space + self.bvscroll
+            
+            #SYSTEM BLEDNER IF THERE IS SUCK
             if self.blendOS[0] == "Empty":
-                if os.system("blender --help") == 32512:
+                if os.system("blender -v") == 32512:
                     self.blendOS[0] = False
-                else:
-                    self.blendOS[0] = True
-            
-            #blenderplayer
-            if self.blendOS[1] == "Empty":
-                if os.system("blenderplayer --help") == 32512:
                     self.blendOS[1] = False
-                else:
-                    self.blendOS[1] = True
-            
-            #blender-thumbnailer.py
-            if self.blendOS[2] == "Empty":
-                if os.system("blender-thumbnailer.py --help") == 32512:
                     self.blendOS[2] = False
+                    
+                    
                 else:
-                    self.blendOS[2] = True
-            
+                    checkframes = Popen(["blender", "-v"],stdout=PIPE, universal_newlines=True)
+                    checkframes.wait()
+                    checkstring = checkframes.stdout.read()
+                    
+                    
+                    self.blendOS[0] = checkstring[:12]
+                    #blenderplayer
+                    if self.blendOS[1] == "Empty":
+                        if os.system("blenderplayer --help") == 32512:
+                            self.blendOS[1] = False
+                        else:
+                            self.blendOS[1] = True
+                    
+                    #blender-thumbnailer.py
+                    if self.blendOS[2] == "Empty":
+                        if os.system("blender-thumbnailer.py --help") == 32512:
+                            self.blendOS[2] = False
+                        else:
+                            self.blendOS[2] = True
                
             # outputtin the results
             
             
             if self.blendOS[0]:
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#080")) ## CHOSE COLOR
-            else:
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#800")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 145, NS+75, 300, 26)
+                    
+                ctx3.set_source_rgba(0,0,0,0.4)
+                ctx3.rectangle(10+self.bvscroll, 30+180+180+5, 140, 140)
+                ctx3.fill()
+                
+                ctx2.set_source_rgb(1,1,1)
+                ctx2.set_font_size(11)
+                ctx2.move_to( 10+30+self.bvscroll,30+180+180+20)
+                ctx2.show_text(str(self.blendOS[0]))
+                
+                
+                
+                widget.window.draw_pixbuf(None, self.blendicon, 0, 0, 12+self.bvscroll, 30+180+180+5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                # system blender                
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, True, 15+self.bvscroll, 30+180+180+5+30,20, 20)
+                widget.window.draw_pixbuf(None, self.okayicon, 0, 0, 12+self.bvscroll+5, 30+180+180+5+30-5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                ctx2.set_source_rgb(1,1,1)
+                ctx2.set_font_size(10)
+                ctx2.move_to( 10+30+self.bvscroll,30+180+180+20+30)
+                ctx2.show_text("System Installed")
+                
+                # Game engine
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, True, 15+self.bvscroll, 30+180+180+5+30+25,20, 20)
+                ctx2.set_source_rgb(1,0,0)
+                if self.blendOS[1]:
+                    ctx2.set_source_rgb(1,1,1)
+                    widget.window.draw_pixbuf(None, self.okayicon, 0, 0, 12+self.bvscroll+5, 30+180+180+5+30+25-5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                ctx2.set_font_size(10)
+                ctx2.move_to( 10+30+self.bvscroll,30+180+180+20+30+25)
+                ctx2.show_text("Game Engine")
+                
+                 # Thumbnail support
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, True, 15+self.bvscroll, 30+180+180+5+30+25+25,20, 20)
+                ctx2.set_source_rgb(1,0,0)
+                if self.blendOS[2]:
+                    ctx2.set_source_rgb(1,1,1)
+                    widget.window.draw_pixbuf(None, self.okayicon, 0, 0, 12+self.bvscroll+5, 30+180+180+5+30+25+25-5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                ctx2.set_font_size(10)
+                ctx2.move_to( 10+30+self.bvscroll,30+180+180+20+30+25+25)
+                ctx2.show_text("Preview Support")
+                
+                
+                 # collections (aka if it's after 2.80)
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, True, 15+self.bvscroll, 30+180+180+5+30+25+25+25,20, 20)
+                ctx2.set_source_rgb(1,0,0)
+                
+                try:
+                    if float(self.blendOS[0][8:8+3]) > 2.79:
+                        ctx2.set_source_rgb(1,1,1)
+                        widget.window.draw_pixbuf(None, self.okayicon, 0, 0, 12+self.bvscroll+5, 30+180+180+5+30+25+25+25-5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                except:
+                    raise
+                ctx2.set_font_size(10)
+                ctx2.move_to( 10+30+self.bvscroll,30+180+180+20+30+25+25+25)
+                ctx2.show_text("Collections")
+                
+                space = space + 150
+                NS = space + self.bvscroll
+                
+                if self.choise == 0 or my in range(30+180+180, 30+180+180+140) and mx in range(10+self.bvscroll, 10+self.bvscroll+140):
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                    widget.window.draw_rectangle(xgc, False,  10+self.bvscroll, 30+180+180+5, 140, 140)
+                
+                if my in range(30+180+180, 30+180+180+140) and mx in range(10+self.bvscroll, 10+self.bvscroll+140) and "GDK_BUTTON1" in str(fx) and self.win.is_active():
             
-            ctx2.set_source_rgb(1,1,1)
-            ctx2.set_font_size(20)
-            ctx2.move_to( 150, NS+95)
-            ctx2.show_text("blender")
+                    self.choise = 0
+                    save()
             
-            if self.blendOS[1]:
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#080")) ## CHOSE COLOR
-            else:
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#800")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 450, NS+75, 300, 26)
-            
-            ctx2.set_source_rgb(1,1,1)
-            ctx2.set_font_size(20)
-            ctx2.move_to( 455, NS+95)
-            ctx2.show_text("blenderplayer")
-            
-            if self.blendOS[2]:
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#080")) ## CHOSE COLOR
-            else:
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#800")) ## CHOSE COLOR
-            widget.window.draw_rectangle(xgc, True, 755, NS+75, 300, 26)
-            
-            ctx2.set_source_rgb(1,1,1)
-            ctx2.set_font_size(20)
-            ctx2.move_to( 760, NS+95)
-            ctx2.show_text("blender-thumbnailer.py")
-            
-            
-            
-            space = space + 140
-            NS = space + self.scroll
-            
-            
-            
-            
-            ######## OUTPUT THE LIST ####
-            
-            print self.blendDATA
             for n, i in enumerate(self.blendDATA):
                 
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 10, NS, w-20, 120)
-                if self.choise == n+1 or my in range(NS, NS+140):
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
-                    widget.window.draw_rectangle(xgc, False, 10, NS, w-20, 120)
-                    
-                    if 65535 in self.keys and n+1 == self.choise:
-                        self.dell = n
-                        self.keys.remove(65535)
-                        
-                
-                if my in range(NS, NS+140) and "GDK_BUTTON1" in str(fx) and self.win.is_active():
-                
-                    self.choise = n+1
-                    save()
-                    
-                widget.window.draw_pixbuf(None, self.blendicon, 0, 0, 20, NS+10, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-                
-                
-                ctx.set_source_rgb(1,1,1)
-                ctx.set_font_size(20)
-                ctx.move_to( 150, NS+20)
-                ctx.show_text("CUSTOM BLENDER") 
-                
-                ctx.set_font_size(20)
-                ctx.move_to( 150, NS+45)
-                ctx.show_text("Command: ") 
-                
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 295, NS+24, w-320, 26)
-                
-                ctx2.set_source_rgb(1,1,1)
-                ctx2.set_font_size(20)
-                ctx2.move_to( 300, NS+45)
-                ctx2.show_text(i[0]+"/blender") 
-                
-                
-                ctx.set_font_size(20)
-                ctx.move_to( 150, NS+70)
-                ctx.show_text("Blender Elements:") 
-                
-                
-                #blender
                 if self.blendDATA[n][1][0] == "Empty":
                     if os.path.exists(i[0]+"/blender"):
-                        self.blendDATA[n][1][0] = True
+                        checkframes = Popen([i[0]+"/blender", "-v"],stdout=PIPE, universal_newlines=True)
+                        checkframes.wait()
+                        checkstring = checkframes.stdout.read()
+                        
+                        
+                        self.blendDATA[n][1][0] = checkstring[:12]
                     else:
                         self.blendDATA[n][1][0] = False
                 
@@ -322,92 +476,100 @@ class draw_blendver:
                         self.blendDATA[n][1][2] = True
                     else:
                         self.blendDATA[n][1][2] = False
-                
-                
-                
+                   
                 # outputtin the results
-            
-            
+                
+                
                 if self.blendDATA[n][1][0]:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#080")) ## CHOSE COLOR
-                else:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#800")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 145, NS+75, 300, 26)
-                
-                ctx2.set_source_rgb(1,1,1)
-                ctx2.set_font_size(20)
-                ctx2.move_to( 150, NS+95)
-                ctx2.show_text("blender")
-                
-                if self.blendDATA[n][1][1]:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#080")) ## CHOSE COLOR
-                else:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#800")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 450, NS+75, 300, 26)
-                
-                ctx2.set_source_rgb(1,1,1)
-                ctx2.set_font_size(20)
-                ctx2.move_to( 455, NS+95)
-                ctx2.show_text("blenderplayer")
-                
-                if self.blendDATA[n][1][2]:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#080")) ## CHOSE COLOR
-                else:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#800")) ## CHOSE COLOR
-                widget.window.draw_rectangle(xgc, True, 755, NS+75, 300, 26)
-                
-                ctx2.set_source_rgb(1,1,1)
-                ctx2.set_font_size(20)
-                ctx2.move_to( 760, NS+95)
-                ctx2.show_text("blender-thumbnailer.py")
-                
-                
-                
-                
-                space = space + 140
-                NS = space + self.scroll
-            
-            
-            
-            
-            # add one more
-            
-            
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c")) ## CHOSE COLOR
-            if my in range(NS, NS+32):
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
-                
-                if "GDK_BUTTON1" in str(fx) and self.win.is_active():
-                    if self.launchfolder:
-                        glib.timeout_add(10, selfolder)
-                        self.launchfolder = False
+                        
+                    ctx3.set_source_rgba(0,0,0,0.4)
+                    ctx3.rectangle(10+self.bvscroll+space, 30+180+180+5, 140, 140)
+                    ctx3.fill()
                     
-            
-            widget.window.draw_rectangle(xgc, True, 10, NS, w-20, 32)
-            
-            widget.window.draw_pixbuf(None, self.plusicon, 0, 0, 20, NS+5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-            
-            ctx.set_font_size(20)
-            ctx.move_to( 50, NS+20)
-            ctx.show_text("Add New Blender") 
-            
-            
-            space = space + 40
-            NS = space + self.scroll
-            
-            
-            
-            
-            
-            
-            # deletion
-            
-            if self.dell > -1:
-                del self.blendDATA[self.dell]
-                self.dell = -1
-                self.choise = 0
+                    ctx2.set_source_rgb(1,1,1)
+                    ctx2.set_font_size(11)
+                    ctx2.move_to( 10+30+self.bvscroll+space,30+180+180+20)
+                    ctx2.show_text(str(self.blendDATA[n][1][0]))
+                    
+                    
+                    
+                    widget.window.draw_pixbuf(None, self.blendicon, 0, 0, 12+self.bvscroll+space, 30+180+180+5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    
+                    # system blender                
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, 15+self.bvscroll+space, 30+180+180+5+30,20, 20)
+                    #widget.window.draw_pixbuf(None, self.okayicon, 0, 0, 12+self.bvscroll+5+space, 30+180+180+5+30-5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    
+                    ctx2.set_source_rgb(1,0,0)
+                    ctx2.set_font_size(10)
+                    ctx2.move_to( 10+30+self.bvscroll+space,30+180+180+20+30)
+                    ctx2.show_text("System Installed")
+                    
+                    # Game engine
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, 15+self.bvscroll+space, 30+180+180+5+30+25,20, 20)
+                    ctx2.set_source_rgb(1,0,0)
+                    if self.blendDATA[n][1][1]:
+                        ctx2.set_source_rgb(1,1,1)
+                        widget.window.draw_pixbuf(None, self.okayicon, 0, 0, 12+self.bvscroll+5+space, 30+180+180+5+30+25-5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    
+                    ctx2.set_font_size(10)
+                    ctx2.move_to( 10+30+self.bvscroll+space,30+180+180+20+30+25)
+                    ctx2.show_text("Game Engine")
+                    
+                     # Thumbnail support
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, 15+self.bvscroll+space, 30+180+180+5+30+25+25,20, 20)
+                    ctx2.set_source_rgb(1,0,0)
+                    if self.blendDATA[n][1][2]:
+                        ctx2.set_source_rgb(1,1,1)
+                        widget.window.draw_pixbuf(None, self.okayicon, 0, 0, 12+self.bvscroll+5+space, 30+180+180+5+30+25+25-5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    
+                    ctx2.set_font_size(10)
+                    ctx2.move_to( 10+30+self.bvscroll+space,30+180+180+20+30+25+25)
+                    ctx2.show_text("Preview Support")
+                    
+                    
+                     # collections (aka if it's after 2.80)
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, 15+self.bvscroll+space, 30+180+180+5+30+25+25+25,20, 20)
+                    ctx2.set_source_rgb(1,0,0)
+                    
+                    try:
+                        if float(self.blendDATA[n][1][0][8:8+3]) > 2.79:
+                            ctx2.set_source_rgb(1,1,1)
+                            widget.window.draw_pixbuf(None, self.okayicon, 0, 0, 12+self.bvscroll+5+space, 30+180+180+5+30+25+25+25-5, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    except:
+                        pass
+                    ctx2.set_font_size(10)
+                    ctx2.move_to( 10+30+self.bvscroll+space,30+180+180+20+30+25+25+25)
+                    ctx2.show_text("Collections")
+                    
+                    if self.choise == n+1 or my in range(30+180+180, 30+180+180+140) and mx in range(10+self.bvscroll+space, 10+self.bvscroll+space+140):
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                        widget.window.draw_rectangle(xgc, False,  10+self.bvscroll+space, 30+180+180+5, 140, 140)
+                    
+                    if my in range(30+180+180, 30+180+180+140) and mx in range(10+self.bvscroll+space, 10+self.bvscroll+space+140) and "GDK_BUTTON1" in str(fx) and self.win.is_active():
                 
-                save()
+                        self.choise = n+1
+                        save()
+                    
+                    
+        
+                    #delete button
+                    if my in range(30+180+180+7, 30+180+180+7+20) and mx in range(self.bvscroll+10+space+120, self.bvscroll+10+space+120+20):
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                        widget.window.draw_rectangle(xgc, True,  self.bvscroll+10+space+120-2, 30+180+180+5, 20, 20)
+                        
+                        if  "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                            self.dell = n
+                    
+                    widget.window.draw_pixbuf(None, self.deleteicon, 0, 0, self.bvscroll+10+space+120, 30+180+180+7, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    
+                    
+                    space = space + 150
+                    NS = space + self.bvscroll
             ######################################################################################
             #                                                                                    #
             #                            DRAW TILL HERE                                          #
@@ -419,17 +581,53 @@ class draw_blendver:
             
             #### SCROLL
             
-            if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
+            #BLENDER FILES SCROOLL
+            if my in range(30, 30+140):
+                if self.mpx > mx and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
+                    
+                    self.blscroll = self.blscroll + (mx-self.mpx)
+                    
+                    
                 
-                self.scroll = self.scroll + (my-self.mpy)
-                
-                
+                if self.mpx < mx and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
+                    
+                    self.blscroll = self.blscroll - (self.mpx-mx)
+                        
             
-            if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
+            
+            # CHECKLISTS SCROLL
+            if my in range(30+180, 30+180+140):
+                if self.mpx > mx and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
+                    
+                    self.chscroll = self.chscroll + (mx-self.mpx)
+                    
+                    
                 
-                self.scroll = self.scroll - (self.mpy-my)
+                if self.mpx < mx and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
+                    
+                    self.chscroll = self.chscroll - (self.mpx-mx)
+            
+            #BLENDER VERSIONS SCROOLL
+            if my in range(30+180+180, 30+180+180+140):
+                if self.mpx > mx and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
+                    
+                    self.bvscroll = self.bvscroll + (mx-self.mpx)
+                    
+                    
+                
+                if self.mpx < mx and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
+                    
+                    self.bvscroll = self.bvscroll - (self.mpx-mx)
             
             
+            # deletion
+            
+            if self.dell > -1:
+                del self.blendDATA[self.dell]
+                self.dell = -1
+                self.choise = 0
+                
+                save()
             
             
             # TESTING SOMETHING

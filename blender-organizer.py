@@ -331,17 +331,17 @@ def secondarybuttonsOMGWTF():
     startsider.connect("clicked",chgCUR, "stats")
     toppannelbox.pack_end(startsider, False)
 
-    # Blender version
+    # Settings AKA blender version ( I'm not going to change names of the buttons and shit)
 
     blendverb = gtk.Button()
     blendverb.props.relief = gtk.RELIEF_NONE
     blendbox = gtk.HBox(False)
     blendico = gtk.Image()
-    blendico.set_from_file("py_data/icons/blender.png")
+    blendico.set_from_file("py_data/icons/settings.png")
     blendbox.pack_start(blendico, False)
-    blendbox.pack_start(gtk.Label("  Blender Version"))
+    blendbox.pack_start(gtk.Label("  Settings"))
     blendverb.add(blendbox)
-    blendverb.set_tooltip_text("Chose what Blender Version to use")
+    blendverb.set_tooltip_text("Blender Versions, And other settings")
     blendverb.connect("clicked",chgCUR, "bldv")
     #blendver.set_sensitive(False)
     toppannelbox.pack_end(blendverb, False)

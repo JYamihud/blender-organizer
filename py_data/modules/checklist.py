@@ -459,8 +459,7 @@ class checkwindow:
                     pass
                     
                 
-                if checkpercent > 0.98:
-                    checkpercent = 1.0
+                
                 
                 #print line, checkpercent
                 

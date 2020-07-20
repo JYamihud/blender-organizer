@@ -91,10 +91,17 @@ def partcalculate(part):
     else:
         for i in part[1:]:
             fraction = fraction + (partcalculate(i) / len(part[1:]))
-            if fraction > 0.98:
+            
+            # int() FUNCTION in python doesn't hold well enough
+            # when dealing with 1.0 calcalted by the algorythm
+            #it's something to do with how float numbers are stored
+            #in memory i guess.
+            #On some checklists it was returning 99% instead of 100%
+            #so the quick fix 
+            
+            if fraction > 0.9999:
                 fraction = 1.0
-            #print i
-            #print fraction
+            
     
     
     

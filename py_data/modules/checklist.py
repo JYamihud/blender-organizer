@@ -107,7 +107,7 @@ def partcalculate(part):
     
     return fraction
     
-#print partcalculate(openckecklist("test.progress"))
+
 
 
 
@@ -116,6 +116,12 @@ def partcalculate(part):
 
 class checkwindow:
     def __init__(self, w=False, pf="/", title="Checklist", FILE=None, highlight=None):
+        
+        
+        print "\033[1;31m ⬥ CHECKLIST EDITOR : \033[1;m"
+        print "\033[1;32m     ⬦ File "+FILE+"  \033[1;m"
+        print "\033[1;32m     ⬦ Title "+title+"  \033[1;m"
+        print "\033[1;32m     ⬦ Highlight "+str(highlight)+"  \033[1;m"
         
         #saving all the input to SELF
         self.widget = w
@@ -199,9 +205,14 @@ class checkwindow:
     def open(self):
         self.FILE = open(self.FILENAME, "r")
         self.FILE = self.FILE.read().split("\n")
-        #print "\nOPENNED\n"
-        #for i in self.FILE:
-            #print i
+        
+        print "\033[1;32m     ⬦ Content (only index tasks) :  \033[1;m"
+        
+        for i in self.FILE:
+            if i.startswith("[ ]") or i.startswith("[V]"):
+                print "\033[1;34m          "+str(i.replace("[ ]", "☐").replace("[V]", "☑"))+"  \033[1;m"
+        
+        
         
         self.colapsed = []
         for n, i in enumerate(self.FILE):
@@ -229,9 +240,9 @@ class checkwindow:
         
         
         
-        #print "\nSAVING\n"
+        
         for i in self.FILE:
-            #print i
+            
             
             if i != "[ ] !!!LASTLINE!!!":
                 save.write(i+"\n")
@@ -461,7 +472,7 @@ class checkwindow:
                 
                 
                 
-                #print line, checkpercent
+                
                 
                 
                     
@@ -510,11 +521,11 @@ class checkwindow:
                                         widget.window.draw_pixbuf(None, self.closed, 0, 0, xmove-30, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                                     colapsed = True
                             except:
-                                print "DRAWING COLLAPSIBLE ICON ERROR"  
+                                pass 
                     
                     
                     except:
-                        print "CLOAPSE BUTTON"    
+                        pass  
                     
                     
                     if colapsed:
@@ -588,7 +599,7 @@ class checkwindow:
                          
                         for i in self.grab:
                             
-                            #print "DELETING : ", self.FILE[i+9]
+                            
                             self.FILE[i+9] = "!!!DELETE!!!"
                             
                         for n, i in enumerate(self.grab_text.split("\n")[::-1]):
@@ -597,7 +608,7 @@ class checkwindow:
                             #i = i[:i.find("]")+1]+" "+i[i.find("]")+2:]
                             
                             
-                            print "TEXT GRABBED : ", i, "BEFORE TEXT : ", self.FILE[ind+9]
+                            
                             self.FILE.insert(ind+9, " "*((int(float(mx - gpos)/80)*80)/20)+i)
                             
                             
@@ -612,7 +623,7 @@ class checkwindow:
                         
                         
                         
-                        print
+                        
                         # refrashing the file
                                     
                         self.grab_text = ""
@@ -865,7 +876,7 @@ class checkwindow:
                                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                                     
                                     removestring.append(self.get_line_path(ind, line))
-                                    #print removestring
+                                    
                     
                     if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist  and notlastline:
                         widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
@@ -931,7 +942,7 @@ class checkwindow:
                                 
                                 schstr = schstr+" "+p
                                 
-                                #print schstr
+                                
                                 
                                 
                                 # OPENING EXISTANT FILE
@@ -950,7 +961,7 @@ class checkwindow:
                                     for i in o:
                                         if i[:i.find(" ")] == d:
                                             tdl.append(i)
-                                            print i , "#####", d
+                                            
                                         
                                         else:
                                             #if schstr[:schstr.find(" ")] == d:
@@ -967,18 +978,18 @@ class checkwindow:
                                     d = i[:i.find(" ")]
                                     
                                             
-                                    print dl, "########### BEFORE  #############"
+                                    
                                     dl = sorted(dl)
-                                    print dl ,"########### AFTER   #############"
+                                    
                                     o = []
                                     for i in dl:
                                         for b in i:
-                                            print b, " ####### B ######"
+                                            
                                             if b != "":
                                                 o.append(b)
                                             
                                 except Exception as c:
-                                    print "########## NOT GOOD ###########\n\n", c, "\n\n########################"
+                                    
                                     
                                     o = sorted(o)
                                 
@@ -1053,11 +1064,11 @@ class checkwindow:
                     # IF CLICKED
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         
-                       # print "CLICKED TO DELETE : ", self.FILE[ind+9]
+                       
                     
                         if self.FILE[ind+10].find("[") > line.find("["):
                             for i in range(ind, ind+s_ind):
-                                #print "DELETING : ", self.FILE[i+9]
+                                
                                 removestring.append(self.get_line_path(i, self.FILE[i+9]))
                                 self.FILE[i+9] = "!!!DELETE!!!"
                             for i in range(ind, ind+s_ind):     
@@ -1069,7 +1080,7 @@ class checkwindow:
                             self.FILE.remove("!!!DELETE!!!")
                         
                                     
-                        print
+                        
                             
                         # refrashing the file
                         #reloadfile = True
@@ -1190,7 +1201,7 @@ class checkwindow:
         
         
         #if not foundhightlight and self.highlight:
-        #    #print "PROBLEMATIC", self.highlight
+        #    #
         #    removestring.append(self.highlight)
         if removestring:
             
@@ -1202,8 +1213,7 @@ class checkwindow:
                     o = o[:-1]
                 
                 try:
-                    #print removing, "REMOVING"
-                    #print self.FILENAME.replace(self.pf, ""), "FILEPATH"
+                    
                     
                     for i in o:
                         if i.endswith(removing) and self.FILENAME.replace(self.pf, "") in i:
@@ -1213,13 +1223,13 @@ class checkwindow:
                     
                     s = open(self.pf+"/schedule.data","w")
                     for i in o:
-                        #print i
+                        
                         s.write(i+"\n")
                     s.close()
                     #self.highlight = None
                 except Exception as e:
                     pass
-                    #print e
+                    
                 
             
         
@@ -1243,7 +1253,7 @@ class checkwindow:
         
         
         #if reloadfile:
-        #    print "IF RELOADFILE IS TRUE"
+        #   
         #    self.save()
         #    self.open()
         

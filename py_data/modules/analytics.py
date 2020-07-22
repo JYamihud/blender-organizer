@@ -98,6 +98,9 @@ class draw_analytics:
         self.hscroll = 0
         self.tscroll = 0
         
+        print "\033[1;31m ⬥ READING ANALYTICS DATA : \033[1;m"
+        
+        
         #selecting days for analytics
         self.selectdate = "0000/00/00"
         
@@ -156,14 +159,19 @@ class draw_analytics:
         projectpercent = (sum(astlist)/len(astlist))*100
         
         
+        print "\033[1;32m     ⬦ Project is at "+str(projectpercent)+"%  \033[1;m"
         
         #### SPANISH LANGUAGE EXCEPTION #####
         
         
+        
         try:
             
+            #TESTING TRY
+            #1.0 / 0
+            
             #TIME
-        
+            
         
             #getting time values
             
@@ -177,6 +185,8 @@ class draw_analytics:
                 if timeline.startswith("FIN"):
                     self.enddate = timeline[4:]
             
+            print "\033[1;32m     ⬦ Startdate is "+str(self.startdate)+"  \033[1;m"
+            print "\033[1;32m     ⬦ Deadline is "+str(self.enddate)+"  \033[1;m"
             
             # CALCULATING DAYS
             deadline = 0.2
@@ -196,9 +206,9 @@ class draw_analytics:
             
             self.passed = passed
             
+            print "\033[1;32m     ⬦ Passed days "+str(self.passed)+"  \033[1;m"
             
             
-            print "PASSED", passed, self.alltime
             
             try:
                 deadline = (1.0/self.alltime)*passed
@@ -206,6 +216,8 @@ class draw_analytics:
                 deadline = 0
             
             deadline = deadline  * 100
+            
+            
             
             assetpercent = projectpercent
             projectpercent = str((float(assetpercent)+self.mainchecklist*100)/2)
@@ -247,61 +259,61 @@ class draw_analytics:
                             psdate = sdate
                         ypos = ypos + 1
                         
-                        #print sdate, gypos, "AHHHHH"
-                        
-                        #gypos = gypos +1
-                        
-                        if sdate == self.selectdate:#datetime.datetime.today().strftime(self.schedule_date_format):
-                            today = True
-                            over = False
-                        
-                        if not today:
-                            a = datetime.datetime.today()
+                        if sdate:
+                            
+                            #gypos = gypos +1
+                            
+                            if sdate == self.selectdate:#datetime.datetime.today().strftime(self.schedule_date_format):
+                                today = True
+                                over = False
+                            
+                            if not today:
+                                a = datetime.datetime.today()
+                                b = datetime.datetime.strptime(sdate, self.schedule_date_format)
+                                delta = b - a
+                            
+                            
+                                s = ""
+                                
+                                
+                                if delta.days < 0:
+                                    
+                                    if not (delta.days)*-1-1 > 1:
+                                        daystring = "Yesterday"
+                                    else:
+                                        daystring = str((delta.days)*-1-1)+" Days Ago"
+                                
+                                    under = True
+                                
+                                else:
+                                    if not delta.days+1 > 1:
+                                        daystring = "Tomorrow"
+                                    else:
+                                        daystring = "In "+str(delta.days+1)+" Days"
+                                    
+                            #print daystring, "DAYSTRING"
+                            
+                            
+                            a = datetime.datetime.strptime(self.startdate, date_format)
                             b = datetime.datetime.strptime(sdate, self.schedule_date_format)
                             delta = b - a
-                        
-                        
-                            s = ""
+                            
+                            xpos = float(delta.days)/self.alltime
                             
                             
-                            if delta.days < 0:
-                                
-                                if not (delta.days)*-1-1 > 1:
-                                    daystring = "Yesterday"
-                                else:
-                                    daystring = str((delta.days)*-1-1)+" Days Ago"
                             
-                                under = True
+                            #print xpos, sdate
                             
-                            else:
-                                if not delta.days+1 > 1:
-                                    daystring = "Tomorrow"
-                                else:
-                                    daystring = "In "+str(delta.days+1)+" Days"
-                                
-                        #print daystring, "DAYSTRING"
-                        
-                        
-                        a = datetime.datetime.strptime(self.startdate, date_format)
-                        b = datetime.datetime.strptime(sdate, self.schedule_date_format)
-                        delta = b - a
-                        
-                        xpos = float(delta.days)/self.alltime
-                        
-                        
-                        
-                        #print xpos, sdate
-                        
-                        taskfile = task[task.find(" ")+1:task.replace(" ", ".", 1).find(" ")]
-                        #print taskfile
-                        taskstring = task[task.replace(" ", ".", 2).find(" "):].replace("=:>", " >")
-                        #print taskstring
-                        
-                        #print
-                        #print
-                        
-                        self.schedule.append([today, over, under, xpos, ypos, gypos, done, taskstring, taskfile, task, daystring])
-                        
+                            taskfile = task[task.find(" ")+1:task.replace(" ", ".", 1).find(" ")]
+                            #print taskfile
+                            taskstring = task[task.replace(" ", ".", 2).find(" "):].replace("=:>", " >")
+                            #print taskstring
+                            
+                            #print
+                            #print
+                            
+                            self.schedule.append([today, over, under, xpos, ypos, gypos, done, taskstring, taskfile, task, daystring])
+                            
                     except Exception as exception:
                         print exception
                     
@@ -310,19 +322,10 @@ class draw_analytics:
                 
         except:
             
-            print """
-
-IF YOU SEE THIS ERROR MESSAGE IT'S Probably
-because of your language system settings.
-
-Reference: https://blenderartists.org/t/new-blender-organizer-forget-about-making-folders-work-faster/1126110/40
-
-Change you Region & Language setting to English.
-
-thx to c17vfx ( member of blenderartists.org ) for this workarround
-
-
-"""         
+            import troubleshooter
+            troubleshooter.shoot(4)
+            
+            
             
             raw_input()
             exit()
@@ -1869,9 +1872,7 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
             
             
             if insersto != -1 and "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.taskmove != -1:
-                print "########### MOVIN TASKS #############\n\n"
-                print self.taskmove, "TASK NUMBER"
-                print insersto, "INSERT TO"
+                
                 
                 o = []
                 neededline = ""
@@ -1880,22 +1881,19 @@ thx to c17vfx ( member of blenderartists.org ) for this workarround
                     today, over, under, xpos, ypos, gypos, done, taskstring, taskfile, rawline, daystring = task
                     
                     if self.taskmove == tind:
-                        print rawline, "RAWLINE"
+                        
                         o.append("")
                         neededline = rawline
                     else:
                         o.append(rawline)
-                print "### BEFORE  #############\n\n"
-                for i in o:
-                    print i
-                print "#############\n\n"
+                
                 
                 o.insert(insersto, neededline)
                 
-                print "### AFTER  #############\n\n"
+                
                 for i in o:
                     print i
-                print "#############\n\n"
+                
                 
                 
                 

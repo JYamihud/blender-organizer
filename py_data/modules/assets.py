@@ -82,6 +82,7 @@ class asset:
         
         
         
+        
         # checking if the item is finished...
         # looking into the ast folder instead of dev
         
@@ -124,7 +125,7 @@ class asset:
         # getting the asset /ast/ if it's finished
         if self.done:
             astpath = self.pf+"/ast/"+self.CUR+"/"+self.name+".blend"
-            print astpath
+            
             
             
             
@@ -1040,7 +1041,7 @@ class draw_assets:
                                     bv = open(self.pf+"/py_data/blenderver.data", "r")
                                     bv = bv.read().split("\n")
                                     
-                                    print "bv", bv
+                                    
                                     
                                     if int(bv[0]) > 0:
                                         cblndr = bv[int(bv[0])]+"/"
@@ -1124,7 +1125,7 @@ class draw_assets:
                                 bv = open(self.pf+"/py_data/blenderver.data", "r")
                                 bv = bv.read().split("\n")
                                 
-                                print "bv", bv
+                                
                                 
                                 if int(bv[0]) > 0:
                                     cblndr = bv[int(bv[0])]+"/"
@@ -1172,7 +1173,7 @@ class draw_assets:
                         
                         
                     
-                    #print blend[2]
+                    
                 
                 
                 
@@ -1322,7 +1323,7 @@ class draw_assets:
                         
                         def ee():
                                     
-                            print "BUTTON WAS CLICKED"
+                            
                                     
                             linkconfig.config(self.pf, self.screen.CUR+"/"+self.screen.name )
                                     
@@ -1488,7 +1489,7 @@ class draw_assets:
         self.newitem = self.newitem.getpath()
         self.newitem = self.newitem[self.newitem.rfind("/")+1:]
         
-        print self.newitem
+        
         
         self.justadded = True
         self.folder_read()
@@ -1598,8 +1599,11 @@ class draw_assets:
         for i in os.walk(self.pf+"/dev/"+self.CUR).next()[1]:
             tmp.append(i)
             
-        for i in sorted(tmp):    
+        for i in sorted(tmp): 
+            
+            print "\033[1;32m     ⬦ "+i+"  \033[1;m"
+               
             thisasset = asset(self.pf, self.pf+"/dev/"+self.CUR+"/"+i, self.CUR, i)
-            print thisasset.info()
+            
             self.assets.append(thisasset)
          

@@ -77,15 +77,12 @@ class story:
         notfound = True
         for FILE in os.walk(self.pf+"/pln").next()[2]:
             if FILE.endswith(".bos"):
-                print FILE
+                
                 notfound = False
         
         
         if notfound:
-            print "Making a missing main.bos"
         
-        # LOADING THE FILE
-            
             self.FILE = bos(self.pf+"/pln/main.bos")
         else:
             
@@ -389,7 +386,7 @@ class story:
             if self.showcross:  # IF MOUSE NOT IN EDITOR
                 widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.ARROW)) 
             
-            #print self.showcross, "SHOWCROSS"
+            
             self.showcross = True   
             
             
@@ -889,7 +886,7 @@ class story:
                             try:
                                 os.remove(self.pf+"/pln/thumbs/"+thumb+".png")
                             except:
-                                print "WASN'T ABLE TO REMOVE"
+                                pass
                             
                             self.event_select = -1
                             self.deletelastframe = True
@@ -1206,10 +1203,7 @@ class story:
                                     
                                     self.shotsDATA = get_shots(scenestory, scnDATA[ind][n][1])
                                 except:
-                                    
-                                    
-                                    
-                                    print "scene loading error"
+                                    pass
                                 self.shotsSCROLL = 0
                         
                         
@@ -1428,7 +1422,7 @@ class story:
                         
                         imageNOT = True
                         for i in fileformats.images:
-                            print u.lower(), i, u[-3:]
+                            
                             if u.lower().endswith(i):
                                 imageNOT = False
                                 
@@ -1474,7 +1468,6 @@ class story:
                                 MT = MT.read()
                                 for i in MT:
                                     if i not in lets:
-                                        print i, "is wrong"
                                         return
                                 
                                 #pureX = (x -   self.px)/self.sx  - 1
@@ -1793,8 +1786,6 @@ class story:
                                     existing.append(s)
                         
                     
-                    for i in existing:
-                        print i, "SCENEFOUND" 
                     
                     rnn = foundtimes+1
                     rn = "Scene_"
@@ -2430,7 +2421,7 @@ class story:
                         bv = open(self.pf+"/py_data/blenderver.data", "r")
                         bv = bv.read().split("\n")
                         
-                        print "bv", bv
+                        
                         
                         if int(bv[0]) > 0:
                             cblndr = bv[int(bv[0])]+"/"
@@ -2565,7 +2556,7 @@ class story:
             SCnames = [] # [NAME, shotlistlength] 
             
             for ind, i in enumerate(self.shotsDATA):
-                #print i
+                
                 anyscenedata = True
                 
                 
@@ -2649,7 +2640,7 @@ class story:
                         
                         imageurl = line[7:line.find("</image>")]
                         
-                        print imageurl, "IMAGEURL"
+                        
                         
                     
                     
@@ -2729,13 +2720,11 @@ class story:
                                     shotlistlength = shotlistlength + 150 + 40
                                     movex = 0
                                 
-                                #shotlistlength = shotlistlength + 150 + 40
                                 
-                                print i, "IMAGE DATA"
                         
                         if not loaded:
                             
-                            print "NOT LOADED"
+                            
                             
                             if os.path.exists(imageurl):
                                 pix = gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(imageurl, 150,150))
@@ -2810,11 +2799,6 @@ class story:
                                         
                                         
                                         
-                                        print item[1], "item[1]"
-                                        print CUR, "CUR"
-                                        print URL, "URL"
-                                        
-                                        print item[1]
                                         self.box.destroy()
                             
                             
@@ -2917,7 +2901,7 @@ class story:
                         # NOW LETS CREATE THE AUUTOLINK.DATA 
                 
                         if items: #IF ANY ITEMS ARE IN THE SCENE
-                            #print items, "ITEMS BEFORE"
+                            
                     
                             #clearing items. we already got them to the screen we don't nee all the data.
                             tmp = []
@@ -2927,12 +2911,12 @@ class story:
                                     tmp.append(i)
                             items = tmp
                             
-                            #print items, "ITEMS AFTER"
+                            
                             
                             # CHECKING IF THE FILE IS NOT THERE
                             if not os.path.exists(self.pf+"/"+shotname+"/extra/autolink.data"):
                                 
-                                print "FILE NOT THERE"
+                                
                                 
                                 autolink = open(self.pf+"/"+shotname+"/extra/autolink.data", "w")
                                 for i in items:
@@ -2961,7 +2945,7 @@ class story:
                                 
                                      
                                     
-                                    print FILE
+                                    
                                         
                                     for F in fileformats.images:   ### WHAT IF FOUND AN IMAGE
                                             
@@ -3011,7 +2995,7 @@ class story:
                     
                         
                             
-                        #print "SHOTFOLDER", shotname
+                        
                         
                         if shotlistlength+220+self.shotsSCROLL+self.empty_frame.get_height() > 220 and shotlistlength+220+self.shotsSCROLL < h: # IF IN FRAME
                             
@@ -3386,7 +3370,7 @@ class story:
                                         
                                         refpath = self.pf+"/py_data/new_file/"+name+".progress"
                                         
-                                        print refpath
+                                        
                                         if os.path.exists(refpath):
                                             
                                                 o = open(refpath, "r")
@@ -3426,7 +3410,7 @@ class story:
                             for FILE in os.listdir(self.pf+"/"+shotname):   
                                 
                                 if FILE.lower().endswith(".blend"):
-                                    print FILE, "blend found"
+                                    
                                     blends.append([FILE, False])
                                     
                             
@@ -3444,7 +3428,7 @@ class story:
                         
                         xstep = 0
                         
-                        #print self.shotsDATA[ind][3]
+                        
                         
                         for BInd, blend in enumerate(blends): 
                             
@@ -3505,7 +3489,7 @@ class story:
                                             bv = open(self.pf+"/py_data/blenderver.data", "r")
                                             bv = bv.read().split("\n")
                                             
-                                            print "bv", bv
+                                            
                                             
                                             if int(bv[0]) > 0:
                                                 cblndr = bv[int(bv[0])]+"/"
@@ -3594,7 +3578,7 @@ class story:
                                         
                                         def ee(shotname, BName):
                                             
-                                            print "OPENING THE WINDOW"
+                                            
                                             
                                             linkconfirm.config(self.pf,  self.pf+"/"+shotname+"/extra/autolink.data", self.pf+"/"+shotname+"/"+BName)
                                         glib.timeout_add(10, ee, shotname, BName)
@@ -3701,7 +3685,7 @@ class story:
                                             
                                             if Pname not in os.listdir(self.pf+"/"+shotname):
                                             
-                                                print shotname
+                                                
                                                 fr = open(self.BLboard, "r")
                                                 to = open(self.pf+"/"+shotname+"/"+str(Pname), "w")
                                                 to.write(fr.read())
@@ -3717,7 +3701,7 @@ class story:
                                                     scenestory = scnDATA[self.event_select][self.scene_select][3]
                                                     self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
                                                 except:
-                                                    print "scene loading error"
+                                                    pass
                                     glib.timeout_add(10, ee, shotname)
                                         
                                         
@@ -3763,7 +3747,7 @@ class story:
                                             Pname = Pname + ".blend"
                                         
                                         if Pname not in os.listdir(self.pf+"/"+shotname):
-                                            print shotname
+                                            
                                             fr = open(self.pf+"/py_data/new_file/empty.blend", "r")
                                             to = open(self.pf+"/"+shotname+"/"+str(Pname), "w")
                                             to.write(fr.read())
@@ -3782,7 +3766,7 @@ class story:
                                                 scenestory = scnDATA[self.event_select][self.scene_select][3]
                                                 self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
                                             except:
-                                                print "scene loading error"
+                                                pass
                                 glib.timeout_add(10, ee, shotname) 
                                 
                         widget.window.draw_pixbuf(None, self.plus, 0, 0, Pstart+10, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
@@ -3838,7 +3822,7 @@ class story:
                                 scenestory = scnDATA[self.event_select][self.scene_select][3]
                                 self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
                             except:
-                                print "scene loading error"
+                                pass
                         
                         
                         glib.timeout_add(10, justdoit)
@@ -4157,7 +4141,7 @@ class story:
             
             imageNOT = True
             for i in fileformats.images:
-                print u.lower(), i, u[-3:]
+                
                 if u.lower().endswith(i):
                     imageNOT = False
                     
@@ -4203,7 +4187,7 @@ class story:
                     MT = MT.read()
                     for i in MT:
                         if i not in lets:
-                            print i, "is wrong"
+                            
                             return
                     
                     pureX = (x -   self.px)/self.sx  - 1
@@ -4232,7 +4216,9 @@ class story:
             
             if event.keyval not in self.keys:
                 self.keys.append( event.keyval )
-            print self.keys
+            print "\033[1;31m ⬥ ACTIVE KEYS : \033[1;m"
+            for i in self.keys:
+                print "\033[1;32m     ⬦ "+str(i)+"  \033[1;m"
             
         def bre (w, event):    
             
@@ -4241,7 +4227,7 @@ class story:
             except:
                 pass
             
-            print self.keys
+            
             
         self.win.connect("key_press_event", bpe)
         self.win.connect("key_release_event", bre)
@@ -4441,7 +4427,7 @@ class bos:
                 # getting 2 sides
                 
                 arrow = arrow.split(" --> ")   
-                print arrow
+                
                 
                 arr = []
                 
@@ -4487,15 +4473,15 @@ class bos:
             openfile = openfile[openfile.rfind("</arrow>"):]
         
         
-        print openfile
+        
         
         #### GETTING IMAGES
         if "<image>" in openfile and "</image>" in openfile:
             
             allpixs = openfile[openfile.find("<image>"):openfile.rfind("</image>")+8]
-            print allpixs
+            
             for img in allpixs.split("</image>")[:-1]:
-                print img
+                
                 image = []
                 
                 img = img[img.find("<image>")+7:].split(",")
@@ -4587,10 +4573,10 @@ class bos:
         
         
         
-        print "Trying to delete event", 
+        
     
     def split(self, event, LETTER, END, PIXEL, scnIND):    
-        print event, LETTER, END, PIXEL
+        
         
         pos, size, Y, name, story = self.events[event]
         
@@ -4637,10 +4623,6 @@ class bos:
                 new.append([s[0],s[1]])
         
         
-        print "ARROWS BEFORE\n"
-        for i in self.arrows:
-            print i
-        
         # GETTING THE SCNAGES ONTO THE ARROWS
         
         for AN, arrow in enumerate(self.arrows):
@@ -4653,15 +4635,6 @@ class bos:
                         
                         self.arrows[AN][SN] = new[DN] 
                     
-        
-        print "ARROWS AFTER\n"
-        for i in self.arrows:
-            print i
-        
-        print "sncDATA\n"
-        print oldDATA
-        print
-        print newDATA
         
         
             
@@ -4698,7 +4671,7 @@ class bos:
             
         savefile.close()
         
-        print "SAVED TOO  "+self.filename
+        
         
         #WRITTING TO HYSTORY
         history.write(os.getcwd() ,self.filename, "[Edited]")
@@ -4839,7 +4812,7 @@ def get_scenes_percentage(FILE):
                     
                     
                     
-                    print "EMPTY", scenename
+                    
                     scenevalues.append(0)
                 
                 

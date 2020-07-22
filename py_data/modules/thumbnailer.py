@@ -36,7 +36,7 @@ def blenderthumb(im, x=200, y=200):
         bv = open(os.getcwd()+"/py_data/blenderver.data", "r")
         bv = bv.read().split("\n")
         
-        print "bv", bv
+        
         
         if int(bv[0]) > 0:
             cblndr = "python3 "+bv[int(bv[0])]+"/"

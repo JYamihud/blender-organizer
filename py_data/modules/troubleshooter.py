@@ -59,7 +59,7 @@ def shoot(ER):
         print "\033[1;m\033[1;40m   sudo apt-get install build-essential gnome-devel  \033[1;36m? If not.   "
         print "\033[1;40m  \033[1;36m                                                              \033[1;40m "
     
-    else:
+    elif ER == 3:
         print "\033[1;m\033[1;40m  ⏵ BASIC MODULES                                                "
         print "\033[1;m\033[1;40m  ⏵ GTK MODULES                                                  "
         print "\033[1;m\033[1;40m  ⏷ IMAGE MODULES                                                "
@@ -78,6 +78,16 @@ def shoot(ER):
         print "\033[1;m\033[1;40m   curl https://bootstrap.pypa.io/get-pip.py --output get-pip.py "
         print "\033[1;m\033[1;40m   sudo python2 get-pip.py             \033[1;36m? Get & Run their script  "
     
+    elif ER == 4:
+        
+        print "\033[1;40m  \033[1;36m   You encountered a bug in the datetime module in python     \033[1;40m "
+        print "\033[1;40m  \033[1;36m   As I understand it. It is something to do with language.   \033[1;40m "
+        print "\033[1;40m  \033[1;36m   If your Region & Language settings in the system are not   \033[1;40m "
+        print "\033[1;40m  \033[1;36m   set to English. It confuses the datetime module. And you   \033[1;40m "
+        print "\033[1;40m  \033[1;36m   get this error message. I hope this will be resolved soon  \033[1;40m "
+        print "\033[1;40m  \033[1;36m   but for now.                                               \033[1;40m "
+        print "\033[1;m\033[1;40m        Change Region & Language settings to English             "
+        
     print "\033[1;40m                                                                 \033[1;m"
     
     exit()

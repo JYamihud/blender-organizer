@@ -35,18 +35,24 @@ def write(pf, filename, action):
     newdate = y+"/"+m+"/"+d+" "+h+":"+n+":"+s
 
 
-    print "HISTORY", newdate, filename, action
+    
     
     
     #writting down the hystory
     
     # THIS IS GOING TO BE A LARGE F-ING FILE
     
+    lf = 0
+    
     if not os.path.exists(pf+"/history.data"):
         f = open(pf+"/history.data", "w")
         f.write(newdate+" "+filename+" "+action)
         f.close()
     else:
+        f = open(pf+"/history.data", "r")
+        f = f.read().split("\n")
+        lf = len(f)
+        
         f = open(pf+"/history.data", "ab")
         f.write("\n"+newdate+" "+filename+" "+action)
         f.close()
@@ -64,3 +70,12 @@ def write(pf, filename, action):
             s.write(i+"\n")
         p = i
     s.close()
+    
+    
+    
+    if lf-1 < len(w):
+        
+        print "\033[1;31m ⬥ HISTORY ENTRY : \033[1;m"
+        print "\033[1;32m     ⬦ Date "+newdate+"  \033[1;m"
+        print "\033[1;32m     ⬦ Path "+filename+"  \033[1;m"
+        print "\033[1;32m     ⬦ Action "+action+"  \033[1;m"

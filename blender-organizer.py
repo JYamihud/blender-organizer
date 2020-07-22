@@ -204,8 +204,8 @@ def chgCUR(w=None, cur=CUR):
     
     
     
+    print "\033[1;31m ⬥ OPENING "+cur+" :  \033[1;m"
     
-    print cur
     global CUR
     CUR = cur
     drawmainbuttons()
@@ -217,7 +217,7 @@ def drawmainbuttons():
     try:
         global mainbuttonsbox
         mainbuttonsbox.destroy()
-        print "destroyed"
+        
     except:
         pass
     
@@ -515,3 +515,4 @@ gtk.main()
 
 
 history.write(os.getcwd(), "/", "[Project Exited]")
+print "\033[1;m"

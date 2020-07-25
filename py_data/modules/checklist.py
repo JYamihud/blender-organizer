@@ -427,24 +427,24 @@ class checkwindow:
                 
                  
                 #every even darker
-                if (yline/40 % 2) == 0 and self.tool != "grab":    
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#262626")) ## CHOSE COLOR
-                    #widget.window.draw_rectangle(xgc, True, 0, ymove,  w, 39)
+                if (yline/40 % 2) == 0 and self.tool != "grab":
+                    
                     
                     ctx3 = widget.window.cairo_create()
                     ctx3.set_source_rgba(0,0,0,0.4)
                     ctx3.rectangle(0, ymove,  w, 39)
                     ctx3.fill()
                     
+                if not notcomment:    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c")) ## CHOSE COLOR
+                    widget.window.draw_rectangle(xgc, True, xmove-50, ymove,  w, 40)
                     
                 
-                if my in range(ymove, ymove+35) and self.tool == "select" and notlastline:
+                if my in range(ymove, ymove+35) and self.tool == "select" and notlastline and notcomment:
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#414141")) ## CHOSE COLOR
                     widget.window.draw_rectangle(xgc, True, xmove-50, ymove,  w, 39)
                 
-                      
-                    
                 
                 
                 ### LETS TRY TO FIND THE % OF EACH PART IN THE CHECKLIST
@@ -658,7 +658,7 @@ class checkwindow:
                     
                 
                 
-                # IF IT ALREADY WAS CHECK OFF AT EARLIER STAGE
+                # TEXT OF THE TASK
                 
                 if notlastline:
                 
@@ -666,7 +666,7 @@ class checkwindow:
                     if checkedhigher or "[V]" in line or checkpercent == 1.0:
                         ctx.set_source_rgb(0.7,0.4,0.2) #395384
                     if not notcomment:
-                        ctx.set_source_rgb(0.5,0.5,0.5)
+                        ctx.set_source_rgb(0.4,0.5,0.5)
                     
                     ctx.set_font_size(20)
                     
@@ -678,6 +678,8 @@ class checkwindow:
                         ctx.show_text(line[line.find("]")+2:])
                     if not notcomment:
                         ctx.show_text(line[line.find("]")+3:])
+                        ctx.move_to(  xmove+10, ymove+25)
+                        ctx.show_text("#")
                     
                     if "[ ]" in line and not "[V]" in line and checkpercent > 0.0 and checkpercent < 1.0:
                         ctx.set_source_rgb(0.7,0.7,0.7)
@@ -721,7 +723,7 @@ class checkwindow:
                              for n, i in enumerate(self.FILE):
                                 if n in range(ind+10, ind+s_ind+9):
                                     self.FILE[n] = i[:i.find("[")+1]+put+i[i.find("]"):]
-                                    if self.FILE[n][self.FILE[n].find("]")+2] != "#":
+                                    if self.FILE[n][line.find("]")+2+4] != "#" and line.find("[")+4 == line.find("["):
                                         allcomment = False
                              if not allcomment:
                                 self.FILE[ind+9] = line[:line.find("[")+1]+" "+line[line.find("]"):]
@@ -809,9 +811,11 @@ class checkwindow:
                 
                 
                 
-                if self.tool == "select" and notlastline:# and not checkedhigher:
+                if self.tool == "select" and notlastline and notcomment: 
+                
                     widget.window.draw_pixbuf(None, self.plus, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                    
+                if my in range(ymove, ymove+35) and not notcomment and notlastline:
+                    widget.window.draw_pixbuf(None, self.plus, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                 # ACTIVATE GRAB BUTTON
                 
@@ -845,7 +849,9 @@ class checkwindow:
                                 
                         
                         
-                if self.tool == "select"  and notlastline:# and not checkedhigher:       
+                if self.tool == "select"  and notlastline and notcomment:# and not checkedhigher:       
+                    widget.window.draw_pixbuf(None, self.move, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                if my in range(ymove, ymove+35) and not notcomment and notlastline:
                     widget.window.draw_pixbuf(None, self.move, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
@@ -1115,9 +1121,10 @@ class checkwindow:
                         
                         
                         
-                if self.tool == "select"  and notlastline:
+                if self.tool == "select"  and notlastline and notcomment:
                     widget.window.draw_pixbuf(None, self.delete, 0, 0, w-40, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                
+                if my in range(ymove, ymove+35) and not notcomment and notlastline:
+                    widget.window.draw_pixbuf(None, self.delete, 0, 0, w-40, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
             

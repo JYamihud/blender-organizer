@@ -53,7 +53,7 @@ def openckecklist(filepath, rang=[9,-1], minus=0):
         
         line = line[minus:]
         
-        if line.startswith("[") and index in range(rang[0],rang[1]):
+        if line.startswith("[") and index in range(rang[0],rang[1]) and line[line.find("]")+2] != "#":
             #every indentation is a list
             part = [line]
             indent = minus/4
@@ -66,8 +66,9 @@ def openckecklist(filepath, rang=[9,-1], minus=0):
                         #line = line[minus:]
                         partb = [line[line.find("["):]]
                         partb = checkindent(partb, index, indentb, minus) #here
-                        part.append(partb)
-                    
+                        
+                        if partb[0][partb[0].find("]")+2] != "#":
+                            part.append(partb)
                     if line.startswith("    "*(indent)+"[") and index > indexb:
                         break
                 
@@ -90,6 +91,8 @@ def partcalculate(part):
     
     else:
         for i in part[1:]:
+            
+            
             fraction = fraction + (partcalculate(i) / len(part[1:]))
             
             # int() FUNCTION in python doesn't hold well enough
@@ -375,10 +378,19 @@ class checkwindow:
             #if it's the LASTLINE BUGFIXER THINGY
             if line == "[ ] !!!LASTLINE!!!":
                 notlastline = False
-                
+            
+            
+            
+            
             #reloadfile = False
             
             if "[ ]" in line or "[V]" in line or "[v]" in line:
+                
+                notcomment = True
+                #COMMENTS
+                if line[line.find("]")+2] == "#":
+                    notcomment = False
+                
                 
                 try:
                     if self.colapsed[ind+9] and not self.grabbed:                    
@@ -653,14 +665,19 @@ class checkwindow:
                     ctx.set_source_rgb(1,1,1)
                     if checkedhigher or "[V]" in line or checkpercent == 1.0:
                         ctx.set_source_rgb(0.7,0.4,0.2) #395384
+                    if not notcomment:
+                        ctx.set_source_rgb(0.5,0.5,0.5)
+                    
                     ctx.set_font_size(20)
                     
                     
                     
                     ctx.move_to(  xmove+40, ymove+25)
                     
-                    if ind not in self.grab:
+                    if ind not in self.grab and notcomment:
                         ctx.show_text(line[line.find("]")+2:])
+                    if not notcomment:
+                        ctx.show_text(line[line.find("]")+3:])
                     
                     if "[ ]" in line and not "[V]" in line and checkpercent > 0.0 and checkpercent < 1.0:
                         ctx.set_source_rgb(0.7,0.7,0.7)
@@ -684,7 +701,7 @@ class checkwindow:
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c")) ## CHOSE COLOR
                 # IF MOUSE OVER
-                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+5, xmove+5+20) and self.tool == "select" and notlastline:
+                if my in range(ymove+5, ymove+5+20) and mx in range(xmove+5, xmove+5+20) and self.tool == "select" and notlastline and notcomment:
                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                     
@@ -700,11 +717,14 @@ class checkwindow:
                         self.FILE[ind+9] = line[:line.find("[")+1]+put+line[line.find("]"):]
                         
                         if self.FILE[ind+10].find("[") > line.find("["):
+                             allcomment = True
                              for n, i in enumerate(self.FILE):
                                 if n in range(ind+10, ind+s_ind+9):
                                     self.FILE[n] = i[:i.find("[")+1]+put+i[i.find("]"):]
-                            
-                             self.FILE[ind+9] = line[:line.find("[")+1]+" "+line[line.find("]"):]
+                                    if self.FILE[n][self.FILE[n].find("]")+2] != "#":
+                                        allcomment = False
+                             if not allcomment:
+                                self.FILE[ind+9] = line[:line.find("[")+1]+" "+line[line.find("]"):]
                         
                         #WRITTING TO HYSTORY
                         history.write(self.pf ,self.FILENAME, self.get_line_path(ind, line)+" ["+put+"]")
@@ -715,19 +735,20 @@ class checkwindow:
                         self.save()
                         self.open()
                         
-                if notlastline:
+                if notlastline and notcomment:
                     widget.window.draw_rectangle(xgc, True, xmove+5, ymove+5, 20, 20)
                 
                 
-                if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v") or checkpercent == 1.0: # IF THE LINE IS CHECKED
+                if line[line.find("[")+1:].startswith("V") or line[line.find("[")+1:].startswith("v") or checkpercent == 1.0 : # IF THE LINE IS CHECKED
                     
-                    widget.window.draw_pixbuf(None, self.ok, 0, 0, xmove+7, ymove , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                    
-                    
-                    #HERE I WANT TO ADD A SPECIAL THING THAT MAKES IT SO IF YOU CHECKED THE THING THERE IS NO ADD SCHEDULES
-                    removestring.append(self.get_line_path(ind, line))
-                    #foundhightlight = False
-                    checked = True
+                    if notcomment:
+                        widget.window.draw_pixbuf(None, self.ok, 0, 0, xmove+7, ymove , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                        
+                        
+                        #HERE I WANT TO ADD A SPECIAL THING THAT MAKES IT SO IF YOU CHECKED THE THING THERE IS NO ADD SCHEDULES
+                        removestring.append(self.get_line_path(ind, line))
+                        #foundhightlight = False
+                        checked = True
                 
                 # ADD SUBTASK
                 
@@ -757,10 +778,15 @@ class checkwindow:
                         def ee(theline, p_line, line):
                                 
                             Pname = ""
-                            Pname = dialogs.PickName("New Subtask")
+                            comm = False
+                            if line[line.find("]")+2] != "#":
+                                Pname = dialogs.PickName("New Subtask")
+                            else:
+                                comm = True
+                                Pname = dialogs.PickName("#New Sub-Comment")
                             
-                            
-                            
+                            if comm and not Pname.startswith("#"):
+                                Pname = "#"+Pname
                             
                             if Pname != "":
                                 self.FILE[theline+9] = line[:line.find("[")+1]+" "+line[line.find("]"):]
@@ -858,7 +884,7 @@ class checkwindow:
                             
                             
                             
-                            if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select"  and notlastline:
+                            if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select"  and notlastline and notcomment:
                                 widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                                 widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+35+35, ymove+5, 22, 22)
@@ -878,7 +904,7 @@ class checkwindow:
                                     removestring.append(self.get_line_path(ind, line))
                                     
                     
-                    if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist  and notlastline:
+                    if my in range(ymove+5, ymove+5+20) and mx in range(xmove+(len(line[line.find("]")+1:])*12)+35+35+35, xmove+(len(line[line.find("]")+1:])*12)+35+20+35+35) and self.tool == "select" and not alreadyexist  and notlastline and notcomment:
                         widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
                         widget.window.draw_rectangle(xgc, True, xmove+(len(line[line.find("]")+1:])*12)+35+35+35, ymove+5, 22, 22)
@@ -1006,7 +1032,7 @@ class checkwindow:
                             glib.timeout_add(10, ee, ind, line)
                         
                         
-                    if self.tool == "select"  and notlastline:       
+                    if self.tool == "select"  and notlastline and notcomment:       
                         widget.window.draw_pixbuf(None, self.schedule, 0, 0, xmove+(len(line[line.find("]")+1:])*12)+35+35+35, ymove+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 

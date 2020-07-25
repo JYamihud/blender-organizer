@@ -2569,6 +2569,8 @@ class story:
                 
                 shotname, story, pixbuf, blends = i
                 
+                b = ""
+                
                 if shotname:
                     for b in shotname[shotname.rfind("/")+1:].split("\n"):
                         
@@ -2588,10 +2590,14 @@ class story:
                 #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#575757"))
                 #widget.window.draw_rectangle(xgc, True, Pstart+20, 15+shotlistlength+220+self.shotsSCROLL-15, w/3-90, len(story.split("\n"))*15+5)
                 
-                if "<shot>" in story:
+                if '"' in story[:story.find("<item>")]:
                     story = story[story.replace('"', " ", 1).find('"')+1:] # IDK WHAT IT DID BUT IT SEEMS LIKE IT DID NOTHING
                 
+                
                 # DRAWING LITTLE ITEM LINKS
+                
+                
+                
                 
                 itemcounts = 0 # HOW MUCH WE HAVE
                 items = [] #LIST OF ITEMS         [[startintext, endintext, url], [.....
@@ -2615,8 +2621,35 @@ class story:
                         
                         
                         items.append([startintext, url, endintext])
+               
+               
+                # FINDING ALL THE FRASES THAT CHARACTERS SPEAK
                 
-                       
+                
+                frasecounts = 0
+                frases = []
+                
+                for frase in range(story.count(" - [")):
+                    
+                    frasecounts = frasecounts + 1
+                    
+                    # FINDING WHERE IT TEXT ARE FRASES
+                    
+                    startofname = story[:story.find(" - [")].rfind("\n") +1 # THIS IT THE START OF THE NAME
+                    endofname = story.find(" - [")                          # THIS IS END OF THE NAME
+                    startoffrase = endofname + 4                            # THIS IS START OF THE FRASE
+                    endoffrase   = story.find("]")                          # THIS IS END OF THE FRASE
+                    
+                    
+                    # DELETING THE PREVIOUS INSTANCE TO FIND NEW ONES
+                    
+                    story = story.replace(" - [", "    ", 1).replace("]", " ", 1)
+                    
+                    #APPENDING THE RESULTS
+                    
+                    frases.append([startofname, endofname, startoffrase, endoffrase])
+                    
+                    
                 
                 # MULTILINE SEPARATION
                 
@@ -2751,18 +2784,80 @@ class story:
                 
                     for word in line.split(" "):
                         
+                        # PARSING THE FRASES
                         
+                        isName = False
+                        isFrase = False
+                        frase = [0,0,0,0]
+                        
+                        for frase in frases:
+                            if frase[0] in range(letter, letter+len(word)):
+                                isName = True
+                                break
+                            if frase[2] in range(letter, letter+len(word)):
+                                isFrase = True
+                                
+                                
+                                t = story[frase[2]:frase[3]]
+                                
+                                
+                                shotlistlength = shotlistlength + 22
+                                movex = 100
+                                
+                                
+                                
+                                for wor in t.split("\n"):
+                                    GraphicsX = Pstart+20+movex-2
+                                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c")) #403666   #6e5daf
+                                    widget.window.draw_rectangle(xgc, True, GraphicsX-20, shotlistlength+220+self.shotsSCROLL, Ppart-150, 20)
+                                    
+                                    for wo in wor.split(" "):
+                                    
+                                        GraphicsX = Pstart+20+movex-2
+                                        
+                                        
+                                    
+                                        
+                                        
+                                        ctx2.set_source_rgb(1,1,1)
+                                        ctx2.move_to( GraphicsX, 15+shotlistlength+220+self.shotsSCROLL)
+                                        ctx2.show_text(wo)
+                                        
+                                        movex = movex + len(wo)*9+9
+                                        
+                                        if movex > Ppart-150:
+                                            
+                                            shotlistlength = shotlistlength + 20
+                                            movex = 100
+                                            GraphicsX = Pstart+20+movex-2
+                                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c")) #403666   #6e5daf
+                                            widget.window.draw_rectangle(xgc, True, GraphicsX-20, shotlistlength+220+self.shotsSCROLL, Ppart-150, 20)
+                                        
+                                        
+                                        skipto = letter + len(t)+1
+                                    
+                                    shotlistlength = shotlistlength + 20
+                                    movex = 100
+                                    
+                                shotlistlength = shotlistlength + 20
+                                break
+                        
+                        # PARSING THE ITEMS
                         
                         for item in items:
-                            if item[0] in range(letter, letter+len(word)):
+                            if item[0] in range(letter, letter+len(word)) and letter >= skipto:
                                 
+                                
+                                GraphicsX = Pstart+20+movex-2
+                                if isName:
+                                    GraphicsX = Pstart+Ppart/2-len(story[item[0]:item[2]])*9/2
                                 
                                 #ITEM COLOR
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6e5daf")) #403666   #6e5daf
-                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 20)
+                                widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+220+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 20)
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0")) #403666   #6e5daf
-                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL+20, len(story[item[0]:item[2]])*9+9+22, 2)
+                                widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+220+self.shotsSCROLL+20, len(story[item[0]:item[2]])*9+9+22, 2)
                                 
                                 
                                 
@@ -2778,17 +2873,17 @@ class story:
                                 lenofsecondcube = int(round(float(len(story[item[0]:item[2]])*9+9+22) * itempercent))
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165")) #403666   #6e5daf
-                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL+20, lenofsecondcube, 2)
+                                widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+220+self.shotsSCROLL+20, lenofsecondcube, 2)
                                 
                                 
                                 
                                 # MOUSE OVER
-                                if mx in range(Pstart+20+movex-2, Pstart+20+movex-2 + len(story[item[0]:item[2]])*9+9+22) and my in range(shotlistlength+220+self.shotsSCROLL+2, shotlistlength+220+self.shotsSCROLL+18):
+                                if mx in range(GraphicsX, GraphicsX + len(story[item[0]:item[2]])*9+9+22) and my in range(shotlistlength+220+self.shotsSCROLL+2, shotlistlength+220+self.shotsSCROLL+18):
                                     
                                     tooltip = "Go to the item"
                                     
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                                    widget.window.draw_rectangle(xgc, True, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 18)
+                                    widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+220+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 18)
                                     
                                     # get mouse to show the hand
                                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
@@ -2811,13 +2906,13 @@ class story:
                                 
                                 
                                 if CUR == "obj":
-                                    widget.window.draw_pixbuf(None, self.objicon, 0, 0, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                    widget.window.draw_pixbuf(None, self.objicon, 0, 0, GraphicsX, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                                 elif CUR == "chr":
-                                    widget.window.draw_pixbuf(None, self.chricon, 0, 0, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                    widget.window.draw_pixbuf(None, self.chricon, 0, 0, GraphicsX, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                                 elif CUR == "loc":
-                                    widget.window.draw_pixbuf(None, self.locicon, 0, 0, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                    widget.window.draw_pixbuf(None, self.locicon, 0, 0, GraphicsX, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                                 elif CUR == "veh":
-                                    widget.window.draw_pixbuf(None, self.vehicon, 0, 0, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                    widget.window.draw_pixbuf(None, self.vehicon, 0, 0, GraphicsX, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                                 
                                 
                                 
@@ -2830,8 +2925,11 @@ class story:
                                 
                                 
                                 ctx2.set_source_rgb(1,1,1)
-                                ctx2.move_to( Pstart+20+movex, 15+shotlistlength+220+self.shotsSCROLL)
-                                ctx2.show_text(story[item[0]:item[2]])
+                                ctx2.move_to( GraphicsX+22, 15+shotlistlength+220+self.shotsSCROLL)
+                                if isName:
+                                    ctx2.show_text(story[item[0]:item[2]].upper())
+                                else:
+                                    ctx2.show_text(story[item[0]:item[2]])
                                 
                                 
                                 
@@ -2845,32 +2943,39 @@ class story:
                                 
                                 skipto = letter + len(story[item[0]:item[2]])+1
                                 
+                                break
+                        
+                        
                         
                         if letter >= skipto:
                                    
                             ctx2.set_source_rgb(1,1,1)
                             ctx2.set_font_size(15)
                             ctx2.move_to( Pstart+20+movex, 15+shotlistlength+220+self.shotsSCROLL)
-                            ctx2.show_text(word)
+                            if isName:
+                                    t = story[frase[0]:frase[1]]
+                                    
+                                    ctx2.move_to( Pstart+Ppart/2-len(t)*9/2, 15+shotlistlength+220+self.shotsSCROLL)
+                                    
+                                    ctx2.show_text(t.upper())
+                                    skipto = letter + len(t)+1
+                            else:       
+                                ctx2.show_text(word)
                             movex = movex + len(word)*9 + 9 # 9 PIXELS IS ONE LETTER
                         letter = letter + len(word)+1
                         
                         
-                        if movex > Ppart-120:
+                        if movex > Ppart-80 or isName:# or movex > Ppart - 500 and isFrase:
                             
                             shotlistlength = shotlistlength + 20
-                            
-                            
-                            
-                            
                             movex = 0
+                            
                     
                     
 
                     shotlistlength = shotlistlength + 20
                     movex = 0
                     
-                
                 
                 
                     
@@ -3302,7 +3407,7 @@ class story:
                             widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart-Ppart/2, 23)
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
-                                
+                                Pstart
                                 os.system("nautilus "+self.pf+"/"+shotname+"/extra")
                             
                             
@@ -3797,54 +3902,7 @@ class story:
                
                
                 
-                if mx in range(Pstart+25, Pstart+25+Ppart-100) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+200):
-                    
-                    
-                    tooltip = "Create a new shot"
-                            
-                    # get mouse to show the hand
-                    widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
-                    
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                    
-                    
-                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h): # IF CLICKED
-                    
-                        
-                        def justdoit(v=None):
-                            sae = dialogs.event(name, story, self.FILE, self.event_select)
-                            sae.add_shot()
-                        
-                            #REFRASHING
-                                            
-                            try:
-                                scnDATA = self.FILE.get_scenes_data()
-                                scenestory = scnDATA[self.event_select][self.scene_select][3]
-                                self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
-                            except:
-                                pass
-                        
-                        
-                        glib.timeout_add(10, justdoit)
-                    
-                        
-                    
-                else:
                 
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#424242"))
-                widget.window.draw_rectangle(xgc, True, Pstart+25, shotlistlength+220+self.shotsSCROLL, Ppart-100, 200)
-                
-                widget.window.draw_pixbuf(None, self.plus, 0, 0, Pstart+Ppart/4, shotlistlength+220+self.shotsSCROLL+100 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-                            
-                ctx.set_source_rgb(1,1,1)
-                ctx.set_font_size(15)
-                ctx.move_to( Pstart+Ppart/4+40, 15+shotlistlength+220+self.shotsSCROLL+100)
-                ctx.show_text("Create New Shot")
-                
-                
-                
-                shotlistlength = shotlistlength + 250
-            
             
             
             

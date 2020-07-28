@@ -94,6 +94,7 @@ from py_data.modules import schedule
 from py_data.modules import update_window
 from py_data.modules import blendver
 from py_data.modules import history
+from py_data.modules import oscalls
 
 ### FILES FOLDERS MAKE SURE
 
@@ -163,7 +164,7 @@ def buttons1():
     projectfolder.set_tooltip_text("Open the "+os.getcwd())
 
     def openpf(w=None):
-        os.system("nautilus "+os.getcwd())
+        oscalls.Open(os.getcwd())
     projectfolder.connect("clicked",openpf)
 
     toppannelbox.pack_start(projectfolder, False)
@@ -182,7 +183,7 @@ def buttons1():
     rndfolder.set_tooltip_text("Open the "+os.getcwd()+"/rnd")
 
     def openpf(w=None):
-        os.system("nautilus "+os.getcwd()+"/rnd")
+        oscalls.Open(os.getcwd()+"/rnd")
     rndfolder.connect("clicked",openpf)
 
     toppannelbox.pack_start(rndfolder, False)
@@ -236,9 +237,9 @@ def drawmainbuttons():
     if CUR == "rnd":
         scenico.set_from_file("py_data/icons/scn_asset_done.png")
     scenbox.pack_start(scenico, False)
-    scenbox.pack_start(gtk.Label("  Scenes"))
+    scenbox.pack_start(gtk.Label("  Story Editor"))
     scender.add(scenbox)
-    scender.set_tooltip_text("Manage Scenes")
+    scender.set_tooltip_text("The Famous Blender-Organizer Story Editor")
     scender.connect("clicked",chgCUR, "rnd")
     mainbuttonsbox.pack_start(scender, False)
 
@@ -254,7 +255,7 @@ def drawmainbuttons():
     charbox.pack_start(charico, False)
     charbox.pack_start(gtk.Label("  Characters"))
     charder.add(charbox)
-    charder.set_tooltip_text("Manage characters")
+    charder.set_tooltip_text("Do The People. The Characters. \nThe Humans. The Aliens.\n The Monsters")
     charder.connect("clicked",chgCUR, "chr")
     mainbuttonsbox.pack_start(charder, False)
     
@@ -270,7 +271,7 @@ def drawmainbuttons():
     vehibox.pack_start(vehiico, False)
     vehibox.pack_start(gtk.Label("  Vehicles"))
     vehider.add(vehibox)
-    vehider.set_tooltip_text("Manage Vehicles")
+    vehider.set_tooltip_text("People Should Have Cars. \nIK It's a little bit Hibdy Bi.\nBut I love cars so much, they have to have their own tab")
     vehider.connect("clicked",chgCUR, "veh")
     mainbuttonsbox.pack_start(vehider, False)
     
@@ -286,7 +287,7 @@ def drawmainbuttons():
     locibox.pack_start(lociico, False)
     locibox.pack_start(gtk.Label("  Locations"))
     locider.add(locibox)
-    locider.set_tooltip_text("Manage locations")
+    locider.set_tooltip_text("The Places. The Settings.\nThe Backgrounds. The Cities.\nThe Houses. YOU KNOW.")
     locider.connect("clicked",chgCUR, "loc")
     mainbuttonsbox.pack_start(locider, False)
     
@@ -302,15 +303,15 @@ def drawmainbuttons():
     if CUR == "obj":
         objiico.set_from_file("py_data/icons/obj_asset_done.png")
     objibox.pack_start(objiico, False)
-    objibox.pack_start(gtk.Label("  Objects"))
+    objibox.pack_start(gtk.Label("  Other Items"))
     objider.add(objibox)
-    objider.set_tooltip_text("Manage objects")
+    objider.set_tooltip_text("All The Other Junk")
     objider.connect("clicked",chgCUR, "obj")
     mainbuttonsbox.pack_start(objider, False)
     
     
     
-    mainbuttonsbox.pack_start(gtk.VSeparator(), False)
+    
     toppannelbox.pack_start(mainbuttonsbox, False)
     
     mainbuttonsbox.show_all()
@@ -327,10 +328,12 @@ def secondarybuttonsOMGWTF():
     startsibox.pack_start(startsiico, False)
     startsibox.pack_start(gtk.Label("  Analytics"))
     startsider.add(startsibox)
-    startsider.set_tooltip_text("See Analytics")
+    startsider.set_tooltip_text("Schedules, Analitycs.\nAre you doing by deadline? Ah...?")
     startsider.connect("clicked",chgCUR, "stats")
-    toppannelbox.pack_end(startsider, False)
-
+    toppannelbox.pack_start(startsider, False)
+    
+    toppannelbox.pack_start(gtk.VSeparator(), False)
+    
     # Settings AKA blender version ( I'm not going to change names of the buttons and shit)
 
     blendverb = gtk.Button()
@@ -349,7 +352,7 @@ def secondarybuttonsOMGWTF():
     # TELEGRAM
     
     def telegram(w):
-        os.system("xdg-open https://t.me/blenderorganizer")
+        oscalls.Open("https://t.me/blenderorganizer")
         
     
     syncider = gtk.Button()
@@ -360,12 +363,41 @@ def secondarybuttonsOMGWTF():
     syncibox.pack_start(synciico, False)
     syncibox.pack_start(gtk.Label("  Telegram Chat"))
     syncider.add(syncibox)
-    syncider.set_tooltip_text("Get Real Time Help On the telegram")
+    syncider.set_tooltip_text("Get Help, Request Features, Chat With Developers")
     syncider.connect("clicked",telegram)
     #syncider.set_sensitive(False)
     toppannelbox.pack_end(syncider, False)
 
-
+    ctut = "Analytics"
+    if CUR in ["chr", "veh", "loc", "obj"]:
+        ctut = "Items"
+    elif CUR == "rnd":
+        ctut = "Story Editor"
+    
+    def tutorials(w):
+        
+        if CUR in ["chr", "veh", "loc", "obj"]: 
+            oscalls.Open("https://youtu.be/wiejIqHS0Vg")
+        elif CUR == "rnd":
+            oscalls.Open("https://youtu.be/086qRkHCa6c")
+        else:
+            oscalls.Open("https://youtu.be/ohTgpc-FuXE") # PUT
+        
+    
+    syncider = gtk.Button()
+    syncider.props.relief = gtk.RELIEF_NONE
+    syncibox = gtk.HBox(False)
+    synciico = gtk.Image()
+    synciico.set_from_file("py_data/icons/info.png")
+    syncibox.pack_start(synciico, False)
+    syncibox.pack_start(gtk.Label("  Tutorial About "+ctut))
+    syncider.add(syncibox)
+    syncider.set_tooltip_text("Watch a tutorial on YouTube\nabout Blender-Organizer's "+ctut)
+    syncider.connect("clicked",tutorials)
+    #syncider.set_sensitive(False)
+    toppannelbox.pack_end(syncider, False)
+    
+    
 
     # SYNC
 
@@ -386,7 +418,7 @@ def secondarybuttonsOMGWTF():
     # REPORT BUG
     def Reportbug(w=False):
         
-        os.system("xdg-open https://github.com/JYamihud/blender-organizer/issues")
+        oscalls.Open("https://github.com/JYamihud/blender-organizer/issues")
     Reportbugider = gtk.Button()
     Reportbugider.props.relief = gtk.RELIEF_NONE
     Reportbugibox = gtk.HBox(False)

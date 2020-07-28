@@ -28,13 +28,14 @@ import quick
 import fileformats
 from subprocess import *
 import odt_export
+import oscalls
 
 tbox = gtk.VBox()
 
 def rendersettings(pf, blend):
 
     
-    dialog = gtk.Dialog("Render Settings", None, 0, (gtk.STOCK_EXECUTE,  gtk.RESPONSE_APPLY, 
+    dialog = gtk.Dialog("Render Settings", None, 0, ("Render",  gtk.RESPONSE_APPLY, "Just Save", 666,  
                                                gtk.STOCK_CANCEL, gtk.RESPONSE_CLOSE))
     box = dialog.get_child()
     
@@ -84,9 +85,24 @@ def rendersettings(pf, blend):
     
     print "FODLER FILE", pf+"/"+blend
     
-    box.pack_start(textscroll, False)
+    #box.pack_start(textscroll, False)
     
+    def tutorials(w):
+        oscalls.Open("https://youtu.be/5zW4lUwac0M")
+        
     
+    syncider = gtk.Button()
+    syncider.props.relief = gtk.RELIEF_NONE
+    syncibox = gtk.HBox(False)
+    synciico = gtk.Image()
+    synciico.set_from_file("py_data/icons/info.png")
+    syncibox.pack_start(synciico, False)
+    syncibox.pack_start(gtk.Label("  Tutorial"))
+    syncider.add(syncibox)
+    syncider.set_tooltip_text("Watch a tutorial on YouTube")
+    syncider.connect("clicked",tutorials)
+    #syncider.set_sensitive(False)
+    box.pack_start(syncider, False)
     
     
     
@@ -108,10 +124,10 @@ def rendersettings(pf, blend):
         cblndr = ""
                                         
         try:
-            bv = open(self.pf+"/py_data/blenderver.data", "r")
+            bv = open(pf+"/py_data/blenderver.data", "r")
             bv = bv.read().split("\n")
             
-            print "bv", bv
+            
             
             if int(bv[0]) > 0:
                 cblndr = bv[int(bv[0])]+"/"
@@ -121,7 +137,7 @@ def rendersettings(pf, blend):
         
         
         Popen(['stdbuf', '-o0', cblndr+"blender", pf+"/"+blend])
-        #os.system("xdg-open "+pf+"/"+blend)
+        
     
     
     blendfileicon = gtk.Image()
@@ -677,7 +693,7 @@ in the folder.
     
     onlyset = gtk.CheckButton("Only settings (No Render)")
     onlyset.set_tooltip_text("Do not start rendering. Only edit the settings data.")
-    box.pack_start(onlyset, False)
+    #box.pack_start(onlyset, False)
     
     
     
@@ -703,7 +719,10 @@ in the folder.
     box.show_all()
     r = dialog.run()
     
-    if r == gtk.RESPONSE_APPLY:
+    if r == gtk.RESPONSE_APPLY or r == 666:
+        
+        if r == 666:
+            onlyset.set_active(True)
         
         
         try:
@@ -985,12 +1004,12 @@ def choose_shot_type():
     box = dialog.get_child()
     
     types = ["shot", "shot_anim", "shot_vfx"]
-    words = ["Normal", "Animated", "Visual FX"]
+    words = ["Live Action", "Animated", "Visual FX"]
     
     buttons = []
     
     for i in words: 
-        if i == "Normal":
+        if i == "Live Action":
             buttons.append(gtk.RadioButton(None, i))
         else:
             buttons.append(gtk.RadioButton(buttons[0], i))
@@ -2066,6 +2085,9 @@ def markup(textbuffer):
     
     textbuffer.remove_all_tags(textbuffer.get_start_iter(), textbuffer.get_end_iter())
     text = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())
+    
+    
+    
     
     YELLOW = ["<scene>", "</scene>"]
     BLUE   = ["<shot>", "</shot>"]

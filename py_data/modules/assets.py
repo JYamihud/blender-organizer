@@ -26,6 +26,7 @@ import dialogs
 import fileformats
 import linkconfig
 import history
+import oscalls
 
 from subprocess import *
 
@@ -777,7 +778,7 @@ class draw_assets:
                                 # IF CLICKED
                                 if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
                                     
-                                    os.system("xdg-open "+render[1])
+                                    oscalls.Open(render[1])
                             
                             
                             
@@ -915,7 +916,7 @@ class draw_assets:
                         # IF CLICKED
                         if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
                             
-                            os.system("nautilus "+self.pf+"/dev/"+self.CUR+"/"+self.screen.name+"/"+rawdirs[raw])
+                            oscalls.Open(self.pf+"/dev/"+self.CUR+"/"+self.screen.name+"/"+rawdirs[raw])
                         
                         
                         
@@ -1223,7 +1224,7 @@ class draw_assets:
                     # IF CLICKED
                     if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
                         
-                        os.system("nautilus "+self.screen.path)
+                        oscalls.Open(self.screen.path)
                     
                     
                 widget.window.draw_pixbuf(None, self.foldericon, 0, 0, mmx+60, 65, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)

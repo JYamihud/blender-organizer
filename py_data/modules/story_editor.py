@@ -31,6 +31,7 @@ import fileformats
 import render_lists
 import assets # SO I COULD LINK TO ITEMS
 import linkconfirm #AUTOMATIC LINKING WTF
+import oscalls
 
 import copy # OMG OPTIMIZATION HACKS OMG I HOPE IT'S GOING TO WORK
 
@@ -836,9 +837,9 @@ class story:
                             
                         else:   
                             if mode == "ABSOLUTE":
-                                os.system("xdg-open "+url)
+                                oscalls.Open(url)
                             elif mode == "RELATIVE":
-                                os.system("xdg-open "+self.pf+url)
+                                oscalls.Open(self.pf+url)
                                 
                                 
                                 
@@ -2711,9 +2712,9 @@ class story:
                                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h) : 
                                         
                                         if os.path.exists(imageurl):
-                                            os.system("xdg-open "+imageurl)    
+                                            oscalls.Open(imageurl)    
                                         else:
-                                            os.system("xdg-open "+self.pf+imageurl)
+                                            oscalls.Open(self.pf+imageurl)
                                 
                                            
                                 
@@ -3133,7 +3134,7 @@ class story:
                                     
                                     
                                     
-                                    os.system("xdg-open "+self.pf+"/"+(self.imgAT[ind]))
+                                    oscalls.Open(self.pf+"/"+(self.imgAT[ind]))
                                 
                             
                             
@@ -3218,7 +3219,7 @@ class story:
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 
-                                os.system("nautilus "+self.pf+"/"+shotname)
+                                oscalls.Open(self.pf+"/"+shotname)
                             
                             
                         
@@ -3260,7 +3261,7 @@ class story:
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 
-                                os.system("nautilus "+self.pf+"/"+shotname+"/storyboard")
+                                oscalls.Open(self.pf+"/"+shotname+"/storyboard")
                                 
                             
                         
@@ -3297,7 +3298,7 @@ class story:
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 
-                                os.system("nautilus "+self.pf+"/"+shotname+"/opengl")
+                                oscalls.Open(self.pf+"/"+shotname+"/opengl")
                             
                             
                         
@@ -3334,7 +3335,7 @@ class story:
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 
-                                os.system("nautilus "+self.pf+"/"+shotname+"/test_rnd")
+                                oscalls.Open(self.pf+"/"+shotname+"/test_rnd")
                             
                             
                         
@@ -3372,7 +3373,7 @@ class story:
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 
-                                os.system("nautilus "+self.pf+"/"+shotname+"/rendered")
+                                oscalls.Open(self.pf+"/"+shotname+"/rendered")
                             
                             
                         
@@ -3396,7 +3397,7 @@ class story:
                         
                         
                         # MOUSE OVER
-                        if mx in range(Pstart, w-Ppart/2) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w-Ppart/2-60) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
                             
                             
                             
@@ -3404,11 +3405,11 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart-Ppart/2, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart-Ppart/2-60, 23)
                             
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
                                 Pstart
-                                os.system("nautilus "+self.pf+"/"+shotname+"/extra")
+                                oscalls.Open(self.pf+"/"+shotname+"/extra")
                             
                             
                         

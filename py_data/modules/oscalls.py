@@ -10,10 +10,16 @@ import platform
 
 ostype = platform.system()
 
-def Open(arg):
+def Open(arg):  # XDG-OPEN (start the file in a default software)
     
-    # For Linux
-    if ostype == "Linux":
-        os.system("xdg-open "+arg)
-    else:
-        os.system("start "+arg)
+    # For The Best OS Ever
+    if ostype == "Linux":                     #####       ##        ##    ##        ##
+        os.system("xdg-open "+arg)          ##      ##    ####      ##    ##        ##
+    # For Stinky                           ##             ##  ##    ##    ##        ##
+    elif ostype == "Windows":             ##    ####      ##    ##  ##    ##        ##
+        os.system("start "+arg)            ##   #  ##     ##     ## ##     ##      ##
+    # For Not that Stinky                   ##      ##    ##      ####      ##    ##
+    elif ostype == "Darwin":                  #####       ##        ##        ####
+        os.system("open "+arg)
+        
+        

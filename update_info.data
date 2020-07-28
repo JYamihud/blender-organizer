@@ -1,3 +1,13 @@
+VERSION 4.64
+FILE update_info.data
+FILE py_data/modules/story_editor.py
+FILE py_data/modules/oscalls.py
+FILE py_data/modules/assets.py
+FILE py_data/modules/dialogs.py
+FILE FILE py_data/icons/info.png
+MAIN_FILE
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.64
+
 VERSION 4.63
 FILE update_info.data
 FILE py_data/modules/checklist.py

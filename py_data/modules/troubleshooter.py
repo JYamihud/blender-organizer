@@ -15,9 +15,8 @@ def shoot(ER):
     print "\033[1;40m                                                                 "
     print "\033[1;40m  \033[1;36m      Blender-Organizer is just a python script. And in       \033[1;40m "
     print "\033[1;40m  \033[1;36m      order to run it, particular python modules have to      \033[1;40m "
-    print "\033[1;40m  \033[1;36m      be installed. And since you see this message some       \033[1;40m "
-    print "\033[1;40m  \033[1;36m      of them are still missing from your system.             \033[1;40m "
-    
+    print "\033[1;40m  \033[1;36m      be installed. Since you see it, you miss some modules.  \033[1;40m "
+    print "\033[1;40m  \033[1;36m      For aditional help go to\033[1;m\033[1;40m https://t.me/blenderorganizer  \033[1;40m "
     print "\033[1;40m  \033[1;36m                                                              \033[1;40m "
     
     v = ""
@@ -25,13 +24,13 @@ def shoot(ER):
     # ▫☐❓⬜⮿⇨⇩→↓⏵⏷
     
     if ER == 1:
-        print "\033[1;m\033[1;40m  ⏷ BASIC MODULES                                                "
-        print "\033[1;m\033[1;40m       ⮿ os            \033[1;36m? Folders, files, system things           "
-        print "\033[1;m\033[1;40m       ⮿ socket        \033[1;36m? Network things                          "
-        print "\033[1;m\033[1;40m       ⮿ urllib2       \033[1;36m? Network things                          "
-        print "\033[1;m\033[1;40m       ⮿ datetime      \033[1;36m? Date and time calculations              "
-        print "\033[1;m\033[1;40m  ⏵ GTK MODULES                                                  "
-        print "\033[1;m\033[1;40m  ⏵ IMAGE MODULES                                                "
+        print "\033[1;m\033[1;40m  - BASIC MODULES                                                "
+        print "\033[1;m\033[1;40m       ! os            \033[1;36m? Folders, files, system things           "
+        print "\033[1;m\033[1;40m       ! socket        \033[1;36m? Network things                          "
+        print "\033[1;m\033[1;40m       ! urllib2       \033[1;36m? Network things                          "
+        print "\033[1;m\033[1;40m       ! datetime      \033[1;36m? Date and time calculations              "
+        print "\033[1;m\033[1;40m  > GTK MODULES                                                  "
+        print "\033[1;m\033[1;40m  > IMAGE MODULES                                                "
         print "\033[1;40m  \033[1;36m                                                              \033[1;40m "
         print "\033[1;40m  \033[1;36m    Those modules usually go with python by default it's      \033[1;40m "
         print "\033[1;40m  \033[1;36m    safe to assume that you have a broken version of python.  \033[1;40m "
@@ -43,28 +42,32 @@ def shoot(ER):
         
         
     elif ER == 2:
-        print "\033[1;m\033[1;40m  ⏵ BASIC MODULES                                                "
-        print "\033[1;m\033[1;40m  ⏷ GTK MODULES                                                  "
-        print "\033[1;m\033[1;40m       ⮿ gtk           \033[1;36m? Windows, Buttons, UI                    "
-        print "\033[1;m\033[1;40m       ⮿ pango         \033[1;36m? Text in the UI                          "
-        print "\033[1;m\033[1;40m       ⮿ cairo         \033[1;36m? Custom UI elements                      "
-        print "\033[1;m\033[1;40m       ⮿ glib          \033[1;36m? Time offsets for UI elements            "
-        print "\033[1;m\033[1;40m  ⏵ IMAGE MODULES                                                "
+        print "\033[1;m\033[1;40m  > BASIC MODULES                                                "
+        print "\033[1;m\033[1;40m  - GTK MODULES                                                  "
+        print "\033[1;m\033[1;40m       ! gtk           \033[1;36m? Windows, Buttons, UI                    "
+        print "\033[1;m\033[1;40m       ! pango         \033[1;36m? Text in the UI                          "
+        print "\033[1;m\033[1;40m       ! cairo         \033[1;36m? Custom UI elements                      "
+        print "\033[1;m\033[1;40m       ! glib          \033[1;36m? Time offsets for UI elements            "
+        print "\033[1;m\033[1;40m  > IMAGE MODULES                                                "
         print "\033[1;40m  \033[1;36m                                                              \033[1;40m "
         print "\033[1;40m  \033[1;36m    Those modules usually the hardest to get right. They      \033[1;40m "
         print "\033[1;40m  \033[1;36m    are for UI development. And most people don't do it.      \033[1;40m "
         print "\033[1;40m  \033[1;36m                                                              \033[1;40m "
         print "\033[1;40m  \033[1;36m    On Linux there are couple of way you can try:             \033[1;40m "
-        print "\033[1;m\033[1;40m   sudo apt-get install python-gtk2-dev   \033[1;36m? Maybe will do it.    "
-        print "\033[1;m\033[1;40m   sudo apt-get install build-essential gnome-devel  \033[1;36m? If not.   "
-        print "\033[1;40m  \033[1;36m                                                              \033[1;40m "
-    
+        print "\033[1;m\033[1;40m   sudo apt-get install build-essential gnome-devel  \033[1;36m? Official  "
+        print "\033[1;40m  \033[1;36m    Or if still doesn't work. You probably need those 2       \033[1;40m "
+        print "\033[1;m\033[1;40m   sudo add-apt-repository ppa:nrbrtx/python2-stuff  \033[1;36m? and then  "
+        print "\033[1;m\033[1;40m   sudo apt-get install python-gtk2                  \033[1;36m?           "
+        
+        #sudo add-apt-repository ppa:nrbrtx/python2-stuff
+        #sudo apt-get install python-gtk2
+        
     elif ER == 3:
-        print "\033[1;m\033[1;40m  ⏵ BASIC MODULES                                                "
-        print "\033[1;m\033[1;40m  ⏵ GTK MODULES                                                  "
-        print "\033[1;m\033[1;40m  ⏷ IMAGE MODULES                                                "
-        print "\033[1;m\033[1;40m       ⮿ PIL           \033[1;36m? Image manipulation                      "
-        print "\033[1;m\033[1;40m       ⮿ Image         \033[1;36m? Same if PIL don't exist.                "
+        print "\033[1;m\033[1;40m  > BASIC MODULES                                                "
+        print "\033[1;m\033[1;40m  > GTK MODULES                                                  "
+        print "\033[1;m\033[1;40m  - IMAGE MODULES                                                "
+        print "\033[1;m\033[1;40m       ! PIL           \033[1;36m? Image manipulation                      "
+        print "\033[1;m\033[1;40m       ! Image         \033[1;36m? Same if PIL don't exist.                "
         print "\033[1;40m  \033[1;36m                                                              \033[1;40m "
         print "\033[1;40m  \033[1;36m    Those modules usually installed using python PIP          \033[1;40m "
         print "\033[1;40m  \033[1;36m    only with recent addoption of python3. Python PIP is      \033[1;40m "

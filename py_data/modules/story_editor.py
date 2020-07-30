@@ -184,7 +184,7 @@ class story:
         
         
         self.imageselected = -1
-        
+        self.arrowimage = False
         
         
         ### SHOTS HANDELLIGN OMG ####
@@ -408,7 +408,8 @@ class story:
                 
                 self.arrows_output_dots.append(  [[0,0],[0,0], False]  )
             
-            
+            self.ImageArrows = [] # this is gonna be merged with self.arrows_output_dots right before drawing them.
+            # it's used to see connections of images to items / assets
             
             
             
@@ -702,7 +703,7 @@ class story:
             
             
             ######## SHOWING DRAGGED IMAGES ######
-            
+            self.arrow_to = False
             
             for count, image in enumerate(self.FILE.images):
                 
@@ -773,6 +774,9 @@ class story:
                 
                 previewurl = url
                 
+                checkurl = url[:url.rfind("/")]
+                checkurl = checkurl[:checkurl.rfind("/")]
+                
                 if mode == "ABSOLUTE":
                     
                 
@@ -790,7 +794,43 @@ class story:
                     elif url.startswith("/dev/obj"):
                         tinyicon = self.objicon
                     
-                    if url.startswith("/dev/"):
+                    
+                    
+                    
+                    #Making a connetiong start
+                    if url.startswith("/dev/") and "Preview." not in url: # IF IMAGE FROM ASSET BUT NOT THE ASSET HIM SELF
+                        if imX in range(-200, w/3*2) and imY in range(0, h): # IF IMAGE IN FRAME
+                            
+                            
+                            
+                            foundarrow = False
+                            for an , a in enumerate(self.ImageArrows):
+                                if a[2] == self.pf+url:
+                                    foundarrow = True
+                                    if a[0] == [0,0]:
+                                        self.ImageArrows[an][0] = [imX+piX, imY+10]
+                            
+                            if not foundarrow:
+                                self.ImageArrows.append([[imX+piX, imY+10], [0,0], self.pf+url])
+                        
+                    if url.startswith("/dev/") and "Preview." in url: # IF IMAGE IS ASSET HIM SELF
+                        if imX in range(-200, w/3*2) and imY in range(0, h): # IF IMAGE IN FRAME
+                            
+                            for raw, part in enumerate(["reference", "tex", "renders"]):
+                                curl = os.walk(self.pf+checkurl+"/"+part).next()[2]
+                                 
+                                for FILE in curl:
+                                    foundarrow = False
+                                    for an , a in enumerate(self.ImageArrows):
+                                        if self.pf+checkurl+"/"+part+"/"+FILE == a[2]:
+                                            foundarrow = True
+                                            if a[1] == [0,0]:
+                                                self.ImageArrows[an][1] = [imX, imY+piY+20+(11*raw)]
+                                    
+                                    if not foundarrow:
+                                        self.ImageArrows.append([[0,0], [imX, imY+piY+20+(11*raw)], self.pf+checkurl+"/"+part+"/"+FILE])
+                        
+                        
                         
                         CUR = url[5:8]
                             
@@ -809,6 +849,10 @@ class story:
                 
                 
                 
+                if not launchitem:
+                    if self.toolXY[0] in range(imX, imX+piX) and self.toolXY[1] in range(imY, imY+piY) and mx in range(0, w-w/3) and my in range(50, h) and self.tool == "arrow":
+                        self.toolXY = [imX+piX, imY+10]
+                        self.arrowimage = [imX, imY, url[url.rfind("/")+1:], mode, url, self.FILE.images[count][0], self.FILE.images[count][1], count]
                 
                 
                 
@@ -822,7 +866,9 @@ class story:
                     self.showcross = False
                     
                     
-                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                    
+                    
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and self.tool == "select":
                         
                         if launchitem:
                             
@@ -840,7 +886,8 @@ class story:
                                 oscalls.Open(url)
                             elif mode == "RELATIVE":
                                 oscalls.Open(self.pf+url)
-                                
+                            
+                                    
                                 
                                 
                 elif mx in range(imX, imX+piX) and my in range(imY-22, imY) and mx in range(0, w-w/3) and my in range(50, h):
@@ -855,7 +902,7 @@ class story:
                 
                                 
                             
-                if "GDK_BUTTON1" in str(fx) and self.win.is_active() and self.imageselected == count:
+                if "GDK_BUTTON1" in str(fx) and self.win.is_active() and self.imageselected == count and self.tool == "select":
                     
                     self.FILE.images[count][0] = self.FILE.images[count][0] + ((mx-self.mpx ) / sx)
                     self.FILE.images[count][1] = self.FILE.images[count][1] + ((my-self.mpy ) / sy)
@@ -931,9 +978,110 @@ class story:
                     percenttext = str(int(round(itempercent*100)))+"%"
                     
                     
+                    # LET'S MAKE A LINKED NODE INPUTS FOR 
+                    # References
+                    # Textures
+                    # Renders
+                    # Infodocument
                     
-                    #LETS FIX THE GOD DAMN PREVIEWS FOR FUCK SAKE
-                    # BTW THOSE WHO WANT TO EDIT BAD WORDS OUT OF THE CODE. FUCK YOU!
+                    ctx3 = widget.window.cairo_create()
+                    ctx3.set_source_rgba(0,0,0,0.4)
+                    ctx3.rectangle(imX-2, imY+piY+10, piX+4, 11*4)
+                    ctx3.fill()
+                    
+                    #widget.window.draw_pixbuf(None, self.node_link, 0, 0, imX-5, imY+piY+10+5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    #widget.window.draw_pixbuf(None, self.node_link, 0, 0, imX-5, imY+piY+10+5+11 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    #widget.window.draw_pixbuf(None, self.node_link, 0, 0, imX-5, imY+piY+10+5+22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    #widget.window.draw_pixbuf(None, self.node_link, 0, 0, imX-5, imY+piY+10+5+33 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.set_font_size(10)
+                    ctx.move_to( imX+10, imY+piY+10+15)               
+                    ctx.show_text("References")
+                    
+                    ctx.move_to( imX+10, imY+piY+10+15+11)               
+                    ctx.show_text("Textures")
+                    
+                    ctx.move_to( imX+10, imY+piY+10+15+22)               
+                    ctx.show_text("Renders")
+                    
+                    #ctx.move_to( imX+10, imY+piY+10+15+33)               
+                    #ctx.show_text("Information")
+                    
+                    putx, puty, puturl, putmode, frurl , wasx, wasy, co = 0,0,"","ABSOLUTE", "", 0,0, 0
+                    
+                    
+                    if self.arrowimage:
+                        putx, puty, puturl, putmode, frurl, wasx, wasy, co = self.arrowimage
+                    
+                    if putmode == "RELATIVE":
+                        frurl = self.pf+"/"+frurl
+                    
+                    
+                    rndname = ""
+                    rndchar = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+                    while os.path.exists(self.pf+"/pln/thumbs/"+rndname+".png") or rndname == "":
+                        rndname = ""
+                        for l in range(20):
+                            rndname = rndname + random.choice(rndchar)
+                    
+                    
+                        
+                    
+                    
+                    docopy = False
+                    
+                    #REF
+                    if my in range(imY+piY+14, imY+piY+14+11) and mx in range(imX, imX+piX):
+                        self.arrow_to = [imX, imY+piY+10+10]
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                        widget.window.draw_rectangle(xgc, False, imX+10, imY+piY+15, piX-10, 11)
+                        
+                        puturl = checkurl+"/reference/"+puturl
+                        docopy = True
+                        
+                    #TEX
+                    if my in range(imY+piY+14+11, imY+piY+14+11+11) and mx in range(imX, imX+piX):
+                        self.arrow_to = [imX, imY+piY+10+10+11]
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                        widget.window.draw_rectangle(xgc, False, imX+10, imY+piY+15+11, piX-10, 11)
+                        
+                        puturl = checkurl+"/tex/"+puturl
+                        docopy = True
+                        
+                    #RND
+                    if my in range(imY+piY+14+22, imY+piY+14+11+22) and mx in range(imX, imX+piX):
+                        self.arrow_to = [imX, imY+piY+10+10+22]
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                        widget.window.draw_rectangle(xgc, False, imX+10, imY+piY+15+22, piX-10, 11)
+                        
+                        puturl = checkurl+"/renders/"+puturl
+                        docopy = True
+                        
+                    
+                    # MAKING A COPY OF THE IMAGE AND CONNECTING IT
+                    if docopy and "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.tool == "arrow" and self.arrowimage:
+                        
+                        print self.arrowimage, "self.arrowimage"
+                        
+                        if os.path.exists(self.pf+puturl):
+                            puturl = puturl[:puturl.rfind(".")]+"_copy"+puturl[puturl.rfind("."):]
+                        
+                        fr = open(frurl, "r")
+                        tr = open(self.pf+puturl, "w")
+                        tr.write(fr.read())
+                        tr.close()
+                        
+                        putx = wasx +((20 ) / sx)
+                        puty = wasy -((20 ) / sy)
+                        
+                        if putmode == "RELATIVE":
+                            self.FILE.images.append([putx, puty, "RELATIVE", puturl, rndname, "NO PIXBUF"])                 
+                        else:
+                            self.FILE.images[co] = [putx, puty, "RELATIVE", puturl, rndname, "NO PIXBUF"]
+                        
+                        self.arrowimage = False
+                        
                     
                     
                     if not os.path.exists(self.pf+"/"+previewurl):
@@ -998,13 +1146,34 @@ class story:
                 ctx.move_to( imX+2, imY+piY-8)
                 ctx.show_text(percenttext)
             
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
             ################# EVENT TOOL ##################
             
             
             ### SHOWING EVENTS
             
             this_frame_events = []
-            self.arrow_to = False
+            
             
             
             start_active = False
@@ -1321,7 +1490,10 @@ class story:
                 #this_frame_events.append([ex, ey, esx, esy, event[3]])
             
             
+            # MERGING WITH THE ARROWS FROM IMAGES
             
+            for dot in self.ImageArrows:
+                self.arrows_output_dots.append(dot)
             
             ###### OUTPUTTING ARROWS TO THE SCREEEEENNNNNN
             
@@ -1838,6 +2010,7 @@ class story:
                         self.toolXY = [mx, my]
                         
                         widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.DOT))
+                        self.showcross = False
                         
                         self.toolactive = True
                 
@@ -1858,7 +2031,7 @@ class story:
                     
                     #FIRST TRIANGLE
                     dots = (tx-10, ty+10), (tx, ty), (tx-10, ty-10)
-                    widget.window.draw_polygon(xgc, True, dots)
+                    widget.window.draw_pixbuf(None, self.node_link, 0, 0, tx-5, ty-5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     if self.arrow_to == False:
                         widget.window.draw_line(xgc, tx, ty, mx, my)
@@ -1868,14 +2041,14 @@ class story:
                         
                         
                         dots = (mx, my+10), (mx+10, my), (mx, my-10)
-                        widget.window.draw_polygon(xgc, True, dots)
+                        widget.window.draw_pixbuf(None, self.node_link, 0, 0, mx-5, my-5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     else:
                         widget.window.draw_line(xgc, tx, ty, self.arrow_to[0], self.arrow_to[1])
                         
                         
                         dots = (self.arrow_to[0], self.arrow_to[1]+10), (self.arrow_to[0]+10, self.arrow_to[1]), (self.arrow_to[0], self.arrow_to[1]-10)
-                        widget.window.draw_polygon(xgc, True, dots)
+                        widget.window.draw_pixbuf(None, self.node_link, 0, 0, self.arrow_to[0]-5, self.arrow_to[1]-5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                     
                     
                     # Release
@@ -4530,7 +4703,8 @@ class bos:
         tmpopenfile = openfile
         if "</arrow>" in openfile:
             openfile = openfile[openfile.rfind("</arrow>"):]
-        
+        elif "</scene>" in openfile:
+            openfile = openfile[openfile.rfind("</scene>"):]
         
         
         

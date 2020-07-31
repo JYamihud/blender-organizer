@@ -102,7 +102,11 @@ from py_data.modules import oscalls
 
 history.write(os.getcwd(), "/", "[Project Started]")
 
-
+#make sure schedule.data exists
+if os.path.exists(os.getcwd()+"/schedule.data") == False:
+    
+    s = open(os.getcwd()+"/schedule.data", "w")
+    s.close()
 
 
 # others
@@ -318,6 +322,8 @@ def drawmainbuttons():
     
 drawmainbuttons()
 def secondarybuttonsOMGWTF():
+    toppannelbox.pack_start(gtk.VSeparator(), False)
+
     # Analytics
 
     startsider = gtk.Button()
@@ -332,7 +338,29 @@ def secondarybuttonsOMGWTF():
     startsider.connect("clicked",chgCUR, "stats")
     toppannelbox.pack_start(startsider, False)
     
+    
+    
+    
+    
+
+    # checklist
+
+    checklistider = gtk.Button()
+    checklistider.props.relief = gtk.RELIEF_NONE
+    checklistibox = gtk.HBox(False)
+    checklistiico = gtk.Image()
+    checklistiico.set_from_file("py_data/icons/checklist.png")
+    checklistibox.pack_start(checklistiico, False)
+    checklistibox.pack_start(gtk.Label("  Main Checklist"))
+    checklistider.add(checklistibox)
+    checklistider.set_tooltip_text("Open Main Checklist")
+    checklistider.connect("clicked", checklist.checkwindow, os.getcwd(), "Main Checklist", "project.progress")
+    toppannelbox.pack_start(checklistider, False)
+    
+    
     toppannelbox.pack_start(gtk.VSeparator(), False)
+    
+    
     
     # Settings AKA blender version ( I'm not going to change names of the buttons and shit)
 
@@ -349,6 +377,8 @@ def secondarybuttonsOMGWTF():
     #blendver.set_sensitive(False)
     toppannelbox.pack_end(blendverb, False)
     
+    toppannelbox.pack_end(gtk.VSeparator(), False)
+    
     # TELEGRAM
     
     def telegram(w):
@@ -361,7 +391,7 @@ def secondarybuttonsOMGWTF():
     synciico = gtk.Image()
     synciico.set_from_file("py_data/icons/telegram.png")
     syncibox.pack_start(synciico, False)
-    syncibox.pack_start(gtk.Label("  Telegram Chat"))
+    syncibox.pack_start(gtk.Label("  Community Help!"))
     syncider.add(syncibox)
     syncider.set_tooltip_text("Get Help, Request Features, Chat With Developers")
     syncider.connect("clicked",telegram)
@@ -390,14 +420,14 @@ def secondarybuttonsOMGWTF():
     synciico = gtk.Image()
     synciico.set_from_file("py_data/icons/info.png")
     syncibox.pack_start(synciico, False)
-    syncibox.pack_start(gtk.Label("  Tutorial About "+ctut))
+    syncibox.pack_start(gtk.Label(ctut+" Help!"))
     syncider.add(syncibox)
     syncider.set_tooltip_text("Watch a tutorial on YouTube\nabout Blender-Organizer's "+ctut)
     syncider.connect("clicked",tutorials)
     #syncider.set_sensitive(False)
     toppannelbox.pack_end(syncider, False)
     
-    
+    toppannelbox.pack_end(gtk.VSeparator(), False)
 
     # SYNC
 
@@ -452,45 +482,10 @@ def secondarybuttonsOMGWTF():
 
 
     toppannelbox.pack_end(Updateider, False)
-
-    # Schedule
-    def start_schedule(w):
-        schedule.draw(os.getcwd())
-        
-        
-    #make sure schedule.data exists
-    if os.path.exists(os.getcwd()+"/schedule.data") == False:
-        
-        s = open(os.getcwd()+"/schedule.data", "w")
-        s.close()
-
-    Scheduleider = gtk.Button()
-    Scheduleider.props.relief = gtk.RELIEF_NONE
-    Scheduleibox = gtk.HBox(False)
-    Scheduleiico = gtk.Image()
-    Scheduleiico.set_from_file("py_data/icons/schedule.png")
-    Scheduleibox.pack_start(Scheduleiico, False)
-    Scheduleibox.pack_start(gtk.Label("  Schedule"))
-    Scheduleider.add(Scheduleibox)
-    Scheduleider.set_tooltip_text("Edit Scheduling")
-    Scheduleider.connect("clicked",start_schedule)
-
-    #toppannelbox.pack_end(Scheduleider, False)
-
-
-    # checklist
-
-    checklistider = gtk.Button()
-    checklistider.props.relief = gtk.RELIEF_NONE
-    checklistibox = gtk.HBox(False)
-    checklistiico = gtk.Image()
-    checklistiico.set_from_file("py_data/icons/checklist.png")
-    checklistibox.pack_start(checklistiico, False)
-    checklistibox.pack_start(gtk.Label("  Checklist"))
-    checklistider.add(checklistibox)
-    checklistider.set_tooltip_text("Open Main Checklist")
-    checklistider.connect("clicked", checklist.checkwindow, os.getcwd(), "Main Checklist", "project.progress")
-    toppannelbox.pack_end(checklistider, False)
+    
+    toppannelbox.pack_end(gtk.VSeparator(), False)    
+    
+    
 
 
 secondarybuttonsOMGWTF()

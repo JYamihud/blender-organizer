@@ -15,33 +15,35 @@ amount = len(l)-1
 
 for n, i in enumerate(l):
     
-    if i == "MAIN_FILE":
-        
-        MAIN_FILE = open("MAIN_FILE")
-        MAIN_FILE = MAIN_FILE.read()
-        
-        f = urllib2.urlopen(path+"blender-organizer.py")
-        
-        
-        curfile = open(MAIN_FILE, "w")
-        
-        curfile.write( f.read() )
-        curfile.close()
-    
-    
-    if i != "MAIN_FILE":
-        #print "UPDATE STRTING:  " + i
-        
-        f = urllib2.urlopen(path+i)
+    try:
+        if i == "MAIN_FILE":
+            
+            MAIN_FILE = open("MAIN_FILE")
+            MAIN_FILE = MAIN_FILE.read()
+            
+            f = urllib2.urlopen(path+"blender-organizer.py")
+            
+            
+            curfile = open(MAIN_FILE, "w")
+            
+            curfile.write( f.read() )
+            curfile.close()
         
         
-        curfile = open(i, "w")
-        
-        curfile.write( f.read() )
-        curfile.close()
-        
-    print float(n) / amount
-
+        if i != "MAIN_FILE":
+            #print "UPDATE STRTING:  " + i
+            
+            f = urllib2.urlopen(path+i)
+            
+            
+            curfile = open(i, "w")
+            
+            curfile.write( f.read() )
+            curfile.close()
+            
+        print float(n) / amount
+    except:
+        pass
 
 
 

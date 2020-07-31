@@ -1,3 +1,20 @@
+VERSION 4.66
+FILE update_info.data
+FILE py_data/modules/analytics.py
+FILE py_data/modules/assets.py
+FILE py_data/modules/dialogs.py
+FILE py_data/modules/imageselector.py
+FILE py_data/modules/story_editor.py
+FILE py_data/icons/checklist.png
+FILE py_data/icons/folder.png
+FILE py_data/icons/image_add.png
+FILE py_data/icons/render_big.png
+FILE py_data/icons/report_bug.png
+FILE py_data/icons/stats.png
+FILE py_data/icons/update.png
+MAIN_FILE
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.66
+
 VERSION 4.65
 FILE update_info.data
 FILE py_data/modules/story_editor.py

@@ -22,6 +22,7 @@ import datetime
 
 import thumbnailer
 import itemselector
+import imageselector
 import history
 import checklist
 import quick
@@ -1157,28 +1158,14 @@ class AddAsset:
 
 class editPreview:
     
-    def __init__(self, ifol, box):
+    def __init__(self, ifol, box, pf):
         
         
         
         # FILE CHOOSER
-        box.set_sensitive(False)
-        addbuttondialog = gtk.FileChooserDialog("CHOOSE NEW BANNER IMAGE",
-                                         None,
-                                         gtk.FILE_CHOOSER_ACTION_OPEN,
-                                        (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                         gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        addbuttondialog.set_default_response(gtk.RESPONSE_OK)
-        addbuttondialog.set_current_folder(ifol)
+        get = imageselector.select(os.getcwd(), ifol.replace(pf, ""))
         
-        
-        
-        response = addbuttondialog.run()
-        if response == gtk.RESPONSE_OK:
-            
-            get = addbuttondialog.get_filename()
-            
-            
+        if get:
             # OPENING AND COPEING
             
             if get.lower().endswith(".jpg") or get.lower().endswith(".png") and ifol+"/renders/Preview.png" not in get:
@@ -1190,7 +1177,7 @@ class editPreview:
             
         box.set_sensitive(True)    
         
-        addbuttondialog.destroy()    
+        
 
 
 
@@ -1564,22 +1551,10 @@ class event:
         
         def insertimage(w=False):
             
-            # FILE CHOOSER
+            u = imageselector.select(os.getcwd())
             
-            addbuttondialog = gtk.FileChooserDialog("CHOOSE INSERTING IMAGE",
-                                             None,
-                                             gtk.FILE_CHOOSER_ACTION_OPEN,
-                                            (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                             gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-            addbuttondialog.set_default_response(gtk.RESPONSE_OK)
-            addbuttondialog.set_current_folder(os.getcwd())
-            
-            
-            
-            response = addbuttondialog.run()
-            if response == gtk.RESPONSE_OK:
+            if u:   
                 
-                u = addbuttondialog.get_filename()
                 
                 imageNOT = True
                 for i in fileformats.images:
@@ -1602,7 +1577,7 @@ class event:
             
                         textview.grab_focus()
                 
-            addbuttondialog.destroy() 
+            
          
          
         def markitem(w=False):

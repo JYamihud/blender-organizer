@@ -25,6 +25,7 @@ import datetime
 import thumbnailer
 import history
 import itemselector
+import imageselector
 import checklist
 import dialogs
 import fileformats
@@ -61,6 +62,9 @@ class story:
     def __init__(self, pf, box, win, mainbox=None):
         
         
+        
+        
+        
         self.pf = pf
         self.box = box
         self.win = win
@@ -72,6 +76,23 @@ class story:
         
         
         self.keys = []
+        
+        
+        # THIS WILL REFRASH ALL THE THUMBNAILS SO YOU COULD EDIT PRVIEWS FOR EXAMPLE
+        # AND CHANGES WILL BE PRESENTED
+        # BASICALLY DELETING A FOLDER WITH THE THUMBNAILS
+        os.system("rm -r "+self.pf+"/pln/thumbs")
+        
+        
+        
+        ## UNDO DATA
+        
+        self.undoDATA = []    # A PLACE WHERE I GONNA SAVE PREVIOUS COPIES
+        self.undoINDEX = -1   # A PLACE WHERE YOU MOVE IN UNDO HISTORY
+        self.doundo = False   # IT'S WHETHER SOMETHING CHANGED AND WHEHTER TO SAVE AFTER THE SAVE
+        # PROBABLY WE WILL NEED A FUNCTION THAT WE PUT FOR IT. BECUSE UNDO IS RECORDED AT EVERY
+        # CHANGE. AND SO WE NEED TO HAVE A FUNCTION TO PLUG INTO THOSE VARIOUS PLACES.
+        # THEY A LITTLE BIT LATER def undo(), def redo(), def undo_record()
         
         # make a .bos file if no files exits in /pln/
         
@@ -116,6 +137,63 @@ class story:
         
         
         return None, overlap
+    
+    
+    def undo(self):
+        
+        if self.undoINDEX < 1:
+            self.undoINDEX = 1
+        
+        self.undoINDEX = self.undoINDEX - 1 # MOVE ONE WAY BACK
+        
+        try:
+            wr = self.undoDATA[self.undoINDEX]
+            wf = open(self.pf+"/pln/main.bos", "w")
+            wf.write(wr)
+            wf.close()
+            
+            self.FILE.load()
+            
+            
+        
+        except:
+            self.undoINDEX = len(self.undoDATA)  
+        
+        
+    
+    def redo(self):
+        
+        self.undoINDEX = self.undoINDEX + 1 # MOVE ONE WAY FORWARD
+        
+        try:
+            wr = self.undoDATA[self.undoINDEX]
+            wf = open(self.pf+"/pln/main.bos", "w")
+            wf.write(wr)
+            wf.close()
+            
+            self.FILE.load()
+            
+            
+        
+        except:
+            self.undoINDEX = len(self.undoDATA)  
+        
+        
+    
+    def undo_record(self):
+        
+        # MAKE SURE YOU RECORD BEFORE CHANGES TO THE FILE
+        
+        self.undoDATA = self.undoDATA[:self.undoINDEX+1]
+        
+        f = open(self.pf+"/pln/main.bos", "r")
+        
+        self.undoDATA.append(f.read())
+        self.undoINDEX = len(self.undoDATA)  
+        
+        if len(self.undoDATA) > 32:
+            self.undoDATA = self.undoDATA[32:] # RECORD ONLY LAST 32 INSTANCES
+        
         
         
     def editor(self):
@@ -197,6 +275,9 @@ class story:
         self.shotsSCROLL = 0
         
         
+        self.imagesearch = ""
+        
+        
         
         # LOADING ALL THE ICONS
         self.bosicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/bos_big.png")
@@ -211,6 +292,7 @@ class story:
         self.item_big = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/item_big.png")
         self.blendericon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blender.png")
         self.node_link = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/node_link.png")
+        self.image_add = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/image_add.png")
         
         #start end
         
@@ -276,6 +358,7 @@ class story:
         self.insertedimgs = []
         
         
+        
         def framegraph(widget, event):
                                                     
             w, h = widget.window.get_size()
@@ -283,6 +366,8 @@ class story:
             
             mx, my, fx  = widget.window.get_pointer()
             tx, ty = self.toolXY
+            
+            
             
             # GETTING WHETHER THE WINDOW IS ACTIVE
             
@@ -930,6 +1015,8 @@ class story:
                         
                         if self.event_select < len(self.FILE.events)  and allowdelete  and self.tool == "select":
                             
+                            self.undo_record()
+                            
                             del self.FILE.images[count]
                             try:
                                 os.remove(self.pf+"/pln/thumbs/"+thumb+".png")
@@ -938,6 +1025,8 @@ class story:
                             
                             self.event_select = -1
                             self.deletelastframe = True
+                            
+                            self.doundo = True
                             
                     else:
                         self.deletelastframe = False      
@@ -1041,7 +1130,7 @@ class story:
                         docopy = True
                         
                     #TEX
-                    if my in range(imY+piY+14+11, imY+piY+14+11+11) and mx in range(imX, imX+piX):
+                    elif my in range(imY+piY+14+11, imY+piY+14+11+11) and mx in range(imX, imX+piX):
                         self.arrow_to = [imX, imY+piY+10+10+11]
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                         widget.window.draw_rectangle(xgc, False, imX+10, imY+piY+15+11, piX-10, 11)
@@ -1050,19 +1139,32 @@ class story:
                         docopy = True
                         
                     #RND
-                    if my in range(imY+piY+14+22, imY+piY+14+11+22) and mx in range(imX, imX+piX):
+                    elif my in range(imY+piY+14+22, imY+piY+14+11+22) and mx in range(imX, imX+piX):
                         self.arrow_to = [imX, imY+piY+10+10+22]
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                         widget.window.draw_rectangle(xgc, False, imX+10, imY+piY+15+22, piX-10, 11)
                         
                         puturl = checkurl+"/renders/"+puturl
-                        docopy = True
                         
+                        docopy = True
+                    
+                    else:
+                        checkurl = ""
+                    # OUTPUTTING THE IMAGE OUT
+                    
+                    if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and checkurl and self.tool != "arrow":
+                        if not self.imagesearch:
+                            self.imagesearch = puturl
+                            if puturl.count("/") > 3:
+                                self.imagesearch = puturl[:puturl.rfind("/")]
+                            self.tool = "linkimage"
                     
                     # MAKING A COPY OF THE IMAGE AND CONNECTING IT
                     if docopy and "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.tool == "arrow" and self.arrowimage:
                         
-                        print self.arrowimage, "self.arrowimage"
+                        #print self.arrowimage, "self.arrowimage"
+                        
+                        self.imagesearch = ""
                         
                         if os.path.exists(self.pf+puturl):
                             puturl = puturl[:puturl.rfind(".")]+"_copy"+puturl[puturl.rfind("."):]
@@ -1409,10 +1511,19 @@ class story:
                         
                                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active(): # IF CLICKED
                                 
-                                
+                                    self.undo_record()
+                            
+                            
+                                    
+                                    
+                                    
                                     self.FILE.split(ind, i, END, PIXEL, n)
                                     self.tool = "select"
-                                
+                                    
+                                    scnDATA = self.FILE.get_scenes_data()
+                                    
+                                    self.doundo = True
+                                    
                                 xgc.line_width = 2
                                 
                         ## IF ARROWS DRAWING
@@ -1438,12 +1549,14 @@ class story:
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4987af"))
                             widget.window.draw_rectangle(xgc, True, ds+1, ey, dw-2, int(esy)/3)
-                            
-                        ctx.set_source_rgb(1,1,1)
-                        ctx.set_font_size(11)
-                        ctx.move_to( ds+2, ey+12)
-                        ctx.show_text(scnDATA[ind][n][1]) 
-                
+                        
+                        try:                              # IDK WTF IS WITH THIS PEACE BUT IT WAS LAGGING WHEN SLIPT
+                            ctx.set_source_rgb(1,1,1)     # IS ACTIVATED SO YEAH... I NEED TO LOOK INTO IT FURTHER
+                            ctx.set_font_size(11)
+                            ctx.move_to( ds+2, ey+12)
+                            ctx.show_text(scnDATA[ind][n][1]) 
+                        except:
+                            pass
                 
                 
                 
@@ -1462,9 +1575,14 @@ class story:
                             self.keys.remove(65289)
                         
                         def ee(e=None):
+                            
+                            self.undo_record()
+                            
                             editevent = dialogs.event(name, story, self.FILE, self.event_select)
                             editevent.edit()
-                    
+                            
+                            self.doundo = True
+                            
                         glib.timeout_add(10, ee)
                     
                     
@@ -1545,7 +1663,7 @@ class story:
             #ITEM ADDER
             
             
-            if self.tool == "linkitem":
+            if self.tool == "linkitem" or self.tool == "linkimage":
                 
                 
                 if "GDK_BUTTON3" in str(fx): ## CANCEL with right mouse button
@@ -1563,33 +1681,52 @@ class story:
                     
                     def ee(e=None):
                         
-                        
-                         
-                        try:
-                            u = itemselector.select(self.pf)+"/renders/"
-                        except:
+                        if e == "linkitem":
+                             
+                            try:
+                                u = itemselector.select(self.pf)+"/renders/"
+                                
+                                
+                            except:
+                                
                             
-                        
-                            self.tool = "select"
-                            self.toolactive = False 
+                                self.tool = "select"
+                                self.toolactive = False 
+                                
+                                return
+                                
+                            if os.path.exists(self.pf+"/"+u+"Preview.png"):
+                                u = u+"Preview.png"
+                            elif os.path.exists(self.pf+"/"+u+"Preview.jpg"):
+                                u = u+"Preview.jpg"
+                            else:
+                                u = u+"Preview.png"
                             
-                            return
                             
-                        if os.path.exists(self.pf+"/"+u+"Preview.png"):
-                            u = u+"Preview.png"
-                        elif os.path.exists(self.pf+"/"+u+"Preview.jpg"):
-                            u = u+"Preview.jpg"
-                        else:
-                            u = u+"Preview.png"
+                            u = self.pf+""+u
                         
-                        
-                        u = self.pf+""+u
+                        elif e == "linkimage":
+                            
+                            u = imageselector.select(self.pf, self.imagesearch)
+                                
+                            if not u:
+                                
+                            
+                                self.tool = "select"
+                                self.toolactive = False 
+                                self.imagesearch = ""
+                                return
+                            
+                            self.imagesearch = ""
+                            #u = "/home/vc3/launch_grub_texture.png"
                         
                         x,y = self.toolXY
                         
-                        pureX = (x  -  px)/sx  - 1
-                        pureY = (y+22  -  py)/sy 
+                        #pureX = (x  -  px)/sx  - 1   # NOT GOOD
+                        #pureY = (y+22  -  py)/sy 
                         
+                        pureX = x / sx - px           # GOOD
+                        pureY = (y + 22) / sx - px
                         
                         ################## COPIED FROM THE BOTTOM ######################
                         
@@ -1662,7 +1799,7 @@ class story:
                         
                     
                     
-                    glib.timeout_add(10, ee)
+                    glib.timeout_add(10, ee, self.tool)
                     
                     self.tool = "linkingnow"
                     self.toolactive = False
@@ -2210,7 +2347,7 @@ class story:
                 
                 tooltip = "[ N ]\nCreate a new scene"
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
                 widget.window.draw_rectangle(xgc, True, 10, 5, 40, 40)
                 
                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():# and len(self.FILE.events):
@@ -2257,7 +2394,7 @@ class story:
                     
                     tooltip = "[ A ]\n\nArrow connection\nto guide editing of the scenes"
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
                     widget.window.draw_rectangle(xgc, True, 60, 5, 40, 40)
                     
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and len(self.FILE.events):
@@ -2271,32 +2408,32 @@ class story:
             # SPLIT EVENT BETWEEN SCENES
             
             
-            #if 75 in self.keys or 107 in self.keys:
-            #    
-            #    
-            #    self.tool = "split"                   # PRESS K
-            #    self.toolactive = False
-            #
-            #
-            #if self.tool == "split":
-            #    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
-            #    widget.window.draw_rectangle(xgc, True, 110, 5, 40, 40)
-            #else:
-            #    if mx in range(110,150) and my in range(5,45):
-            #    
-            #    
-            #        tooltip = "[ K ]\n\nSplit events between the scenes\nlike a Knife"
-            #            
-            #        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
-            #        widget.window.draw_rectangle(xgc, True, 110, 5, 40, 40)
-            #        
-            #        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
-            #            
-            #            self.tool = "split"
-            #            self.toolactive = False
-            #        
-            #        
-            #widget.window.draw_pixbuf(None, self.split_event, 0, 0, 110, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+            if 75 in self.keys or 107 in self.keys:
+                
+                
+                self.tool = "split"                   # PRESS K
+                self.toolactive = False
+            
+            
+            if self.tool == "split":
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
+                widget.window.draw_rectangle(xgc, True, 110, 5, 40, 40)
+            else:
+                if mx in range(110,150) and my in range(5,45):
+                
+                
+                    tooltip = "[ K ]\n\nSplit events between the scenes\nlike a Knife"
+                        
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
+                    widget.window.draw_rectangle(xgc, True, 110, 5, 40, 40)
+                    
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
+                        
+                        self.tool = "split"
+                        self.toolactive = False
+                    
+                    
+            widget.window.draw_pixbuf(None, self.split_event, 0, 0, 110, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
             
             
             
@@ -2317,7 +2454,7 @@ class story:
                     
                     tooltip = "[ M ]\n\nMark an important timepoint"
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
                     widget.window.draw_rectangle(xgc, True, 160, 5, 40, 40)
                     
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
@@ -2335,7 +2472,7 @@ class story:
             if 76 in self.keys or 108 in self.keys:
                 
                 
-                self.tool = "linkitem"                   # PRESS M
+                self.tool = "linkitem"               
                 self.toolactive = False
             
             
@@ -2343,11 +2480,11 @@ class story:
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
                 widget.window.draw_rectangle(xgc, True, 210, 5, 40, 40)
             else:
-                if mx in range(210,240) and my in range(5,45):
+                if mx in range(210,250) and my in range(5,45):
                     
                     tooltip = "[ L ]\n\nLink item to the Story Editor"
                     
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#999"))
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
                     widget.window.draw_rectangle(xgc, True, 210, 5, 40, 40)
                     
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
@@ -2361,7 +2498,34 @@ class story:
             
             
             
+            # LINK IMAGE
             
+            
+            
+            if 73 in self.keys or 105 in self.keys:
+                
+                
+                self.tool = "linkimage"                  
+                self.toolactive = False
+            
+            
+            if self.tool == "linkimage":
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
+                widget.window.draw_rectangle(xgc, True, 260, 5, 40, 40)
+            else:
+                if mx in range(260,260+40) and my in range(5,45):
+                    
+                    tooltip = "[ I ]\n\nLink image file to the Story Editor"
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
+                    widget.window.draw_rectangle(xgc, True, 260, 5, 40, 40)
+                    
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() :
+                        
+                        self.tool = "linkimage"
+                        self.toolactive = False
+            
+            widget.window.draw_pixbuf(None, self.image_add, 0, 0, 260, 5 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
             
             
             
@@ -2638,11 +2802,14 @@ class story:
                 
                 if self.event_select < len(self.FILE.events)  and allowdelete  and self.tool == "select":
                     
+                    self.undo_record()
+                    
                     self.FILE.event_delete(self.event_select)
                 
                     self.event_select = False
                     self.deletelastframe = True
                     
+                    self.doundo = True
             else:
                 self.deletelastframe = False
                 
@@ -4232,9 +4399,16 @@ class story:
                     if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                         
                         def ee(e=None):
+                            
+                            self.undo_record()
+                            
+                            
                             editevent = dialogs.event(name, story, self.FILE, self.event_select)
                             editevent.edit()
-                    
+                            
+                            self.doundo = True
+                            
+                            
                         glib.timeout_add(10, ee)
                         
                     
@@ -4337,8 +4511,24 @@ class story:
             #AUTOSAVE
             if (self.frame % 10) == 0:
                 self.FILE.save(px,py,sx,sy)
+                
+                
+                
+                if self.doundo:
+                    self.undo_record()
+                    self.doundo = False
             
-            
+            #UNDO
+            if 65507 in self.keys and 122 in self.keys:
+                self.undo()
+                self.undo()
+                self.keys.remove(122)
+                #self.keys.remove(65507)
+            elif 65507 in self.keys and 121 in self.keys:
+                self.redo()
+                self.redo()
+                self.keys.remove(121)
+                #self.keys.remove(65507)
             
             def callback():
                 if self.allowed == True:

@@ -26,7 +26,8 @@ import dialogs
 import story_editor # to get scene percentage
 import schedule
 import assets
-
+import imageselector
+import oscalls
 
 class draw_analytics:
     
@@ -35,9 +36,7 @@ class draw_analytics:
         self.pf = pf # pf stands for project folder. It's a string to know
                      # where the project's folders start with
         
-        # THIS DOESN'T REALLY MAKES TOO MUCH SENSE HERE. LOOK AT STORY EDITOR
-        # BUT IT HAS TO BE DONE ON THE STARTUP OF THE SOFTWARE
-        os.system("rm -r "+self.pf+"/pln/thumbs")
+        
         
         
         
@@ -525,7 +524,7 @@ class draw_analytics:
                 tooltip = "Banner : /py_data/banner.png"
                 
                 if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): #####   IF MOUSE CLICKED #####
-                    os.system("xdg-open "+pf+"/py_data/banner.png")
+                    oscalls.Open(pf+"/py_data/banner.png")
             
             
             UIY = drawpix.get_height() + border / 2
@@ -2278,24 +2277,11 @@ class draw_analytics:
     def banner_changer(self, w=None):
         
         
-       
+        self.box.set_sensitive(False)   
         
-        # FILE CHOOSER
-        self.box.set_sensitive(False)
-        addbuttondialog = gtk.FileChooserDialog("CHOOSE NEW BANNER IMAGE",
-                                         None,
-                                         gtk.FILE_CHOOSER_ACTION_OPEN,
-                                        (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL,
-                                         gtk.STOCK_OPEN, gtk.RESPONSE_OK))
-        addbuttondialog.set_default_response(gtk.RESPONSE_OK)
-        addbuttondialog.set_current_folder(self.pf)
-        
-        
-        
-        response = addbuttondialog.run()
-        if response == gtk.RESPONSE_OK:
+        get = imageselector.select(self.pf)
+        if get: 
             
-            get = addbuttondialog.get_filename()
             
             
             # OPENING AND COPEING
@@ -2309,7 +2295,6 @@ class draw_analytics:
             
         self.box.set_sensitive(True)    
         self.allowed = True
-        addbuttondialog.destroy()
         
         self.dW = 0
         self.DH = 0

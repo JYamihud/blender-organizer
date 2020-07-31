@@ -27,6 +27,7 @@ import fileformats
 import linkconfig
 import history
 import oscalls
+import imageselector
 
 from subprocess import *
 
@@ -1355,7 +1356,7 @@ class draw_assets:
                     if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
                         
                         def dobutton(w=None):
-                            dialogs.editPreview(self.screen.path, box)
+                            dialogs.editPreview(self.screen.path, box, self.pf)
                             self.blends = self.loadBlendFiles(self.screen)
                             self.iteminfo = self.loaditem(self.screen)
                             

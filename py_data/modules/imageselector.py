@@ -123,9 +123,14 @@ def select(pf, searchitem=""):
                 
                 for n, i in enumerate(self.listofitems):
                     
+                    docont = False
                     if nameentry.get_text():
-                        if nameentry.get_text().upper() not in i[0].upper():
-                            continue
+                        for name in nameentry.get_text().upper().split(" "):
+                            if name not in i[0].upper():
+                                docont = True
+                    
+                    if docont:
+                        continue
                     
                     fol = i[0][:i[0].rfind("/")] #FOLDER NAME
                     fin = i[0][i[0].rfind("/")+1:] #FILENAME

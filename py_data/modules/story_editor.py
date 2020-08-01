@@ -1152,7 +1152,7 @@ class story:
                         checkurl = ""
                     # OUTPUTTING THE IMAGE OUT
                     
-                    if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and checkurl and self.tool != "arrow":
+                    if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and checkurl and self.tool != "arrow" and self.win.is_active():
                         if not self.imagesearch:
                             self.imagesearch = puturl
                             if puturl.count("/") > 3:

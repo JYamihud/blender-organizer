@@ -2922,7 +2922,8 @@ class story:
                         ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
                         ctx2.show_text(b)
                         shotlistlength = shotlistlength + 30
-                
+                        
+                        ctx2.set_font_size(15)
                 
                 
                 
@@ -3158,6 +3159,7 @@ class story:
                                         
                                         
                                     
+                                        
                                         
                                         
                                         ctx2.set_source_rgb(1,1,1)

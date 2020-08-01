@@ -150,10 +150,7 @@ class draw_analytics:
                 
                 astlist.append(sum(flist)/len(flist))
             
-            else:            
-                print f, "EMPTY"
-                astlist.append(1.0)
-        
+            
         astlist.append(scenpercent)
         projectpercent = (sum(astlist)/len(astlist))*100
         
@@ -262,10 +259,17 @@ class draw_analytics:
                             
                             #gypos = gypos +1
                             
+                            
                             if sdate == self.selectdate:#datetime.datetime.today().strftime(self.schedule_date_format):
                                 today = True
                                 over = False
                             
+                            if sdate == "1997/07/30":
+                                sdate = datetime.datetime.strftime(datetime.datetime.today(), self.schedule_date_format)
+                                today = True
+                                over = True 
+                                
+                                
                             if not today:
                                 a = datetime.datetime.today()
                                 b = datetime.datetime.strptime(sdate, self.schedule_date_format)
@@ -760,8 +764,8 @@ class draw_analytics:
             
             timefile = open("project.progress", "r")
             timefile = timefile.read()
-            self.startdate = "00/00/00"
-            self.enddate = "00/00/00"
+            self.startdate = "30/07/1997"
+            self.enddate = "24/12/1998"
             for timeline in timefile.split("\n"):
                 if timeline.startswith("STR"):
                     self.startdate = timeline[4:]
@@ -769,6 +773,39 @@ class draw_analytics:
                     self.enddate = timeline[4:]             
                     
             
+            if self.startdate == "30/07/1997":
+                self.startdate = datetime.datetime.strftime(datetime.datetime.today(), date_format)
+                self.enddate = datetime.datetime.strftime(datetime.datetime.today()+datetime.timedelta(days=30), date_format)
+                #datetime.datetime.strftime(datetime.datetime.strptime(self.startdate, date_format)+datetime.timedelta(days=i-2), self.schedule_date_format)
+                
+                read = open("project.progress", "r")
+                s = read.read().split("\n")
+                if s[-1] == "":
+                    s = s[:-1]
+                
+                for n, i in enumerate(s):
+                    
+                    what = "STR"
+                    newdate = self.startdate
+                    
+                    if i.startswith(what):  
+                        s[n] = what+" "+newdate
+                    
+                    
+                    what = "FIN"
+                    newdate = self.enddate
+                    
+                    if i.startswith(what):  
+                        s[n] = what+" "+newdate    
+                        
+                    
+                
+                save = open("project.progress", "w")
+                for i in s:
+                    save.write(i+"\n")
+                save.close()
+                
+                
             a = datetime.datetime.strptime(self.startdate, date_format)
             b = datetime.datetime.strptime(self.enddate, date_format)
             delta = b - a

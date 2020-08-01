@@ -190,7 +190,7 @@ def buttons1():
         oscalls.Open(os.getcwd()+"/rnd")
     rndfolder.connect("clicked",openpf)
 
-    toppannelbox.pack_start(rndfolder, False)
+    #toppannelbox.pack_start(rndfolder, False)
     toppannelbox.pack_start(gtk.VSeparator(), False)
 
 
@@ -307,7 +307,7 @@ def drawmainbuttons():
     if CUR == "obj":
         objiico.set_from_file("py_data/icons/obj_asset_done.png")
     objibox.pack_start(objiico, False)
-    objibox.pack_start(gtk.Label("  Other Items"))
+    objibox.pack_start(gtk.Label("  Other"))
     objider.add(objibox)
     objider.set_tooltip_text("All The Other Junk")
     objider.connect("clicked",chgCUR, "obj")
@@ -361,6 +361,20 @@ def secondarybuttonsOMGWTF():
     toppannelbox.pack_start(gtk.VSeparator(), False)
     
     
+    # SCROLLED AREA
+    
+    # THIS SQUIZE THE LAST BUTTONS TO THE ORGANIZER WILL FIT INTO SMALLER SCREENS.
+    # SOME PEOPLE STILL USING 720p SCREENS. LIKE FAKE HD TVs AND SUCH.
+    # SO EFFORT SHOULD BE PUT INTO MAKING ORGANIZER COMPATIBLE WITH THOSE TINY SCREEN SIZES.
+    
+    Squiz = gtk.ScrolledWindow()
+    Squiz.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_NEVER)
+    Squiz.set_size_request(50,20)
+    
+    Squizbox = gtk.HBox(False)
+    Squiz.add_with_viewport(Squizbox)
+    
+    toppannelbox.pack_end(Squiz)
     
     # Settings AKA blender version ( I'm not going to change names of the buttons and shit)
 
@@ -375,9 +389,9 @@ def secondarybuttonsOMGWTF():
     blendverb.set_tooltip_text("Blender Versions, And other settings")
     blendverb.connect("clicked",chgCUR, "bldv")
     #blendver.set_sensitive(False)
-    toppannelbox.pack_end(blendverb, False)
+    Squizbox.pack_end(blendverb, False)
     
-    toppannelbox.pack_end(gtk.VSeparator(), False)
+    Squizbox.pack_end(gtk.VSeparator(), False)
     
     # TELEGRAM
     
@@ -391,12 +405,12 @@ def secondarybuttonsOMGWTF():
     synciico = gtk.Image()
     synciico.set_from_file("py_data/icons/telegram.png")
     syncibox.pack_start(synciico, False)
-    syncibox.pack_start(gtk.Label("  Community Help!"))
+    syncibox.pack_start(gtk.Label("  Chat"))
     syncider.add(syncibox)
     syncider.set_tooltip_text("Get Help, Request Features, Chat With Developers")
     syncider.connect("clicked",telegram)
     #syncider.set_sensitive(False)
-    toppannelbox.pack_end(syncider, False)
+    Squizbox.pack_end(syncider, False)
 
     ctut = "Analytics"
     if CUR in ["chr", "veh", "loc", "obj"]:
@@ -425,9 +439,9 @@ def secondarybuttonsOMGWTF():
     syncider.set_tooltip_text("Watch a tutorial on YouTube\nabout Blender-Organizer's "+ctut)
     syncider.connect("clicked",tutorials)
     #syncider.set_sensitive(False)
-    toppannelbox.pack_end(syncider, False)
+    Squizbox.pack_end(syncider, False)
     
-    toppannelbox.pack_end(gtk.VSeparator(), False)
+    Squizbox.pack_end(gtk.VSeparator(), False)
 
     # SYNC
 
@@ -462,7 +476,7 @@ def secondarybuttonsOMGWTF():
     Reportbugider.connect("clicked", Reportbug)
 
 
-    toppannelbox.pack_end(Reportbugider, False)
+    Squizbox.pack_end(Reportbugider, False)
 
     # Update
 
@@ -481,9 +495,9 @@ def secondarybuttonsOMGWTF():
     Updateider.connect("clicked", update_window.main, os.getcwd())
 
 
-    toppannelbox.pack_end(Updateider, False)
+    Squizbox.pack_end(Updateider, False)
     
-    toppannelbox.pack_end(gtk.VSeparator(), False)    
+    Squizbox.pack_end(gtk.VSeparator(), False)    
     
     
 

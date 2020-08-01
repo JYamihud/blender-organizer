@@ -1,3 +1,9 @@
+VERSION 4.68
+FILE update_info.data
+FILE py_data/modules/story_editor.py
+MAIN_FILE
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.68
+
 VERSION 4.67
 FILE py_data/modules/update_update.py
 FILE py_data/icons/info.png

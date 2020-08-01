@@ -5,18 +5,30 @@
 #### [ ] means that task is on list
 #### [V] means that tast is finished
 #### DO NOT USE EMPTY LINES
-STR 13/12/2016
-FIN 01/12/2017
-[ ] Characters
-    [ ] Your Character
-[ ] Vehicles
-    [ ] Your Vehicle
-[ ] Objects
-    [ ] Your Object
-[ ] Locations
-    [ ] Your Location
-[ ] Scenes
-    [ ] Your Scene
-[ ] Fixes
-[ ] Marketing
+STR 30/07/1997
+FIN 24/12/1998
+[ ] Setup Organizer
+    [ ] Setup Deadline Date
+        [ ] #Under the image on the left you 
+        [ ] #can see the little Started and Deadline
+        [ ] #settings that you can change to your
+        [ ] #project's requierments
+    [ ] Setup Name / Director Name / Status
+        [ ] #Under the Image you can see also
+        [ ] #Your Project Title
+        [ ] #by: Your name
+        [ ] #Change those to your project's names
+    [ ] Setup Banner
+        [ ] #Change the Banner if you want
+[ ] Story
+    [ ] #Go to Story Editor to write the 
+    [ ] #script of the movie that you want
+    [ ] #to make.
+[ ].Assets
+    [ ] Characters
+    [ ] Vehicles
+    [ ] Locations
+    [ ] Other
+    [ ] #Do not be afraid to make sub-tasks.
+[ ] Animating
 [ ] Release

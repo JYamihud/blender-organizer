@@ -2,7 +2,7 @@
 
 # blender-organizer
 
-If you have a question, suggestion or simply curious about the development of the project. You can go to out [TELEGRAM CHAT](https://t.me/blenderorganizer)
+If you have a question, suggestion or simply curious about the development of the project. You can go to our [TELEGRAM CHAT](https://t.me/blenderorganizer)
 
   
   ## Movies done with help of Blender-Organizer

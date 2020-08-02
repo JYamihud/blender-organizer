@@ -13,4 +13,4 @@ If you have a question, suggestion or simply curious about the development of th
   
   
   
-[# User Manual](https://github.com/JYamihud/blender-organizer/wiki/Help-For-Users!)
+# [User Manual](https://github.com/JYamihud/blender-organizer/wiki/Help-For-Users!)

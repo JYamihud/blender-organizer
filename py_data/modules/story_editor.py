@@ -114,7 +114,7 @@ class story:
                 self.FILE = bos(self.pf+"/pln/"+FILE)
             
         self.FILE.load()
-        print self.FILE.filename
+        
         
         
         self.editor()
@@ -277,7 +277,7 @@ class story:
         
         self.imagesearch = ""
         
-        
+        self.IsNowProcessing = False
         
         # LOADING ALL THE ICONS
         self.bosicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/bos_big.png")
@@ -374,6 +374,10 @@ class story:
             self.winactive = self.win.is_active()
             
             self.frame = self.frame + 1
+            
+            
+            
+            
             
             # BANNER IMAGE FOR INSPIRATION
             
@@ -807,45 +811,53 @@ class story:
                 
                 
                 if pixthumb == "NO PIXBUF" and imX in range(-200, w/3*2) and imY in range(0, h):
-                    try:
-                        self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
-                    except:
-                        
-                        # If the thumbnail isn't there try to recover it
-                        try:
-                            if mode == "ABSOLUTE":
-                                u = url
-                            if mode == "RELATIVE":
-                                u = self.pf+url
-                            
-                            
-                            if not os.path.exists(self.pf+"/pln/thumbs/"):
-                                os.makedirs(self.pf+"/pln/thumbs/")
-                        
-                        
-                            #chosing a random name for the thumb
-                            rndname = ""
-                            rndchar = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
-                            while os.path.exists(self.pf+"/pln/thumbs/"+rndname+".png") or rndname == "":
-                                rndname = ""
-                                for l in range(20):
-                                    rndname = rndname + random.choice(rndchar)
-                                
-                            
-                            #thumbnailer.thumbnail
-                            
-                            fromr  = open(thumbnailer.thumbnail(u, x=150, y=150), "r")
-                            saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
-                            saveto.write(fromr.read())
-                            saveto.close()
-                            
-                            self.FILE.images[count][-2] = rndname
-                            thumb = rndname
-                            self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
-                        
-                        except:
-                            pass
                     
+                    if not self.IsNowProcessing:
+                        
+                        self.IsNowProcessing = True
+                        
+                        def ee(count, url):
+                            try:
+                                self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
+                            except:
+                                
+                                # If the thumbnail isn't there try to recover it
+                                try:
+                                    if mode == "ABSOLUTE":
+                                        u = url
+                                    if mode == "RELATIVE":
+                                        u = self.pf+url
+                                    
+                                    
+                                    if not os.path.exists(self.pf+"/pln/thumbs/"):
+                                        os.makedirs(self.pf+"/pln/thumbs/")
+                                
+                                
+                                    #chosing a random name for the thumb
+                                    rndname = ""
+                                    rndchar = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+                                    while os.path.exists(self.pf+"/pln/thumbs/"+rndname+".png") or rndname == "":
+                                        rndname = ""
+                                        for l in range(20):
+                                            rndname = rndname + random.choice(rndchar)
+                                        
+                                    
+                                    #thumbnailer.thumbnail
+                                    
+                                    fromr  = open(thumbnailer.thumbnail(u, x=150, y=150), "r")
+                                    saveto = open(self.pf+"/pln/thumbs/"+rndname+".png", "w")
+                                    saveto.write(fromr.read())
+                                    saveto.close()
+                                    
+                                    self.FILE.images[count][-2] = rndname
+                                    thumb = rndname
+                                    self.FILE.images[count][-1] = gtk.gdk.pixbuf_new_from_file(self.pf+"/pln/thumbs/"+thumb+".png")
+                                
+                                except:
+                                    pass
+                                
+                            self.IsNowProcessing = False
+                        glib.timeout_add(10, ee, count, url)
                 #try:
                 #    piX = int(pixthumb.get_width()*self.sx*(self.sy/20))
                 #    piY = int(pixthumb.get_height()*self.sx*(self.sy/20))
@@ -957,14 +969,20 @@ class story:
                         
                         if launchitem:
                             
-                            self.box.destroy()
+                            def ee(CUR, url):
+                                self.box.destroy()
+                                
+                                
+                                self.box = gtk.VBox(False)
+                                self.mainbox.pack_start(self.box, True)
+                                
+                                assets.draw_assets(os.getcwd(), self.box, self.win, CUR, url)
                             
+                            glib.timeout_add(10, ee, CUR, url)
                             
-                            self.box = gtk.VBox(False)
-                            self.mainbox.pack_start(self.box, True)
-                            
-                            assets.draw_assets(os.getcwd(), self.box, self.win, CUR, url)
                             launchitem = False
+                            
+                            
                             
                         else:   
                             if mode == "ABSOLUTE":
@@ -1166,7 +1184,7 @@ class story:
                         
                         self.imagesearch = ""
                         
-                        if os.path.exists(self.pf+puturl):
+                        while os.path.exists(self.pf+puturl):
                             puturl = puturl[:puturl.rfind(".")]+"_copy"+puturl[puturl.rfind("."):]
                         
                         fr = open(frurl, "r")
@@ -1231,6 +1249,7 @@ class story:
                     try:
                         
                         #pixthumb = pixthumb.scale_simple(piX, piY, gtk.gdk.INTERP_NEAREST)
+                        
                         
                         widget.window.draw_pixbuf(None, pixthumb, 0, 0, imX + ((piX-pixthumb.get_width())/2), imY + ((piY-pixthumb.get_height())/2), -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                     except:
@@ -3099,17 +3118,19 @@ class story:
                         
                         if not loaded:
                             
+                            if not self.IsNowProcessing:
                             
                             
-                            if os.path.exists(imageurl):
-                                pix = gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(imageurl, 150,150))
-                            else:
-                                pix = gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(self.pf+imageurl, 150,150))
+                                self.IsNowProcessing = True
+                                if os.path.exists(imageurl):
+                                    pix = gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(imageurl, 150,150))
+                                else:
+                                    pix = gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(self.pf+imageurl, 150,150))
+                                
+                                
+                                self.insertedimgs.append([imageurl, pix])
+                                self.IsNowProcessing = False
                             
-                            
-                            self.insertedimgs.append([imageurl, pix])
-                            
-                        
                         #self.insertedimgs
                         
                         
@@ -3384,7 +3405,9 @@ class story:
                     img = "None"
                     
                     if pixbuf == False and shotlistlength+220+self.shotsSCROLL+self.empty_frame.get_height() > 220 and shotlistlength+220+self.shotsSCROLL < h:
-                    
+                        
+                        
+                        
                         for folder in ["rendered", "test_rnd", "opengl", "storyboard", "extra"]:
                             
                             for L in os.walk(self.pf+"/"+shotname+"/"+folder):
@@ -4495,7 +4518,23 @@ class story:
                     ctx2.set_font_size(10)
                     ctx2.move_to( mx+11, my+20+(n*10))
                     ctx2.show_text(i)
-                    
+            
+            
+            # I FOUND AN OVERFLOW BUG IN GTK DRAWABLE. IF YOU MOVE SOMETHING TOO FAR AWAY FROM 
+            # THE SCREEN IT'S GOING TO COME BACK FROM THE OTHER SIDE...
+            
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#f00"))
+            #widget.window.draw_rectangle(xgc, True, w/2, self.frame, 20,20) # RESTORE THIS...
+            
+            ctx2.set_source_rgb(1,0,0)
+            ctx2.set_font_size(20)
+            ctx2.move_to( w/2, 50)
+            #ctx2.show_text(str(self.frame)) # ... AND THIS TO SEE THE TESTER IN ACTION
+            
+            #                                  ####                      ####
+            # FOUND IT RETURNED BACK AT ROUGLY ####      66K PIXELS      #### FROM THE TOP.
+            #                                  ####                      ####
+            # IT DOESN'T DO IT WITH CAIRO THO... INTERESTING... DOES ANYBODY HAVE A MORE ACCURATE MEASURE?
             
             
             # TESTING SOMETHING
@@ -4814,9 +4853,13 @@ class bos:
                 name = event[event.find('"')+1:event.replace('"'," ",1).find('"')]
                 
                 
+                
                 # COORDINATES
                 
                 coordtext = event[event.find('[')+1:event.find(']')]
+                
+                print "\033[1;32m     ⬦ EVENT: "+name+" "+coordtext+" "+str(event.count("\n"))+" lines \033[1;m"
+                
                 coordinates =  coordtext.split(",")
                 
                 # EVENT TEXT

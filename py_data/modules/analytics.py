@@ -102,7 +102,7 @@ class draw_analytics:
         
         #selecting days for analytics
         self.selectdate = "0000/00/00"
-        
+        self.dateicons = {}
         
         self.taskmove = -1
         
@@ -233,7 +233,7 @@ class draw_analytics:
                 ypos = 0
                 over = True
                 daystring = " Today"
-                gypos = 1
+                gypos = self.dateicons
                 for task in schedulefile:   
                     
                     
@@ -408,7 +408,7 @@ class draw_analytics:
             self.winactive = win.is_active()
             
 
-            
+            stf = datetime.datetime.now()
             
             
             
@@ -469,7 +469,11 @@ class draw_analytics:
             
             
             
+            fif = datetime.datetime.now()
+            mil  = fif - stf
+            #print "IMAGE BACKGROUND - ", mil.microseconds, "microseconds"
             
+            stf = datetime.datetime.now()
             
             
             
@@ -934,7 +938,11 @@ class draw_analytics:
             ctx3.fill()
             
             
+            fif = datetime.datetime.now()
+            mil  = fif - stf
+            #print "BANNER BOX - ", mil.microseconds, "microseconds"
             
+            stf = datetime.datetime.now()
             
             
             ######## UI Box 3 ######## HISTORY ##########
@@ -974,7 +982,7 @@ class draw_analytics:
                     
                     ypart = (ubY-ln*22) + self.hscroll
                     
-                    if ypart < stY + ubY - 21 and ypart > 15:
+                    if  ypart < stY + ubY - 21 and ypart > 15:
                         
                         
                         
@@ -1202,6 +1210,12 @@ class draw_analytics:
                             ctx.show_text("["+l[21:]+"]")
                     
             
+            
+            fif = datetime.datetime.now()
+            mil  = fif - stf
+            #print "HISTORY - ", mil.microseconds, "microseconds"
+            
+            stf = datetime.datetime.now()
             
             
             
@@ -1482,7 +1496,11 @@ class draw_analytics:
             
             
             ################################################################  END OF GRAPH #########################################################
+            fif = datetime.datetime.now()
+            mil  = fif - stf
+            #print "PERCENTAGE GRAPH - ", mil.microseconds, "microseconds"
             
+            stf = datetime.datetime.now()
             
             ################################################################  SCHEDULES #########################################################
             # TRYING TO GET IF TODAY WAS
@@ -1944,6 +1962,13 @@ class draw_analytics:
                 
             ################################################################  OLD CODE #########################################################
             
+            
+            fif = datetime.datetime.now()
+            mil  = fif - stf
+            #print "SCHEDULE GRAPH - ", mil.microseconds, "microseconds"
+            
+            stf = datetime.datetime.now()
+            
             #if self.taskmove != -1:
             #    tooltip = "Moving "+str(self.taskmove)
             
@@ -2090,39 +2115,40 @@ class draw_analytics:
                             ctx.show_text(selectingdate)
                 
                    
-                
+                    if selectingdate in self.dateicons:
                     
-                    needicon = False
-                    hdata = []
-                    for n, l in enumerate(hf.split("\n")[::-1]):
                         
-                        if l.startswith(selectingdate):
-                            if "Scheduled" in l:
-                                needicon = self.scheduleicon
-                            elif "/rnd/" in l:
-                                needicon = self.scnicon
-                            elif "/obj/" in l:
-                                needicon = self.objicon
-                            elif "/chr/" in l:
-                                needicon = self.chricon
-                            elif "/loc/" in l:
-                                needicon = self.locicon
-                            elif "/veh/" in l:
-                                needicon = self.vehicon
-                            elif ".progress" in l:
-                                needicon = self.checklist
+                        hdata = self.dateicons[selectingdate]
+                    
+                           
+                        for n, p in enumerate(hdata):
                             
-                            if needicon not in hdata and needicon:
-                                hdata.append(needicon)
+                            widget.window.draw_pixbuf(None, p, 0, 0, i*20-20+self.scroll, bstY+bubY-n*20-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                    else:    
+                        needicon = False
+                        hdata = []
+                        for n, l in enumerate(hf.split("\n")[::-1]):
+                            
+                            if l.startswith(selectingdate):
+                                if "Scheduled" in l:
+                                    needicon = self.scheduleicon
+                                elif "/rnd/" in l:
+                                    needicon = self.scnicon
+                                elif "/obj/" in l:
+                                    needicon = self.objicon
+                                elif "/chr/" in l:
+                                    needicon = self.chricon
+                                elif "/loc/" in l:
+                                    needicon = self.locicon
+                                elif "/veh/" in l:
+                                    needicon = self.vehicon
+                                elif ".progress" in l:
+                                    needicon = self.checklist
+                                
+                                if needicon not in hdata and needicon:
+                                    hdata.append(needicon)
                        
-                       
-                    
-                       
-                    for n, p in enumerate(hdata):
-                        
-                        widget.window.draw_pixbuf(None, p, 0, 0, i*20-20+self.scroll, bstY+bubY-n*20-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-            
-            
+                                self.dateicons[selectingdate] = hdata
             
             
             #MIDDLE LINE
@@ -2212,6 +2238,12 @@ class draw_analytics:
                     ctx2.show_text(i)
             
             
+            
+            fif = datetime.datetime.now()
+            mil  = fif - stf
+            #print "DATE ICONS - ", mil.microseconds, "microseconds"
+            
+            stf = datetime.datetime.now()
             
             ##########################################################################################################
             ##                                  DONE DRAWING HERE ALREADY                                           ##

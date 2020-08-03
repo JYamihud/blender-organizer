@@ -42,7 +42,7 @@ class asset:
         self.name = name
         self.CUR = CUR
         
-        
+        self.IsNowProcessing = False
         #making sure all NESSESARY FOLDERS ARE IN THE DIRECTIORY
         
         # tex, reference, renders
@@ -96,51 +96,53 @@ class asset:
         
         self.percent = checklist.partcalculate(checklist.openckecklist(path+"/asset.progress"))
         
-        if self.done:
-            self.percent = 1.0 # just making sure
+        #if self.done:
+        #    self.percent = 1.0 # just making sure
             
-        
+        self.preview = "NO PIXBUF"
+        self.pic = "NO PIXBUF"
         # getting the icon
         
-        if os.path.exists(self.path+"/renders/Preview.png"):
-            self.pic = thumbnailer.thumbnail(self.path+"/renders/Preview.png", 182, 124)
-            self.pic = gtk.gdk.pixbuf_new_from_file(self.pic)
-            self.preview = thumbnailer.thumbnail(self.path+"/renders/Preview.png", 400, 400)
-            self.preview = gtk.gdk.pixbuf_new_from_file(self.preview)
+        #if os.path.exists(self.path+"/renders/Preview.png"):
+        #    self.pic = thumbnailer.thumbnail(self.path+"/renders/Preview.png", 182, 124)
+        #    self.pic = gtk.gdk.pixbuf_new_from_file(self.pic)
+        #    self.preview = thumbnailer.thumbnail(self.path+"/renders/Preview.png", 400, 400)
+        #    self.preview = gtk.gdk.pixbuf_new_from_file(self.preview)
+        # 
+        #elif os.path.exists(self.path+"/renders/Preview.jpg"):
+        # 
+        #    self.pic = thumbnailer.thumbnail(self.path+"/renders/Preview.jpg", 182, 124)
+        #    self.pic = gtk.gdk.pixbuf_new_from_file(self.pic)
+        #    self.preview = thumbnailer.thumbnail(self.path+"/renders/Preview.jpg", 400, 400)
+        #    self.preview = gtk.gdk.pixbuf_new_from_file(self.preview)
+        #
+        #
+        #
+        #else:
+        #self.pic = self.pf+"/py_data/icons/"+CUR+"_prev.png"
+        #self.pic = gtk.gdk.pixbuf_new_from_file(self.pic)
         
-        elif os.path.exists(self.path+"/renders/Preview.jpg"):
-        
-            self.pic = thumbnailer.thumbnail(self.path+"/renders/Preview.jpg", 182, 124)
-            self.pic = gtk.gdk.pixbuf_new_from_file(self.pic)
-            self.preview = thumbnailer.thumbnail(self.path+"/renders/Preview.jpg", 400, 400)
-            self.preview = gtk.gdk.pixbuf_new_from_file(self.preview)
-        
-        
-        
-        else:
-            self.pic = self.pf+"/py_data/icons/"+CUR+"_prev.png"
-            self.pic = gtk.gdk.pixbuf_new_from_file(self.pic)
-            
-            self.preview = self.pic
+        #self.preview = self.pic
         
         
         # getting the asset /ast/ if it's finished
+        
         if self.done:
             astpath = self.pf+"/ast/"+self.CUR+"/"+self.name+".blend"
             
+            self.ast = ["NO PIXBUF", astpath]
             
             
-            
-            
-            try:
-                astpic = thumbnailer.blenderthumb(astpath, 100, 100)
-                astpic = gtk.gdk.pixbuf_new_from_file(astpic)
-                
-            except:
-                astpic = self.pf+"/py_data/icons/blendfile_big.png"
-                astpic = gtk.gdk.pixbuf_new_from_file(astpic)
-            
-            self.ast = [astpic, astpath]
+            #
+            #try:
+            #    astpic = thumbnailer.blenderthumb(astpath, 100, 100)
+            #    astpic = gtk.gdk.pixbuf_new_from_file(astpic)
+            #    
+            #except:
+            #    astpic = self.pf+"/py_data/icons/blendfile_big.png"
+            #    astpic = gtk.gdk.pixbuf_new_from_file(astpic)
+            #
+            #self.ast = [astpic, astpath]
         else:
             self.ast = [None, None]
         
@@ -177,10 +179,11 @@ class draw_assets:
         
         self.folder_read()
         
+        self.makesuretooutputhatyouareinafuckingassetsmotherfucker = True
             
         
-        
-        
+        self.IsNowProcessing = False
+        self.IsNowProcessingBlends = False
         
         
         # PREPARATION TO DRAW
@@ -427,18 +430,40 @@ class draw_assets:
                     
                     
                     # preview draw
-                    
-                    yoffset = (100-i.pic.get_height())/2 # get_width
-                    xoffset = (100-i.pic.get_width())/2
-                    
-                    
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#727272"))
-                    #widget.window.draw_rectangle(xgc, True, nx+50, ny+50, 100, 100)
-                    
-                    
-                    widget.window.draw_pixbuf(None, i.pic, 0, 0, nx+50+xoffset, ny+50+yoffset, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
-                    
-                    
+                    if i.pic != "NO PIXBUF":
+                        yoffset = (100-i.pic.get_height())/2 # get_width
+                        xoffset = (100-i.pic.get_width())/2
+                        
+                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#727272"))
+                        #widget.window.draw_rectangle(xgc, True, nx+50, ny+50, 100, 100)
+                        
+                        
+                        widget.window.draw_pixbuf(None, i.pic, 0, 0, nx+50+xoffset, ny+50+yoffset, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                    else:
+                        if not self.IsNowProcessing:
+                            
+                            self.IsNowProcessing = True
+                            def ee(x):
+                                it = self.assets[x]
+                                if os.path.exists(it.path+"/renders/Preview.png"):
+                                    it.pic = thumbnailer.thumbnail(it.path+"/renders/Preview.png", 182, 124)
+                                    it.pic = gtk.gdk.pixbuf_new_from_file(it.pic)
+                                    #it.preview = thumbnailer.thumbnail(it.path+"/renders/Preview.png", 400, 400)
+                                    #it.preview = gtk.gdk.pixbuf_new_from_file(it.preview)
+                                 
+                                elif os.path.exists(it.path+"/renders/Preview.jpg"):
+                                 
+                                    it.pic = thumbnailer.thumbnail(it.path+"/renders/Preview.jpg", 182, 124)
+                                    it.pic = gtk.gdk.pixbuf_new_from_file(it.pic)
+                                    #it.preview = thumbnailer.thumbnail(it.path+"/renders/Preview.jpg", 400, 400)
+                                    #it.preview = gtk.gdk.pixbuf_new_from_file(it.preview)
+                                else:
+                                    it.pic = it.pf+"/py_data/icons/"+CUR+"_prev.png"
+                                    it.pic = gtk.gdk.pixbuf_new_from_file(it.pic)
+                                
+                                self.IsNowProcessing = False
+                            glib.timeout_add(10, ee, x)
                     # percentage widget
                     
                     
@@ -618,14 +643,16 @@ class draw_assets:
                 ctx.set_source_rgb(1,1,1)
                 #widget.set_size_request(500,900)
                 
-                
-                
-                mmx = self.screen.preview.get_width()
-                mmy = self.screen.preview.get_height()
-                
-                if mmy < 120:
+                if self.screen.preview != "NO PIXBUF":
+                    
+                    mmx = self.screen.preview.get_width()
+                    mmy = self.screen.preview.get_height()
+                    
+                    if mmy < 120:
+                        mmy = 120
+                else:
+                    mmx = 120
                     mmy = 120
-                
                 
                  # BANNER IMAGE FOR INSPIRATION
             
@@ -731,29 +758,78 @@ class draw_assets:
                         
                         
                         
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        
-                        ### MATH ###
-                        
-                        
-                        center_X = (100-render[0].get_width())/2
-                        center_Y = (100-render[0].get_height())/2 # GETTING THE PICTURE TO THE CENTER IN RELATION TO It'S SIZE
-                        
-                    
+                        center_X = 50
+                        center_Y = 50
                         
                         mox = ix*100 + the_raw_w_start + ix*10 + 10 
                         moy = iy*130 + raw_start + iy*10       + 10 + self.iscroll[raw] +10
+                       
+                        if not self.IsNowProcessing and render[0] == "NO PIXBUF" and moy in range(raw_start-20, h):
+                            self.IsNowProcessing = True
+                            def ee(ind, raw, FILE):
+                                
+                                
+
+                                    
+                                pic = "NO PIXBUF"
+                                for f in fileformats.images:
+                    
+                    
+                    
+                                    if FILE.endswith(f):
+                                        
+                                        #try making a thubnail
+                                        
+                                        
+                                        try:
+                                            pic = thumbnailer.thumbnail(FILE, 100, 100)
+                                            pic = gtk.gdk.pixbuf_new_from_file(pic)
+                                        except:
+                                            pic = self.pf+"/py_data/icons/pic_big.png"
+                                            pic = gtk.gdk.pixbuf_new_from_file(pic)
+                                            
+                                        self.iteminfo[raw][ind][0] = pic
+                                                  
+                                for f in fileformats.videos:
+                                    
+                                    
+                                    
+                                    if FILE.endswith(f):
+                                        
+                                        #try making a thubnail
+                                        
+                                        
+                                        try:
+                                            pic = thumbnailer.videothumb(FILE, 100)
+                                            pic = gtk.gdk.pixbuf_new_from_file(pic)
+                                        except:
+                                            pic = self.pf+"/py_data/icons/pic_big.png"
+                                            pic = gtk.gdk.pixbuf_new_from_file(pic)
+                                            
+                                        self.iteminfo[raw][ind][0] = pic 
+                                   
+                                self.IsNowProcessing = False
+                            glib.timeout_add(10, ee, ind, raw, render[1])
+                            
+                            
+                        
+                        if render[0] != "NO PIXBUF":
+                            
+                            
+                            ### MATH ###
+                            
+                            
+                            center_X = (100-render[0].get_width())/2
+                            center_Y = (100-render[0].get_height())/2 # GETTING THE PICTURE TO THE CENTER IN RELATION TO It'S SIZE
+                            
+                        
+                            
+                        
                         
                         
                         imx = mox   + center_X
                         imy = moy   + center_Y
-                        
+                            
                         if moy in range(raw_start-20, h):
                         
                         
@@ -811,7 +887,8 @@ class draw_assets:
                                 widget.window.draw_rectangle(xgc, True, mox-2, moy, 104, 22)
                                 widget.window.draw_pixbuf(None, self.vidicon, 0, 0, mox-2, moy, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                             
-                            widget.window.draw_pixbuf(None, render[0], 0, 0, imx, imy+22, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                            if render[0] != "NO PIXBUF":
+                                widget.window.draw_pixbuf(None, render[0], 0, 0, imx, imy+22, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                             
                             # text ( the picture filename )
                             
@@ -924,7 +1001,52 @@ class draw_assets:
                         
                      
                     widget.window.draw_pixbuf(None, self.foldericon, 0, 0, icon_x, icon_y, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                
+                    
+                    
+                    # ADD IMAGES TO THE FOLDER
+                    icon_x = the_raw_w_start+raw_w-30
+                    icon_y = raw_start-28
+                    icon_s = 22
+                    
+                    ### MOUSE OVER
+                    if mx > icon_x and mx < icon_x+icon_s and my > icon_y and my < icon_y+icon_s:
+                        
+                        mouseoverany = True
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                        widget.window.draw_rectangle(xgc, True, icon_x, icon_y, icon_s, icon_s)
+                        
+                        
+                        
+                        
+                        # IF CLICKED
+                        if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
+                            
+                            def ee(raw):
+                                frurl = imageselector.select(self.pf, "/dev/ "+rawdirs[raw])
+                                
+                                puturl = "/dev/"+self.CUR+"/"+self.screen.name+"/"+rawdirs[raw]+frurl[frurl.rfind("/"):]
+                                
+                                while os.path.exists(self.pf+puturl):
+                                    puturl = puturl[:puturl.rfind(".")]+"_copy"+puturl[puturl.rfind("."):]
+                                
+                                fr = open(frurl, "r")
+                                tr = open(self.pf+puturl, "w")
+                                tr.write(fr.read())
+                                tr.close()
+                                
+                                
+                                self.blends = self.loadBlendFiles(self.screen)
+                                self.iteminfo = self.loaditem(self.screen)
+                                
+                                self.screen.preview = thumbnailer.thumbnail(self.screen.path+"/renders/Preview.png", 400, 400)
+                                self.screen.preview = gtk.gdk.pixbuf_new_from_file(self.screen.preview)
+                                
+                                
+                            glib.timeout_add(10, ee, raw)
+                        
+                    
+                    
+                    widget.window.draw_pixbuf(None, self.plusicon, 0, 0, icon_x, icon_y, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
                 
@@ -1057,8 +1179,30 @@ class draw_assets:
                                 
                                 
                         #BLEND PREVIEW 
-                        widget.window.draw_pixbuf(None, blend[0], 0, 0, mmx + 117 +110 +(num*110)+self.blscroll, mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                        if blend[0] != "NO PIXBUF":
+                            widget.window.draw_pixbuf(None, blend[0], 0, 0, mmx + 117 +110 +(num*110)+self.blscroll, mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                         
+                        
+                        if not self.IsNowProcessingBlends and blend[0] == "NO PIXBUF" :
+                            self.IsNowProcessingBlends = True
+                            def ee(num, FILE):
+                                
+                               
+                                    
+                                pic = "NO PIXBUF"
+                                try:
+                                    pic = thumbnailer.blenderthumb(FILE, 100, 100)
+                                    pic = gtk.gdk.pixbuf_new_from_file(pic)
+                                    
+                                except:
+                                    pic = self.pf+"/py_data/icons/pic_big.png"
+                                    pic = gtk.gdk.pixbuf_new_from_file(pic)
+                                
+                                
+                                self.blends[num][0] = pic
+                                self.IsNowProcessingBlends = False
+                                
+                            glib.timeout_add(10, ee, num, blend[1])   
                         ctx.set_font_size(10)
                             
                         ctx.move_to(mmx + 117+110 +(num*110)+self.blscroll+22,mmy-12-22+12  )
@@ -1139,13 +1283,38 @@ class draw_assets:
                             #WRITTING TO HYSTORY
                             history.write(self.pf ,self.screen.ast[1], "[Openned]")
                     
-                    widget.window.draw_pixbuf(None, self.screen.ast[0], 0, 0, mmx + 117 , mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    
+                    if self.screen.ast[0] != "NO PIXBUF":
+                        widget.window.draw_pixbuf(None, self.screen.ast[0], 0, 0, mmx + 117 , mmy-12, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                    else:
+                        if not self.IsNowProcessingBlends:
+                            self.IsNowProcessingBlends = True
+                            def ee():
+                                
+                                FILE = self.screen.ast[1]
+                                    
+                                pic = "NO PIXBUF"
+                                try:
+                                    pic = thumbnailer.blenderthumb(FILE, 100, 100)
+                                    pic = gtk.gdk.pixbuf_new_from_file(pic)
+                                    
+                                except:
+                                    pic = self.pf+"/py_data/icons/pic_big.png"
+                                    pic = gtk.gdk.pixbuf_new_from_file(pic)
+                                
+                                
+                                self.screen.ast[0] = pic
+                                self.IsNowProcessingBlends = False
+                                
+                            glib.timeout_add(10, ee)   
+                    
                     ctx.set_font_size(10)
                         
                     ctx.move_to(mmx + 117+20,mmy-12-22+12  )
                     ctx.show_text(self.screen.name[:15])
                     
                     #blender icon
+                    
                     widget.window.draw_pixbuf(None, self.blendericon, 0, 0, mmx + 117-2, mmy-12-24, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
                 
@@ -1403,8 +1572,32 @@ class draw_assets:
                 
                 
                 
+                if self.screen.preview != "NO PIXBUF":
+                    widget.window.draw_pixbuf(None, self.screen.preview, 0, 0, 50, 70, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
                 
-                widget.window.draw_pixbuf(None, self.screen.preview, 0, 0, 50, 70, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                else:
+                    
+                    def ee():
+                        it = self.screen
+                        if os.path.exists(it.path+"/renders/Preview.png"):
+                            #it.pic = thumbnailer.thumbnail(it.path+"/renders/Preview.png", 182, 124)
+                            #it.pic = gtk.gdk.pixbuf_new_from_file(it.pic)
+                            it.preview = thumbnailer.thumbnail(it.path+"/renders/Preview.png", 400, 400)
+                            it.preview = gtk.gdk.pixbuf_new_from_file(it.preview)
+                         
+                        elif os.path.exists(it.path+"/renders/Preview.jpg"):
+                         
+                            #it.pic = thumbnailer.thumbnail(it.path+"/renders/Preview.jpg", 182, 124)
+                            #it.pic = gtk.gdk.pixbuf_new_from_file(it.pic)
+                            it.preview = thumbnailer.thumbnail(it.path+"/renders/Preview.jpg", 400, 400)
+                            it.preview = gtk.gdk.pixbuf_new_from_file(it.preview)
+                        else:
+                            it.preview = it.pf+"/py_data/icons/"+CUR+"_prev.png"
+                            it.preview = gtk.gdk.pixbuf_new_from_file(it.preview)
+                        
+                        
+                        
+                    glib.timeout_add(10, ee)
                 
                 ## top pannel
                 
@@ -1532,13 +1725,13 @@ class draw_assets:
                         
                         #try making a thubnail
                         
-                        
-                        try:
-                            pic = thumbnailer.thumbnail(self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+part+"/"+FILE, 100, 100)
-                            pic = gtk.gdk.pixbuf_new_from_file(pic)
-                        except:
-                            pic = self.pf+"/py_data/icons/pic_big.png"
-                            pic = gtk.gdk.pixbuf_new_from_file(pic)
+                        pic = "NO PIXBUF"
+                        #try:
+                        #    pic = thumbnailer.thumbnail(self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+part+"/"+FILE, 100, 100)
+                        #    pic = gtk.gdk.pixbuf_new_from_file(pic)
+                        #except:
+                        #    pic = self.pf+"/py_data/icons/pic_big.png"
+                        #    pic = gtk.gdk.pixbuf_new_from_file(pic)
                             
                         renders.append( [pic, self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+part+"/"+FILE, FILE, "IMAGE"] )
                                   
@@ -1550,13 +1743,13 @@ class draw_assets:
                         
                         #try making a thubnail
                         
-                        
-                        try:
-                            pic = thumbnailer.videothumb(self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+part+"/"+FILE, 100)
-                            pic = gtk.gdk.pixbuf_new_from_file(pic)
-                        except:
-                            pic = self.pf+"/py_data/icons/pic_big.png"
-                            pic = gtk.gdk.pixbuf_new_from_file(pic)
+                        pic = "NO PIXBUF"
+                        #try:
+                        #    pic = thumbnailer.videothumb(self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+part+"/"+FILE, 100)
+                        #    pic = gtk.gdk.pixbuf_new_from_file(pic)
+                        #except:
+                        #    pic = self.pf+"/py_data/icons/pic_big.png"
+                        #    pic = gtk.gdk.pixbuf_new_from_file(pic)
                             
                         renders.append( [pic, self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+part+"/"+FILE, FILE, "VIDEO"] )             
             
@@ -1578,14 +1771,14 @@ class draw_assets:
             
             if FILE.endswith(".blend"):
                 
-                
-                try:
-                    pic = thumbnailer.blenderthumb(self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+FILE, 100, 100)
-                    pic = gtk.gdk.pixbuf_new_from_file(pic)
-                    
-                except:
-                    pic = self.pf+"/py_data/icons/pic_big.png"
-                    pic = gtk.gdk.pixbuf_new_from_file(pic)
+                pic = "NO PIXBUF"
+                #try:
+                #    pic = thumbnailer.blenderthumb(self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+FILE, 100, 100)
+                #    pic = gtk.gdk.pixbuf_new_from_file(pic)
+                #    
+                #except:
+                #    pic = self.pf+"/py_data/icons/pic_big.png"
+                #    pic = gtk.gdk.pixbuf_new_from_file(pic)
         
                 blends.append( [pic, (self.pf+"/dev/"+self.CUR+"/"+i.name+"/"+FILE), FILE, "BLEND"] )
         

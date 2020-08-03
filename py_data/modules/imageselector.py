@@ -82,6 +82,7 @@ def select(pf, searchitem=""):
                             self.listofitems.append([os.path.join(r, item).replace(self.pf, ""),"NO PIXBUF"])
             
             
+            self.IsNowProcessing = False
             
             self.objicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/obj_asset_undone.png")
             self.chricon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/chr_asset_undone.png")
@@ -120,6 +121,7 @@ def select(pf, searchitem=""):
                 ry = 20
                 
                 prevf = ""
+                foundcount = 0
                 
                 for n, i in enumerate(self.listofitems):
                     
@@ -131,6 +133,8 @@ def select(pf, searchitem=""):
                     
                     if docont:
                         continue
+                    
+                    foundcount = foundcount + 1
                     
                     fol = i[0][:i[0].rfind("/")] #FOLDER NAME
                     fin = i[0][i[0].rfind("/")+1:] #FILENAME
@@ -191,8 +195,17 @@ def select(pf, searchitem=""):
                         ctx3.rectangle(rx, self.scroll+ry+10,100, 100)
                         ctx3.fill()
                         
-                        if i[1] == "NO PIXBUF":
-                            self.listofitems[n][1] = gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(self.pf+i[0], 100,100))
+                        if i[1] == "NO PIXBUF": 
+                            if not self.IsNowProcessing:
+                                self.IsNowProcessing = True
+                                
+                                def ee(n, i):
+                                    self.listofitems[n][1] = gtk.gdk.pixbuf_new_from_file(thumbnailer.thumbnail(self.pf+i[0], 100,100))
+                                    self.IsNowProcessing = False
+                                glib.timeout_add(10, ee, n, i)
+                            
+                            
+                            
                         else:
                             
                             center_X = (100-i[1].get_width())/2
@@ -243,6 +256,20 @@ def select(pf, searchitem=""):
                 
                     prevf = fol
                 
+                
+                infoy = 0
+                if my in range(0, 30):
+                    infoy = h - 30
+                
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0,0,0,0.7)
+                ctx3.rectangle(w-202, 3+infoy,w, 24)
+                ctx3.fill()
+                
+                
+                ctx.set_font_size(15)
+                ctx.move_to( w-200, 20+infoy)
+                ctx.show_text("Found "+str(foundcount)+" images")
                 
                 
                 # SCROLLING IT SELF

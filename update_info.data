@@ -1,3 +1,12 @@
+VERSION 4.70
+FILE update_info.data
+FILE py_data/modules/story_editor.py
+FILE py_data/modules/analytics.py
+FILE py_data/modules/assets.py
+FILE py_data/modules/imageselector.py
+MAIN_FILE
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.70
+
 VERSION 4.69
 FILE update_info.data
 FILE py_data/modules/story_editor.py

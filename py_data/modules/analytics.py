@@ -409,7 +409,7 @@ class draw_analytics:
             
 
             stf = datetime.datetime.now()
-            
+            perfStat = []
             
             
             ctx = widget.window.cairo_create()
@@ -471,7 +471,7 @@ class draw_analytics:
             
             fif = datetime.datetime.now()
             mil  = fif - stf
-            #print "IMAGE BACKGROUND - ", mil.microseconds, "microseconds"
+            perfStat.append([ "IMAGE BACKGROUND - ", mil.microseconds ])
             
             stf = datetime.datetime.now()
             
@@ -940,7 +940,7 @@ class draw_analytics:
             
             fif = datetime.datetime.now()
             mil  = fif - stf
-            #print "BANNER BOX - ", mil.microseconds, "microseconds"
+            perfStat.append([" BANNER BOX - ", mil.microseconds])
             
             stf = datetime.datetime.now()
             
@@ -1213,7 +1213,7 @@ class draw_analytics:
             
             fif = datetime.datetime.now()
             mil  = fif - stf
-            #print "HISTORY - ", mil.microseconds, "microseconds"
+            perfStat.append([" HISTORY - ", mil.microseconds])
             
             stf = datetime.datetime.now()
             
@@ -1498,7 +1498,7 @@ class draw_analytics:
             ################################################################  END OF GRAPH #########################################################
             fif = datetime.datetime.now()
             mil  = fif - stf
-            #print "PERCENTAGE GRAPH - ", mil.microseconds, "microseconds"
+            perfStat.append([ "PERCENTAGE GRAPH - ", mil.microseconds])
             
             stf = datetime.datetime.now()
             
@@ -1965,7 +1965,7 @@ class draw_analytics:
             
             fif = datetime.datetime.now()
             mil  = fif - stf
-            #print "SCHEDULE GRAPH - ", mil.microseconds, "microseconds"
+            perfStat.append([ "SCHEDULE GRAPH - ", mil.microseconds])
             
             stf = datetime.datetime.now()
             
@@ -1980,6 +1980,9 @@ class draw_analytics:
             for i in range(self.alltime+3):
                 
                 #i = i + 1
+                
+                if  i*20-20+self.scroll > w:
+                    break
                 
                 if  i*20-20+self.scroll in range(10, w - 10) and i > 1:
                     
@@ -2113,43 +2116,51 @@ class draw_analytics:
                             ctx.show_text("Today")
                         else:
                             ctx.show_text(selectingdate)
-                
-                   
-                    if selectingdate in self.dateicons:
+                    actualthign = 0
+                    for jjabrams in range(10):
+                        if my in range(bstY, bstY+(bubY/10*jjabrams)):
+                            actualthign = actualthign + 20
                     
+                    if my in range(bstY, bstY+bubY) and mx in range(i*20-20+self.scroll-actualthign, i*20+self.scroll+actualthign):
+                        if selectingdate in self.dateicons:
                         
-                        hdata = self.dateicons[selectingdate]
-                    
-                           
-                        for n, p in enumerate(hdata):
                             
-                            widget.window.draw_pixbuf(None, p, 0, 0, i*20-20+self.scroll, bstY+bubY-n*20-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                    else:    
-                        needicon = False
-                        hdata = []
-                        for n, l in enumerate(hf.split("\n")[::-1]):
-                            
-                            if l.startswith(selectingdate):
-                                if "Scheduled" in l:
-                                    needicon = self.scheduleicon
-                                elif "/rnd/" in l:
-                                    needicon = self.scnicon
-                                elif "/obj/" in l:
-                                    needicon = self.objicon
-                                elif "/chr/" in l:
-                                    needicon = self.chricon
-                                elif "/loc/" in l:
-                                    needicon = self.locicon
-                                elif "/veh/" in l:
-                                    needicon = self.vehicon
-                                elif ".progress" in l:
-                                    needicon = self.checklist
+                            hdata = self.dateicons[selectingdate]
+                         
+                               
+                            for n, p in enumerate(hdata):
                                 
-                                if needicon not in hdata and needicon:
-                                    hdata.append(needicon)
-                       
-                                self.dateicons[selectingdate] = hdata
+                                widget.window.draw_pixbuf(None, p, 0, 0, i*20-20+self.scroll, bstY+bubY-n*20-22 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        else:    
+                            needicon = False
+                            hdata = []
+                            for n, l in enumerate(hf.split("\n")[::-1]):
+                                
+                                if l.startswith(selectingdate):
+                                    if "Scheduled" in l:
+                                        needicon = self.scheduleicon
+                                    elif "/rnd/" in l:
+                                        needicon = self.scnicon
+                                    elif "/obj/" in l:
+                                        needicon = self.objicon
+                                    elif "/chr/" in l:
+                                        needicon = self.chricon
+                                    elif "/loc/" in l:
+                                        needicon = self.locicon
+                                    elif "/veh/" in l:
+                                        needicon = self.vehicon
+                                    elif ".progress" in l:
+                                        needicon = self.checklist
+                                    
+                                    if needicon not in hdata and needicon:
+                                        hdata.append(needicon)
+                           
+                                    self.dateicons[selectingdate] = hdata
+            fif = datetime.datetime.now()
+            mil  = fif - stf
+            perfStat.append([ "DATES AND TINY ICONS - ", mil.microseconds])
             
+            stf = datetime.datetime.now()
             
             #MIDDLE LINE
             xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
@@ -2241,9 +2252,50 @@ class draw_analytics:
             
             fif = datetime.datetime.now()
             mil  = fif - stf
-            #print "DATE ICONS - ", mil.microseconds, "microseconds"
+            perfStat.append([ "TOOLTIPS", mil.microseconds])
             
-            stf = datetime.datetime.now()
+            
+            ########################
+            
+            
+            #          PERFORMANCE ANALYTICS                   #
+            
+            ###########################
+            
+            
+            rue = mx in range(0, 200) and my in range(h-400, h-200)
+            
+            
+            
+            if rue:  # CHANGE TO FALSE WHEN YOU DON'T NEED TO CHECK PERFORMANCE
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
+                widget.window.draw_rectangle(xgc, True, 10, h-(len(perfStat)*15)-30-300, 500,len(perfStat)*15+30)
+                
+                l = 0
+                s = 0
+                for i in perfStat:
+                    if int(i[1]) > l:
+                        l = int(i[1])
+                    s = s + int(i[1])
+                for n, i in enumerate(perfStat):
+                    ctx2.set_source_rgb(1,1,1)
+                    if int(i[1]) == l:
+                        ctx2.set_source_rgb(1,0,0)
+                    elif int(i[1]) < 1000:
+                        ctx2.set_source_rgb(0,1,0)
+                    ctx2.set_font_size(10)
+                    ctx2.move_to( 20, h-(len(perfStat)*15)+15*n-300)
+                    
+                    p = float(i[1]) / s *100
+                    
+                    ctx2.show_text(str(i[0])+" - "+str(i[1])+" MCRS "+str(int(round(p)))+"%")
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222"))
+                    widget.window.draw_rectangle(xgc, True, 20 + 270, h-(len(perfStat)*15)-20+10+15*n-300, 200,10)
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                    widget.window.draw_rectangle(xgc, True, 20 + 270, h-(len(perfStat)*15)-20+10+15*n-300, int(round(p))*2,10)
             
             ##########################################################################################################
             ##                                  DONE DRAWING HERE ALREADY                                           ##

@@ -754,7 +754,7 @@ class main:
             if self.allowed == True:
                 widget.queue_draw()
 
-        glib.timeout_add(10, callback)
+        glib.timeout_add(1, callback)
         
         
         

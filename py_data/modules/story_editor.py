@@ -4646,11 +4646,7 @@ class story:
                 self.keys.remove(121)
                 #self.keys.remove(65507)
             
-            def callback():
-                if self.allowed == True:
-                    widget.queue_draw()
-
-            glib.timeout_add(10, callback)
+            
             
             
             fif = datetime.datetime.now()
@@ -4699,7 +4695,14 @@ class story:
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                     widget.window.draw_rectangle(xgc, True, 20 + 270, h-(len(perfStat)*15)-20+10+15*n, int(round(p))*2,10)
-                    
+            
+            
+            
+            def callback():
+                if self.allowed == True:
+                    widget.queue_draw()
+
+            glib.timeout_add(1, callback)     
                     
             
         graph = gtk.DrawingArea()

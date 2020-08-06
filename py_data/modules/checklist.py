@@ -402,9 +402,11 @@ class checkwindow:
                     yline = yline + 40
                 ymove = yline+self.offset
                 
-                #if ymove not in range(0-40,h):
-                #    continue
-                
+                try:
+                    if ymove not in range(0-40,h):
+                        continue
+                except:
+                    pass    
                 
                 
                 xmove = line.find("[")*20 + 50
@@ -1314,5 +1316,5 @@ class checkwindow:
             if self.allowed == True:
                 widget.queue_draw()
 
-        glib.timeout_add(10, callback)
+        glib.timeout_add(1, callback)
     

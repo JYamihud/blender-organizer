@@ -460,7 +460,7 @@ class draw:
                 if self.allowed == True:
                     widget.queue_draw()
 
-            glib.timeout_add(10, callback)
+            glib.timeout_add(1, callback)
             
             
             
@@ -562,6 +562,7 @@ class draw:
                         
                         return Popen(['stdbuf', '-o0', cblndr+"blender", "-b", pf+"/"+FILE, "-o",pf+FOLDER+"/####", "-F", FORMAT ,"-f", str(self.nowframe)], stdout=PIPE, universal_newlines=True)
         
+        os.system("notify-send Blender-Organizer Finished\ Rendering")
         gtk.main_quit()
         
     def process_kill(self):
@@ -583,3 +584,5 @@ window.show_all()
 
 
 gtk.main()
+
+

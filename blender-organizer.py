@@ -94,7 +94,12 @@ from py_data.modules import oscalls
 
 # py_data bullshit
 
-history.write(os.getcwd(), "/", "[Project Started]")
+history.write(os.getcwd(), "/", "[Project Started]") # THIS MESSAGE WILL BE GONE AUTOMATICALLY
+                                                     # I'M KEEPING IT IN SO AFTER UPDATE IT WILL
+                                                     # WIPE THE HISTORY FROM THIS TYPE OF SPAM (07/08/2020) # IF IT'S OLD REMOVE THIS.
+os.system("notify-send Blender-Organizer :\)\ I\\'m\ happy\ to\ see\ you.") # THIS IS THE NEW SOLUTION OF GREETINGS 
+                                                                            # LOOK IN THE END OF THE FILE FOR ONE THAT
+                                                                            # SAYS BYE BYE
 
 #make sure schedule.data exists
 if os.path.exists(os.getcwd()+"/schedule.data") == False:
@@ -548,6 +553,6 @@ mainwin.show_all()
 #run GTK
 gtk.main()
 
-
-history.write(os.getcwd(), "/", "[Project Exited]")
+os.system("notify-send Blender-Organizer :\(\ I\ will\ wait\ you\ back.")
+#history.write(os.getcwd(), "/", "[Project Exited]")
 print "\033[1;m"

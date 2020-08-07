@@ -3,6 +3,7 @@
 # system
 import os
 import socket
+import random
 
 # graphics interface
 import gtk
@@ -83,6 +84,8 @@ class draw_analytics:
         self.blendericon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/blender.png")
         self.settingsicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/settings.png")
         self.moveicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/move.png")
+        self.staricon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/star.png")
+        
         
         #getting icons into place OMG WHY????
         self.objicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/obj_asset_undone.png")
@@ -105,6 +108,17 @@ class draw_analytics:
         self.dateicons = {}
         
         self.taskmove = -1
+        
+        # MOTIVATING WORDS
+        motivatingwords = ["Nice!", "Wow!", "Yeah!", "Crazy!", "Win!", "Rocks!", "Lit!", "Cool!", "Best!", "Super!", "Amazing!"]
+        okaywords = ["Alright", "Fine", "Not Bad", "Keep This Pace"]
+        nahword = ["Nah", "Come On", "You Can Do Better"]
+        wtfwords = ["WTF", "NO!", "LOL", "WHY?!", "What Happened!?", "OMG!"]
+        justdoit = ["JUST DO IT!", "MAKE IT BE!", "WE CAN DO THIS TOGETHER!", "DON'T WASTE YOUR TIME!", "IT'S NOT HARD!"]
+        justdoitsting = random.choice(justdoit)
+        otherword = {}
+        starsword = {}
+        
         
         
         #NEW STORY EDITOR CODE
@@ -1293,6 +1307,12 @@ class draw_analytics:
             bprevW = self.scroll
             prevPH = ubY/2+stY
             prevbnowRH = 0
+            prevwordabouthepart = ""
+            prevtextY = 0
+            
+            stars = 0 # THIS IS COUNTING THE STARS TO MOTIVATE
+            
+            insultcheck = [] #HARD TO EXPLAIN LOOK FOR IT LOWER
             
             bprevPH = bubY/2+bstY
             
@@ -1317,7 +1337,7 @@ class draw_analytics:
                     
                     pos = int(delta.days)
                     
-                    nowW = int(round(float(w)/self.alltime*pos)) - int(round(float(w)/self.alltime)+1)
+                    nowW = int(round(float(w)/self.alltime*pos)) - int(round(float(w)/self.alltime))
                     nowH = int(round( float(ubY) / 100 * thepercent ))*-1+h
                     
                     bnowW = pos*20 + self.scroll + 20
@@ -1336,8 +1356,12 @@ class draw_analytics:
                             bnowPH = bubY/2+bstY
                         
                         else:
-                            nowPH = int( round(float(ubY)/2 / shouldbepercent * (thepercent) ))*-1+h
-                            bnowPH = int( round(float(bubY)/2 / shouldbepercent * (thepercent) ))*-1+bstY+bubY
+                            #nowPH = int( round(float(ubY)/2 / shouldbepercent * (thepercent) ))*-1+h
+                            #bnowPH = int( round(float(bubY)/2 / shouldbepercent * (thepercent) ))*-1+bstY+bubY
+                            
+                            nowPH = int( round(float(ubY)/2 / prevV * (thepercent) ))*-1+h
+                            bnowPH = int( round(float(bubY)/2 / prevV * (thepercent) ))*-1+bstY+bubY
+                            
                     except:
                         
                         shouldbepercent = 1
@@ -1347,14 +1371,14 @@ class draw_analytics:
                     
                     
                     
-                    
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                    xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
-                    xgc.line_width = 1
-                    widget.window.draw_polygon(xgc, False, [(prevW, prevH),(nowW,nowH),(nowW,h),(prevW,h)])
-                    widget.window.draw_polygon(xgc, False, [(bprevW+20, bprevH),(bnowW-1,bnowH),(bnowW-1,stY-border-1),(bprevW+20,stY-border-1)])
-                    xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER) 
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
+                    if prevW < nowW-5:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                        xgc.set_line_attributes(4, gtk.gdk.LINE_ON_OFF_DASH, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
+                        xgc.line_width = 1
+                        widget.window.draw_polygon(xgc, False, [(prevW+int(round(float(w)/self.alltime)), prevH),(nowW,nowH),(nowW,h),(prevW+int(round(float(w)/self.alltime)),h)])
+                        widget.window.draw_polygon(xgc, False, [(bprevW+20, bprevH),(bnowW-1,bnowH),(bnowW-1,stY-border-1),(bprevW+20,stY-border-1)])
+                        xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER) 
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
                     
                     
                     
@@ -1456,29 +1480,170 @@ class draw_analytics:
                             nowW = tmp
                             bnowW = btmp
                             
-                        # THOSE LITTLE SQUARES TO REPRESEND VERTICES
-                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))    
-                        widget.window.draw_rectangle(xgc, True , prevW, prevH, int(round(float(w)/self.alltime)+1), h) 
+                        # GRAPH OUTPUT
+                        
+                        ctx3 = widget.window.cairo_create()
+                        ctx3.set_source_rgba(0.79,0.56,0.39,0.25)
+                        ctx3.rectangle(prevW, prevH, nowW-prevW, h)
+                        ctx3.fill()
+                        
+                        
+                        #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))    
+                        #widget.window.draw_rectangle(xgc, True , prevW, prevH, int(round(float(w)/self.alltime)+1), h) 
                         prevLB = nowW
                         
                         #BIG GRAPH
                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))    
-                        widget.window.draw_rectangle(xgc, True , bprevW, bprevH, 20, prevbnowRH-20) 
+                        ctx3 = widget.window.cairo_create()
+                        ctx3.set_source_rgba(0.79,0.56,0.39,0.25)
+                        ctx3.rectangle(bprevW, bprevH, bnowW-bprevW, prevbnowRH-20)
+                        ctx3.fill()
+                        
+                        #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))    
+                        #widget.window.draw_rectangle(xgc, True , bprevW, bprevH, 20, prevbnowRH-20) 
                         
                          
                          
                     
                     # DRAWING PULSE
-                    xgc.line_width = 1
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#f00"))
-                    if int(100 / shouldbepercent * (thepercent)) > 100:
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#0f0"))
-                    
+                    xgc.line_width = 6
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
                     widget.window.draw_line(xgc,prevW, prevPH, nowW, nowPH)
                     widget.window.draw_line(xgc,bprevW, bprevPH, bnowW, bnowPH)
-                    xgc.line_width = 4
+                    
+                    
+                    #print prevV,  thepercent, prevV < thepercent, nowPH, thedate
+                    
+                    # LET'S INSULT PEOPLE FOR NOT WORKING
+                    largestnowPH = h
+                    textavarageX = []
+                    textavarageY = []
+                    
+                    if len(insultcheck) > 2:
+                    
+                        wordabouthepart = ""
+                    
+                        for day in insultcheck:
+                            if largestnowPH > day[0][3]:
+                                largestnowPH = day[0][3]
+                    
+                        
+                    
+                        
+                        
+                        
+                        
+                        for day in insultcheck:    
+                            xgc.line_width = 3
+                            
+                            textavarageX.append(day[1][2])
+                            textavarageY.append(day[1][3])
+                            
+                            #dln #index of where we are
+                            #okaywords 
+                            #nahword
+                            #wtfwords
+                            #otherword
+                            
+                            
+                               
+                            if largestnowPH < ubY/2+stY-ubY/10:
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#0F0"))
+                                wordabouthepart = ""
+                                if str(dln)+wordabouthepart not in otherword:
+                                    otherword[str(dln)] = "" 
+                                
+                                
+                            elif largestnowPH < ubY/2+stY-ubY/20:
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#ff0"))
+                                wordabouthepart = "Okay"
+                                if str(dln)+wordabouthepart not in otherword:
+                                    otherword[str(dln)+wordabouthepart] = random.choice(okaywords)
+                                 
+                                
+                            elif largestnowPH < ubY/2+stY-ubY/35:
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#f70"))
+                                wordabouthepart = "Nah..."
+                                if str(dln)+wordabouthepart not in otherword:
+                                    otherword[str(dln)+wordabouthepart] = random.choice(nahword) 
+
+                            else:
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#f00"))
+                                wordabouthepart = "NO!"
+                                if str(dln)+wordabouthepart not in otherword: 
+                                    otherword[str(dln)+wordabouthepart] = random.choice(wtfwords)
+                                    
+                           
+                            
+                            
+                            widget.window.draw_line(xgc,day[0][0],   day[0][1],  day[0][2],   day[0][3])
+                            widget.window.draw_line(xgc,day[1][0],   day[1][1],  day[1][2],   day[1][3])
+                            xgc.line_width = 4
+                                
+                        
+                        textavarageX = int( sum(textavarageX)/len(textavarageX) )
+                        textavarageY = int( sum(textavarageY)/len(textavarageY) )
+                        
+                        textY = textavarageY - 40
+                        if prevtextY in range(textY-5, textY+15):
+                            textY = textY - 20
+                        
+                        if wordabouthepart != prevwordabouthepart:
+                            ctx.set_source_rgb(1,1,1)
+                            ctx.set_font_size(10)
+                            ctx.move_to( textavarageX-(len(otherword[str(dln)+wordabouthepart])/2)*6, textY) #
+                            ctx.show_text(otherword[str(dln)+wordabouthepart])
+                            
+                            prevtextY =  textY   
+                            
+                        prevwordabouthepart = wordabouthepart
+                        insultcheck = []
+                        
+                        
+                                      #  day[0][0]   day[0][1]  day[0][2]   day[0][3]   day[1][0]   day[1][1]  day[1][2]   day[1][3]  day[2]
+                    insultcheck.append([[prevW,     prevPH,     nowW,      nowPH],    [bprevW,    bprevPH,     bnowW,     bnowPH], bnowH])
+                    
+                    startheight = bnowPH-30
+                    if startheight+30 > bnowH:
+                        startheight = bnowH-30
+                    
+                    if nowPH < ubY/2+stY-ubY/10:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))    
+                        widget.window.draw_rectangle(xgc, True , nowW-2, nowPH-10, 4,4) 
+                        
+                        
+                        
+                        widget.window.draw_pixbuf(None, self.staricon, 0, 0, bnowW-10, startheight , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        stars = stars +1
+                        
+                        
+                        if str(stars) not in starsword:
+                            fornow = random.choice(motivatingwords)
+                        
+                           
+                            if stars != 1:
+                                while starsword[str(stars-1)] ==  fornow:
+                                    fornow = random.choice(motivatingwords)
+                            starsword[str(stars)] = fornow
+                    
+                        textY = startheight - 5
+                        if prevtextY in range(textY-5, textY+15):
+                            textY = textY - 20
+                    
+                    
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(10)
+                        ctx.move_to( bnowW-10, textY)
+                        ctx.show_text(starsword[str(stars)])
+                        
+                        prevtextY =  textY   
+                    
+                    
+                    
+                    
+                    
+                    
                     
                     #PASSING TO THE NEXT VECTOR
                     prevH = nowH
@@ -1489,6 +1654,8 @@ class draw_analytics:
                     bprevW = bnowW
                     prevbnowRH = bnowRH
                     bprevPH = bnowPH
+            
+            
             
             
             
@@ -1962,6 +2129,40 @@ class draw_analytics:
                 
             ################################################################  OLD CODE #########################################################
             
+            # MOTIVATION THING
+            
+            #stars = 0    #testing for the new project
+            
+            ctx3.set_source_rgba(0,0,0,0.75)
+            ctx3.rectangle( bnowW+30-5, bstY+bubY-100+30-5, 250, 75)
+            ctx3.fill()
+            
+            ctx.set_source_rgb(1,1,1)
+            ctx.set_font_size(15)
+            ctx.move_to( bnowW+30,  bstY+bubY-80+30)
+            ctx.show_text("We've got     X "+str(stars))
+            
+            widget.window.draw_pixbuf(None, self.staricon, 0, 0, bnowW+135, bstY+bubY-80+13 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+            
+            if stars > 0:
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(15)
+                ctx.move_to( bnowW+30,  bstY+bubY-80+30+20)
+                ctx.show_text("We can make   X "+str(int(stars*1.5)))
+            else:
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(15)
+                ctx.move_to( bnowW+30,  bstY+bubY-80+30+20)
+                ctx.show_text("We can make   X 1")
+            widget.window.draw_pixbuf(None, self.staricon, 0, 0, bnowW+135, bstY+bubY-80+13+20 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+            
+            ctx.set_source_rgb(1,1,1)
+            ctx.set_font_size(15)
+            ctx.move_to( bnowW+30,  bstY+bubY-80+30+40)
+            ctx.show_text(justdoitsting)
+            
+            
+            
             
             fif = datetime.datetime.now()
             mil  = fif - stf
@@ -1977,7 +2178,7 @@ class draw_analytics:
             ### SELECTABLE DAY
             notfound = True
             
-            for i in range(self.alltime+3):
+            for i in range(0-self.scroll/20,  self.alltime+3):
                 
                 #i = i + 1
                 
@@ -2036,8 +2237,8 @@ class draw_analytics:
                         # Moving taks around
                         if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and self.taskmove != -1:
                             
-                            print "########### MOVIN TASKS #############\n\n"
-                            print self.taskmove, "TASK NUMBER"
+                            
+                            
                             
                             o = []
                             
@@ -2045,9 +2246,9 @@ class draw_analytics:
                             for tind, task in enumerate(self.schedule):
                                 today, over, under, xpos, ypos, gypos, done, taskstring, taskfile, rawline, daystring = task
                                 if self.taskmove == tind:
-                                    print rawline, "RAWLINE"
+                                    
                                     newline = selectingdate + rawline[rawline.find(" "):]
-                                    print newline, "NEWLINE"
+                                    
                                     
                                     o.append(newline)
                                 else:
@@ -2064,7 +2265,7 @@ class draw_analytics:
                                 for task in o:
                                     if task[:task.find(" ")] == d:
                                         tdl.append(task)
-                                        print task , "#####", d
+                                        
                                     
                                     else:
                                         #if newline[:newline.find(" ")] == d:
@@ -2080,18 +2281,18 @@ class draw_analytics:
                                 tdl.append(task)
                                 d = task[:task.find(" ")]
                                         
-                                print dl, "########### BEFORE  #############"
+                                
                                 dl = sorted(dl)
-                                print dl ,"########### AFTER   #############"
+                                
                                 o = []
                                 for task in dl:
                                     for b in task:
-                                        print b, " ####### B ######"
+                                        
                                         if b != "":
                                             o.append(b)
                                         
                             except Exception as c:
-                                print "########## NOT GOOD ###########\n\n", c, "\n\n########################"
+                                
                                 
                                 o = sorted(o)
                             
@@ -2104,7 +2305,7 @@ class draw_analytics:
                             
                             
                             
-                            print "########### MOVIN TASKS DONE #############\n\n"
+                            
                         
                     if self.selectdate == selectingdate:
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
@@ -2134,6 +2335,7 @@ class draw_analytics:
                         else:    
                             needicon = False
                             hdata = []
+                            found = False
                             for n, l in enumerate(hf.split("\n")[::-1]):
                                 
                                 if l.startswith(selectingdate):
@@ -2156,6 +2358,10 @@ class draw_analytics:
                                         hdata.append(needicon)
                            
                                     self.dateicons[selectingdate] = hdata
+                                    found = True
+                            if not found:
+                                self.dateicons[selectingdate] = hdata
+                            
             fif = datetime.datetime.now()
             mil  = fif - stf
             perfStat.append([ "DATES AND TINY ICONS - ", mil.microseconds])
@@ -2381,7 +2587,7 @@ class draw_analytics:
                 if self.allowed == True:
                     widget.queue_draw()
 
-            glib.timeout_add(10, callback)
+            glib.timeout_add(1, callback)
             
             
             

@@ -65,7 +65,7 @@ def write(pf, filename, action):
     w = []
     p = ""
     for i in f:
-        if i not in w and i != "" and i[i.replace(" ", ".", 1).find(" "):] != p[p.replace(" ", ".", 1).find(" "):]:
+        if "[Project " not in i and i not in w and i != "" and i[i.replace(" ", ".", 1).find(" "):] != p[p.replace(" ", ".", 1).find(" "):]:
             w.append(i)
             s.write(i+"\n")
         p = i

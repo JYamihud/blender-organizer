@@ -2994,6 +2994,8 @@ class story:
                 
                 b = ""
                 
+                story = story.decode("utf-8")
+                
                 if shotname:
                     for b in shotname[shotname.rfind("/")+1:].split("\n"):
                         

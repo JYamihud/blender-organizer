@@ -2061,7 +2061,7 @@ def markup(textbuffer):
     textbuffer.remove_all_tags(textbuffer.get_start_iter(), textbuffer.get_end_iter())
     text = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())
     
-    
+    text = text.decode("utf-8")
     
     
     YELLOW = ["<scene>", "</scene>"]

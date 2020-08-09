@@ -689,7 +689,7 @@ class main:
                 
                     
                     ## POPEN MOTHERFUCKER # subprocess
-                    Popen(["python", self.pf+"/py_data/modules/render.py", self.pf+"/py_data/rnd_seq/"+LIST[0]], universal_newlines=True)    
+                    Popen(["python2", self.pf+"/py_data/modules/render.py", self.pf+"/py_data/rnd_seq/"+LIST[0]], universal_newlines=True)    
                 
                 
                 

@@ -72,7 +72,7 @@ class main:
         self.writepagemode = False
         
         
-        self.process = Popen(['stdbuf', '-o0', "python", self.pf+"/py_data/modules/update_network.py"], stdout=PIPE, universal_newlines=True)
+        self.process = Popen(['stdbuf', '-o0', "python2", self.pf+"/py_data/modules/update_network.py"], stdout=PIPE, universal_newlines=True)
         
         self.update_update = False
         self.update_progress = 1.0

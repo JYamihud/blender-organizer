@@ -868,8 +868,8 @@ in the folder.
         
             setting.close()
             if not onlyset.get_active():
-                P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+cpufn], universal_newlines=True)
-                P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+gpufn], universal_newlines=True)
+                P = Popen(["python2", pf+"/py_data/modules/render.py", pf+"/"+cpufn], universal_newlines=True)
+                P = Popen(["python2", pf+"/py_data/modules/render.py", pf+"/"+gpufn], universal_newlines=True)
             
         # IF CLEAR RENDERS
         if clearfolder.get_active():
@@ -906,11 +906,11 @@ in the folder.
                         addtofile.close()
                         
                 if not onlyset.get_active():
-                    P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/py_data/rnd_seq/"+rlistIS], universal_newlines=True)    
+                    P = Popen(["python2", pf+"/py_data/modules/render.py", pf+"/py_data/rnd_seq/"+rlistIS], universal_newlines=True)    
             
             else:
                 if not onlyset.get_active():
-                    P = Popen(["python", pf+"/py_data/modules/render.py", pf+"/"+blend], universal_newlines=True)              
+                    P = Popen(["python2", pf+"/py_data/modules/render.py", pf+"/"+blend], universal_newlines=True)              
                             
         
         

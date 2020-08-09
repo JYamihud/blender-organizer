@@ -312,7 +312,7 @@ class main:
                 
                 print __file__, "<<<<<<<<<<<<<<<< THE FILE NAME"
                 
-                self.update_update = Popen(['stdbuf', '-o0', "python", self.pf+"/py_data/modules/update_update.py"], stdout=PIPE, universal_newlines=True)
+                self.update_update = Popen(['stdbuf', '-o0', "python2", self.pf+"/py_data/modules/update_update.py"], stdout=PIPE, universal_newlines=True)
                 
                 
                 

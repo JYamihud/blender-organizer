@@ -2157,6 +2157,8 @@ class draw_analytics:
             
             #stars = 0    #testing for the new project
             
+            bnowW = 0            
+            
             ctx3.set_source_rgba(0,0,0,0.75)
             ctx3.rectangle( bnowW+30-5, bstY+bubY-100+30-5, 250, 75)
             ctx3.fill()

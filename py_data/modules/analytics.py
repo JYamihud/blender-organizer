@@ -1512,6 +1512,30 @@ class draw_analytics:
                     widget.window.draw_line(xgc,bprevW, bprevPH, bnowW, bnowPH)
                     
                     
+                    # LAST FEW DAYS DRAWER
+                    
+                    if nowPH < ubY/2+stY-ubY/10:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#0F0"))
+                        
+                        
+                        
+                    elif nowPH < ubY/2+stY-ubY/20:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#ff0"))
+                        
+                         
+                        
+                    elif nowPH < ubY/2+stY-ubY/35:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#f70"))
+                        
+
+                    else:
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#f00"))
+                        
+                    xgc.line_width = 3
+                    widget.window.draw_line(xgc,prevW, prevPH, nowW, nowPH)
+                    widget.window.draw_line(xgc,bprevW, bprevPH, bnowW, bnowPH)
+                    
+                    
                     #print prevV,  thepercent, prevV < thepercent, nowPH, thedate
                     
                     # LET'S INSULT PEOPLE FOR NOT WORKING

@@ -403,9 +403,9 @@ class checkwindow:
                 ymove = yline+self.offset
                 
                 try:
-                    if ymove not in range(0-40,h):
-                        continue
-                except:
+                    if ymove not in range(0-40,h):   ############# THIS IS THE ATTEMPT AT OPTIMIZATION ################
+                        continue                                 # tho it breaks the scroll sometimes  #
+                except:                                          # I have an idea to disable scroll limits and see what's gonna happen
                     pass    
                 
                 
@@ -1279,12 +1279,12 @@ class checkwindow:
             self.offset = self.offset - (self.mpy-my)
         
         
-        if self.offset < 0-(yline+40-h):
-            self.offset = 0-(yline+40-h)
-            
-        if self.offset > 0:
-            self.offset = 0
-        
+        #if self.offset < 0-(yline+40-h):              # SCROLL LIMITS #
+        #    self.offset = 0-(yline+40-h)              # for now I disabled them so when optimization happens
+        #                                              # there will not be nasty artifacts. Like scrolling gets
+        #if self.offset > 0:                           # somewhere unexpected. I need to look at this more. But not now.
+        #    self.offset = 0                           # At the top of the frame you can find the code that does this issue.
+                                                       # I think it's something to do with yline value. 
         
         
         #if reloadfile:

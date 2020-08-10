@@ -562,7 +562,7 @@ class draw:
                         
                         return Popen(['stdbuf', '-o0', cblndr+"blender", "-b", pf+"/"+FILE, "-o",pf+FOLDER+"/####", "-F", FORMAT ,"-f", str(self.nowframe)], stdout=PIPE, universal_newlines=True)
         
-        os.system("notify-send Blender-Organizer Finished\ Rendering")
+        os.system("notify-send -i "+os.getcwd()+"/py_data/icon.png Blender-Organizer Finished\ Rendering")
         gtk.main_quit()
         
     def process_kill(self):

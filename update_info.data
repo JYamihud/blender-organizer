@@ -1,3 +1,9 @@
+VERSION 4.77
+FILE update_info.data
+FILE py_data/modules/render.py
+MAIN_FILE
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.77
+
 VERSION 4.76
 FILE update_info.data
 FILE py_data/modules/story_editor.py

@@ -1,3 +1,9 @@
+VERSION 4.78
+FILE update_info.data
+FILE py_data/modules/dialogs.py
+FILE py_data/modules/checklist.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.78
+
 VERSION 4.77
 FILE update_info.data
 FILE py_data/modules/render.py

@@ -374,6 +374,9 @@ class checkwindow:
         
         for ind, line in enumerate(self.FILE[9:]):
             
+            line = line.decode("utf-8")
+            
+            
             notlastline = True
             #if it's the LASTLINE BUGFIXER THINGY
             if line == "[ ] !!!LASTLINE!!!":
@@ -402,11 +405,11 @@ class checkwindow:
                     yline = yline + 40
                 ymove = yline+self.offset
                 
-                try:
-                    if ymove not in range(0-40,h):   ############# THIS IS THE ATTEMPT AT OPTIMIZATION ################
-                        continue                                 # tho it breaks the scroll sometimes  #
-                except:                                          # I have an idea to disable scroll limits and see what's gonna happen
-                    pass    
+                #try:
+                #    if ymove not in range(0-40,h):   ############# THIS IS THE ATTEMPT AT OPTIMIZATION ################
+                #        continue                                 # tho it breaks the scroll sometimes  #
+                #except:                                          # I have an idea to disable scroll limits and see what's gonna happen
+                #    pass    
                 
                 
                 xmove = line.find("[")*20 + 50

@@ -1284,6 +1284,9 @@ class event:
                 
                     scenetext = i[3]
                     
+                    scenetext = scenetext.decode("utf-8")
+                    
+                    
                     #CLEARING THE SCENETEXT FROM <shot>
                     for H in range(scenetext.count("<shot>")):
                         
@@ -1321,6 +1324,9 @@ class event:
         pixbufs = [] #[ ["path", pixbuf] , ...]
         
         text = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())+"\nPS - [Done in Blender-Organizer software Written by J.Y.Amihud]"
+        
+        text = text.decode("utf-8")
+        
         export_text = text
         EXFR = [] #FRASE SPECKER NAME LOCATIONS LIST
         EXSP = [] #FRASES THEM SELFS LOCATIONS

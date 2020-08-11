@@ -1794,7 +1794,8 @@ class event:
             self.LIST.events[IND][4] = textbuffer.get_text(textbuffer.get_start_iter(), textbuffer.get_end_iter())
         
         
-        
+            #WRITTING TO HYSTORY
+            history.write(os.getcwd() ,"pln/main.bos", "[Edited]")
         
         
         

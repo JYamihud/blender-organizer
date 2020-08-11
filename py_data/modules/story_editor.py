@@ -2108,7 +2108,8 @@ class story:
                     
                     
                     
-                    
+                    #WRITTING TO HYSTORY
+                    history.write(os.getcwd() ,"pln/main.bos", "[Edited]")
                     
                     
                     
@@ -2402,19 +2403,13 @@ class story:
             
             # ADD SCENE BUTTON
             addscenenowshortcut = False
-            if 110 in self.keys and self.win.is_active() and 65505 not in self.keys and not saveshortcut:
+            if 110 in self.keys and self.win.is_active() and 65505 not in self.keys:
                 if 110 in self.keys:
                     self.keys.remove(110)
                 #addscenenowshortcut = True
                 self.tool = "event"
                 self.toolactive = False
-            if 110 in self.keys and self.win.is_active() and 65507 not in self.keys and not saveshortcut:
-                
-                if 110 in self.keys:
-                    self.keys.remove(110)
-                #addscenenowshortcut = True
-                self.tool = "event"
-                self.toolactive = False
+            
             
             if self.tool == "event":
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5175ae"))
@@ -5268,8 +5263,7 @@ class bos:
         
         
         
-        #WRITTING TO HYSTORY
-        history.write(os.getcwd() ,self.filename, "[Edited]")
+        
         
         return
 

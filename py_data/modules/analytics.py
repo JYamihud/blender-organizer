@@ -983,246 +983,107 @@ class draw_analytics:
             
             ln = 0
             
+            hlist = {} # HERE I GONNA STORE DATA BY THE URL OF THE HISTORY
+                       # IMO PEOPLE ARE NOT LOOKING FOR LIST, BUT MORE FOR
+                       # WHAT THEY'VE DONE AT A PARTICULAR DAY
             
-            for n, l in enumerate(hf.split("\n")[::-1]):
-                
-                
-                
-                
-                if l.startswith(self.selectdate):
-                    ln = ln + 1
-                    
-                    t = l[11:20]
-                    
-                    ypart = (ubY-ln*22) + self.hscroll
-                    
-                    if  ypart < stY + ubY - 21 and ypart > 15:
-                        
-                        
-                        
-                        ctx3.set_source_rgba(0,0,0,0.5)
-                        ctx3.rectangle(stX+border/2, ypart-15,  ubX-border, 20)
-                        ctx3.fill()
-                        
-                        
-                        ctx.set_source_rgb(0.8,0.8,1)
-                        ctx.set_font_size(15)
-                        ctx.move_to( stX+border/2+2, ypart)
-                        ctx.show_text(t)
-                        
-                        
-                        needicon = self.scnicon
-                        if "obj" in l:
-                            needicon = self.objicon
-                        elif "chr" in l:
-                            needicon = self.chricon
-                        elif "loc" in l:
-                            needicon = self.locicon
-                        elif "veh" in l:
-                            needicon = self.vehicon
-                        
-                        if "pln/main.bos" in l:
-                            
-                            widget.window.draw_pixbuf(None, self.scnicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(15)
-                            ctx.move_to( stX+104, ypart)
-                            ctx.show_text("Edited Story")
-                        
-                        elif "Project Started" in l:
-                            
-                            ctx.set_source_rgb(0,1,0)
-                            ctx.set_font_size(15)
-                            ctx.move_to( stX+104, ypart)
-                            ctx.show_text("Ready for work ; )")
-                        
-                        elif "Project Exited" in l:
-                            
-                            ctx.set_source_rgb(1,0,0)
-                            ctx.set_font_size(15)
-                            ctx.move_to( stX+104, ypart)
-                            ctx.show_text("Where are you going :`(")
-                        
-                        
-                        
-                        elif "[Added Asset]" in l:
-                            widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(15)
-                            ctx.move_to( stX+104, ypart)
-                            ctx.show_text("New : "+l[l.find("/dev/")+9:l.rfind("[")])
-                        
-                        elif "autolink.data" in l:
-                            widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            
-                            nameofasset = l[l.find("/dev/")+9:l.rfind("autolink.data")-1]
-                            ctx2.set_source_rgb(1,1,1)
-                            ctx2.set_font_size(15)
-                            ctx2.move_to( stX+104, ypart)
-                            ctx2.show_text(nameofasset)
-                            
-                            sp = len(nameofasset)*9 + 30
-                            
-                            widget.window.draw_pixbuf(None, self.settingsicon, 0, 0, stX+104-24+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(10)
-                            ctx.move_to( stX+170-48+sp, ypart)
-                            ctx.show_text("Asset Configured")
-                        
-                        elif "/dev/" in l and ".progress" in l:
-                            widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            
-                            nameofasset = l[l.find("/dev/")+9:l.rfind("asset.progress")-1]
-                            ctx2.set_source_rgb(1,1,1)
-                            ctx2.set_font_size(15)
-                            ctx2.move_to( stX+104, ypart)
-                            ctx2.show_text(nameofasset)
-                            
-                            sp = len(nameofasset)*9 + 30
-                            
-                            widget.window.draw_pixbuf(None, self.checklist, 0, 0, stX+104-24+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            if "[V]" in l:
-                                widget.window.draw_pixbuf(None, self.okicon, 0, 0, stX+150-48+sp, ypart-17-4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            elif "Scheduled" in l:
-                                
-                                widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                                
-                            else:
-                                ctx3.set_source_rgba(1,1,1,0.4)
-                                ctx3.rectangle(stX+152-48+sp, ypart-17+6,  12, 12)
-                                ctx3.fill()
-                            
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(10)
-                            ctx.move_to( stX+170-48+sp, ypart)
-                            ctx.show_text(l[l.find(".progress ")+9:l.find("[")].replace("=:>", " > "))
+            sumofthings = 0 # I WANT TO MAKE A LITTLE GRAPH. LIKE WHAT YOU WAS WORKING ON MORE AND OTHERS.
                        
-                        elif "/rnd/" in l and ".progress" in l:
-                            widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            
-                            nameofasset = l[l.find("/rnd/")+5:l.rfind("shot.progress")-1]
-                            ctx2.set_source_rgb(1,1,1)
-                            ctx2.set_font_size(10)
-                            ctx2.move_to( stX+104, ypart)
-                            ctx2.show_text(nameofasset)     
-                            
-                            sp = len(nameofasset)*6 + 30
-                            
-                            
-                            widget.window.draw_pixbuf(None, self.checklist, 0, 0, stX+104-24+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            if "[V]" in l:
-                                widget.window.draw_pixbuf(None, self.okicon, 0, 0, stX+150-48+sp, ypart-17-4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            elif "Scheduled" in l:
-                                
-                                widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            else:
-                                ctx3.set_source_rgba(1,1,1,0.4)
-                                ctx3.rectangle(stX+152-48+sp, ypart-17+6,  12, 12)
-                                ctx3.fill()
-                            
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(10)
-                            ctx.move_to( stX+170-48+sp, ypart)
-                            ctx.show_text(l[l.find(".progress ")+9:l.find("[")].replace("=:>", " > "))
-                            
-                            
-                        
-                        elif ".progress" in l:
-                            
-                            widget.window.draw_pixbuf(None, self.checklist, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            if "[V]" in l:
-                                widget.window.draw_pixbuf(None, self.okicon, 0, 0, stX+150-48, ypart-17-4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            elif "Scheduled" in l:
-                                
-                                widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            
-                            else:
-                                ctx3.set_source_rgba(1,1,1,0.4)
-                                ctx3.rectangle(stX+152-48, ypart-17+6,  12, 12)
-                                ctx3.fill()
-                            
-                            
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(10)
-                            ctx.move_to( stX+170-48, ypart)
-                            ctx.show_text(l[l.find(".progress ")+9:l.find("[")].replace("=:>", " > "))
-                        
-                        
-                        elif "/dev/" in l and ".blend" in l:
-                            widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            
-                            nameofasset = l[l.find("/dev/")+9:l.rfind("[")-1]
-                            nameofasset, blendfile = nameofasset.split("/")
-                            ctx2.set_source_rgb(1,1,1)
-                            ctx2.set_font_size(15)
-                            ctx2.move_to( stX+104, ypart)
-                            ctx2.show_text(nameofasset)
-                            
-                            sp = len(nameofasset)*9 + 30
-                            
-                            widget.window.draw_pixbuf(None, self.blendericon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                            
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(10)
-                            ctx.move_to( stX+104+sp+22, ypart)
-                            ctx.show_text(blendfile+"  "+l[l.rfind("[")+1:l.rfind("]")])
-                        
-                        
-                            
-                        elif "/ast/" in l and ".blend" in l:
-                            widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            
-                            nameofasset = l[l.find("/ast/")+9:l.rfind("[")-1]
-                            ctx2.set_source_rgb(1,1,1)
-                            ctx2.set_font_size(15)
-                            ctx2.move_to( stX+104, ypart)
-                            ctx2.show_text(nameofasset.replace(".blend", ""))
-                            
-                            
-                            sp = len(nameofasset)*9 + 30
-                            
-                            ctx3.set_source_rgba(0.4,0,0.6,0.5)
-                            ctx3.rectangle(stX+border/2+22+sp, ypart-15,  ubX-border-22-sp, 20)
-                            ctx3.fill()
-                            
-                            
-                            widget.window.draw_pixbuf(None, self.blendericon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                            
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(10)
-                            ctx.move_to( stX+104+sp+22, ypart)
-                            ctx.show_text(nameofasset+"  "+l[l.rfind("[")+1:l.rfind("]")])
-                        
-                        elif "/rnd/" in l and ".blend" in l:
-                            widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
-                            
-                            nameofasset = l[l.find("/rnd/")+5:l.rfind("[")-1]
-                            
-                            blendfile = nameofasset[nameofasset.rfind("/")+1:]
-                            nameofasset = nameofasset[:nameofasset.rfind("/")]
-                            
-                            ctx2.set_source_rgb(1,1,1)
-                            ctx2.set_font_size(15)
-                            ctx2.move_to( stX+104, ypart)
-                            ctx2.show_text(nameofasset)
-                            
-                            sp = len(nameofasset)*9 + 30
-                            
-                            widget.window.draw_pixbuf(None, self.blendericon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
-                            
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(10)
-                            ctx.move_to( stX+104+sp+22, ypart)
-                            ctx.show_text(blendfile+"  "+l[l.rfind("[")+1:l.rfind("]")])
-                        
-                        else:
-                            ctx.set_source_rgb(1,1,1)
-                            ctx.set_font_size(15)
-                            ctx.move_to( stX+104, ypart)
-                            ctx.show_text("["+l[21:]+"]")
+            for n, l in enumerate(hf.split("\n")[::-1]): # READING THE DATA
+                
+                if l.startswith(self.selectdate): # IF IT'S TODAY
                     
+                    sumofthings = sumofthings + 1 # COUNTING HOW MUCH IS TODAY
+                    
+                    
+                    
+                    if "project.progress" in l:
+                        urlofentry = "project.progress"
+                    
+                    elif "/ast/" in l:
+                        urlofentry = l[l.replace(" ", ".", 1).find(" ")+1:l.rfind(".")]
+                        urlofentry = urlofentry.replace("/ast/", "/dev/")
+                    
+                    elif "[Added Asset]" in l:
+                        urlofentry = l[l.replace(" ", ".", 1).find(" ")+1:l.replace(" ", ".", 2).find(" ")]
+                    
+                    else: 
+                        urlofentry = l[l.replace(" ", ".", 1).find(" ")+1:l.replace(" ", ".", 2).find(" ")][:l.rfind("/")]
+                        urlofentry = urlofentry[:urlofentry.rfind("/")] #GETTING THE URL
+                    
+                    
+                    if urlofentry not in hlist:
+                        hlist[urlofentry] = []
+                    
+                    hlist[urlofentry].append(l)
+            
+            
+            drawhistory = ""
+            
+            for n, l in enumerate(hlist): #REAING THE DOUCHE
+                
+                ln = ln + 1
+                
+                ypart = (ubY-ln*42) + self.hscroll
+                
+                if  ypart < stY + ubY - 41 and ypart > 1: #MAKING SURE THAT WE DRAW ONLY WHAT'S IN THE SCREEN. (OPTIMIZATION)
+                    
+                    
+                    ctx3.set_source_rgba(0.1,0.1,0.1,0.75)
+                    ctx3.rectangle(stX+border/2, ypart-1,  ubX-border, 40)
+                    ctx3.fill()
+                    
+                    printname = l
+                    
+                    needicon = self.scnicon
+                    if "obj" in l:
+                        needicon = self.objicon
+                        printname = l[l.rfind("/")+1:]
+                    elif "chr" in l:
+                        needicon = self.chricon
+                        printname = l[l.rfind("/")+1:]
+                    elif "loc" in l:
+                        needicon = self.locicon
+                        printname = l[l.rfind("/")+1:]
+                    elif "veh" in l:
+                        needicon = self.vehicon
+                        printname = l[l.rfind("/")+1:]
+                    elif "pln" in l:
+                        printname = "Edited Story"
+                    elif "project.progress" in l:
+                        printname = "Main Checklist"
+                    elif "/rnd/" in l:
+                        printname = l.replace("/rnd/", "").replace("/", " > ")
+                    
+                    
+                    ctx.set_source_rgb(1,1,1)
+                    ctx.set_font_size(15)
+                    ctx.move_to( stX+border+30, ypart+15)
+                    ctx.show_text(printname)
+                    
+                    widget.window.draw_pixbuf(None, needicon, 0, 0, stX + border + 2, ypart, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                    
+                    
+                    # PROGRESS BAR WIDGET
+                            
+                            
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#0c0c0c"))
+                    widget.window.draw_rectangle(xgc, True , stX+border/2+10, ypart+30, ubX-border-10, 4)  
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4c4c4c"))
+                    widget.window.draw_rectangle(xgc, True , stX+border/2+10, ypart+30, (ubX-border-10)/sumofthings*len(hlist[l]), 4)  
+                    
+                    # NOT LET'S SHOW ALL OF THEM
+                    
+                    if my in range(ypart-1, ypart-1+40) and mx in range(stX+border/2, stX+border/2+ubX-border):
+                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                        widget.window.draw_rectangle(xgc, False , stX+border/2, ypart-1,  ubX-border, 40)
+                        
+                        drawhistory = l
+                    
+                
+                        
             
             
             fif = datetime.datetime.now()
@@ -2445,6 +2306,259 @@ class draw_analytics:
             if my in range(stY, h):
                 if "GDK_BUTTON2" in str(fx) and win.is_active(): ## IF DRAGGED
                     self.scroll = int(float(20*self.alltime)/w*(mx-size/2)) * -1          
+             
+             
+            # LIST OF THINGS TOOLTIP
+            if drawhistory:
+            
+                for p, d in enumerate(hlist[drawhistory]):
+                    
+                    tmp = n, l, ypart, stX, ubX
+                    n = p
+                    l = d
+                    stX = mx
+                    ubX = w/3
+                    
+                    
+                    t = l[11:20]
+                    
+                    ypart = my + n*15
+            
+                    while ypart > h-10:
+                        ypart = ypart - (h - my)
+                        stX = stX - ubX
+                
+                
+                    ctx3.set_source_rgba(0,0,0,0.75)
+                    ctx3.rectangle(stX+border/2, ypart-15,  ubX-border, 15)
+                    ctx3.fill()
+                    
+                    
+                    ctx.set_source_rgb(0.8,0.8,1)
+                    ctx.set_font_size(15)
+                    ctx.move_to( stX+border/2+2, ypart)
+                    ctx.show_text(t)
+                    
+                    
+                    needicon = self.scnicon
+                    if "obj" in l:
+                        needicon = self.objicon
+                    elif "chr" in l:
+                        needicon = self.chricon
+                    elif "loc" in l:
+                        needicon = self.locicon
+                    elif "veh" in l:
+                        needicon = self.vehicon
+                    
+                    if "pln/main.bos" in l:
+                        
+                        widget.window.draw_pixbuf(None, self.scnicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(15)
+                        ctx.move_to( stX+104, ypart)
+                        ctx.show_text("Edited Story")
+                    
+                    elif "Project Started" in l:
+                        
+                        ctx.set_source_rgb(0,1,0)
+                        ctx.set_font_size(15)
+                        ctx.move_to( stX+104, ypart)
+                        ctx.show_text("Ready for work ; )")
+                    
+                    elif "Project Exited" in l:
+                        
+                        ctx.set_source_rgb(1,0,0)
+                        ctx.set_font_size(15)
+                        ctx.move_to( stX+104, ypart)
+                        ctx.show_text("Where are you going :`(")
+                    
+                    
+                    
+                    elif "[Added Asset]" in l:
+                        widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(15)
+                        ctx.move_to( stX+104, ypart)
+                        ctx.show_text("New : "+l[l.find("/dev/")+9:l.rfind("[")])
+                    
+                    elif "autolink.data" in l:
+                        widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        nameofasset = l[l.find("/dev/")+9:l.rfind("autolink.data")-1]
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( stX+104, ypart)
+                        ctx2.show_text(nameofasset)
+                        
+                        sp = len(nameofasset)*9 + 30
+                        
+                        widget.window.draw_pixbuf(None, self.settingsicon, 0, 0, stX+104-24+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(10)
+                        ctx.move_to( stX+170-48+sp, ypart)
+                        ctx.show_text("Asset Configured")
+                    
+                    elif "/dev/" in l and ".progress" in l:
+                        widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        nameofasset = l[l.find("/dev/")+9:l.rfind("asset.progress")-1]
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( stX+104, ypart)
+                        ctx2.show_text(nameofasset)
+                        
+                        sp = len(nameofasset)*9 + 30
+                        
+                        widget.window.draw_pixbuf(None, self.checklist, 0, 0, stX+104-24+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        if "[V]" in l:
+                            widget.window.draw_pixbuf(None, self.okicon, 0, 0, stX+150-48+sp, ypart-17-4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        elif "Scheduled" in l:
+                            
+                            widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                            
+                        else:
+                            ctx3.set_source_rgba(1,1,1,0.4)
+                            ctx3.rectangle(stX+152-48+sp, ypart-17+6,  12, 12)
+                            ctx3.fill()
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(10)
+                        ctx.move_to( stX+170-48+sp, ypart)
+                        ctx.show_text(l[l.find(".progress ")+9:l.find("[")].replace("=:>", " > "))
+                   
+                    elif "/rnd/" in l and ".progress" in l:
+                        widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        nameofasset = l[l.find("/rnd/")+5:l.rfind("shot.progress")-1]
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(10)
+                        ctx2.move_to( stX+104, ypart)
+                        ctx2.show_text(nameofasset)     
+                        
+                        sp = len(nameofasset)*6 + 30
+                        
+                        
+                        widget.window.draw_pixbuf(None, self.checklist, 0, 0, stX+104-24+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        if "[V]" in l:
+                            widget.window.draw_pixbuf(None, self.okicon, 0, 0, stX+150-48+sp, ypart-17-4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        elif "Scheduled" in l:
+                            
+                            widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        else:
+                            ctx3.set_source_rgba(1,1,1,0.4)
+                            ctx3.rectangle(stX+152-48+sp, ypart-17+6,  12, 12)
+                            ctx3.fill()
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(10)
+                        ctx.move_to( stX+170-48+sp, ypart)
+                        ctx.show_text(l[l.find(".progress ")+9:l.find("[")].replace("=:>", " > "))
+                        
+                        
+                    
+                    elif ".progress" in l:
+                        
+                        widget.window.draw_pixbuf(None, self.checklist, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        if "[V]" in l:
+                            widget.window.draw_pixbuf(None, self.okicon, 0, 0, stX+150-48, ypart-17-4, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        elif "Scheduled" in l:
+                            
+                            widget.window.draw_pixbuf(None, self.scheduleicon, 0, 0, stX+150-48, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        else:
+                            ctx3.set_source_rgba(1,1,1,0.4)
+                            ctx3.rectangle(stX+152-48, ypart-17+6,  12, 12)
+                            ctx3.fill()
+                        
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(10)
+                        ctx.move_to( stX+170-48, ypart)
+                        ctx.show_text(l[l.find(".progress ")+9:l.find("[")].replace("=:>", " > "))
+                    
+                    
+                    elif "/dev/" in l and ".blend" in l:
+                        widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        nameofasset = l[l.find("/dev/")+9:l.rfind("[")-1]
+                        nameofasset, blendfile = nameofasset.split("/")
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( stX+104, ypart)
+                        ctx2.show_text(nameofasset)
+                        
+                        sp = len(nameofasset)*9 + 30
+                        
+                        widget.window.draw_pixbuf(None, self.blendericon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(10)
+                        ctx.move_to( stX+104+sp+22, ypart)
+                        ctx.show_text(blendfile+"  "+l[l.rfind("[")+1:l.rfind("]")])
+                    
+                    
+                        
+                    elif "/ast/" in l and ".blend" in l:
+                        widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        nameofasset = l[l.find("/ast/")+9:l.rfind("[")-1]
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( stX+104, ypart)
+                        ctx2.show_text(nameofasset.replace(".blend", ""))
+                        
+                        
+                        sp = len(nameofasset)*9 + 30
+                        
+                        ctx3.set_source_rgba(0.4,0,0.6,0.5)
+                        ctx3.rectangle(stX+border/2+22+sp, ypart-15,  ubX-border-22-sp, 20)
+                        ctx3.fill()
+                        
+                        
+                        widget.window.draw_pixbuf(None, self.blendericon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(10)
+                        ctx.move_to( stX+104+sp+22, ypart)
+                        ctx.show_text(nameofasset+"  "+l[l.rfind("[")+1:l.rfind("]")])
+                    
+                    elif "/rnd/" in l and ".blend" in l:
+                        widget.window.draw_pixbuf(None, needicon, 0, 0, stX+104-24, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                        nameofasset = l[l.find("/rnd/")+5:l.rfind("[")-1]
+                        
+                        blendfile = nameofasset[nameofasset.rfind("/")+1:]
+                        nameofasset = nameofasset[:nameofasset.rfind("/")]
+                        
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( stX+104, ypart)
+                        ctx2.show_text(nameofasset)
+                        
+                        sp = len(nameofasset)*9 + 30
+                        
+                        widget.window.draw_pixbuf(None, self.blendericon, 0, 0, stX+150-48+sp, ypart-17, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                        
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(10)
+                        ctx.move_to( stX+104+sp+22, ypart)
+                        ctx.show_text(blendfile+"  "+l[l.rfind("[")+1:l.rfind("]")])
+                    
+                    else:
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.set_font_size(15)
+                        ctx.move_to( stX+104, ypart)
+                        ctx.show_text("["+l[21:]+"]")
+                    
+                    
+                    
+                    
+                    
+                    n, l, ypart, stX, ubX = tmp
+             
+             
                  
             ##### TOOLTIP
             
@@ -2543,10 +2657,10 @@ class draw_analytics:
             self.hscroll
             # SCROLLING IT SELF
             # the scroll is done with the middle mouse button
-            if self.mpx > mx and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(bstY, bstY+bubY):
+            if self.mpx > mx and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(bstY, bstY+bubY) and self.winactive:
                 self.scroll = self.scroll + (mx-self.mpx)
                 
-            if self.mpx < mx and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(bstY, bstY+bubY):
+            if self.mpx < mx and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(bstY, bstY+bubY) and self.winactive:
                 self.scroll = self.scroll - (self.mpx-mx)
             
             
@@ -2565,10 +2679,10 @@ class draw_analytics:
             
             # SCROLLING HYSTORY
             # the scroll is done with the middle mouse button
-            if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3*2,w):
+            if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3*2,w) and self.winactive:
                 self.hscroll = self.hscroll + (my-self.mpy)
                 
-            if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3*2,w):
+            if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3*2,w) and self.winactive:
                 self.hscroll = self.hscroll - (self.mpy-my)
             
             
@@ -2581,10 +2695,10 @@ class draw_analytics:
             
             # SCROLLING TASK
             # the scroll is done with the middle mouse button
-            if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3,w/3*2):
+            if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3,w/3*2) and self.winactive:
                 self.tscroll = self.tscroll + (my-self.mpy)
                 
-            if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3,w/3*2):
+            if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and my in range(0, bstY) and mx in range(w/3,w/3*2) and self.winactive:
                 self.tscroll = self.tscroll - (self.mpy-my)
             
             

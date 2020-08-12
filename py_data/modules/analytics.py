@@ -1034,27 +1034,34 @@ class draw_analytics:
                     ctx3.fill()
                     
                     printname = l
+                    CUR = ""
                     
                     needicon = self.scnicon
                     if "obj" in l:
                         needicon = self.objicon
                         printname = l[l.rfind("/")+1:]
+                        CUR = "obj"
                     elif "chr" in l:
                         needicon = self.chricon
                         printname = l[l.rfind("/")+1:]
+                        CUR = "chr"
                     elif "loc" in l:
                         needicon = self.locicon
                         printname = l[l.rfind("/")+1:]
+                        CUR = "loc"
                     elif "veh" in l:
                         needicon = self.vehicon
                         printname = l[l.rfind("/")+1:]
+                        CUR = "veh"
                     elif "pln" in l:
                         printname = "Edited Story"
+                        CUR = "rnd"
                     elif "project.progress" in l:
                         printname = "Main Checklist"
+                        CUR = "Checklist"
                     elif "/rnd/" in l:
                         printname = l.replace("/rnd/", "").replace("/", " > ")
-                    
+                        CUR = "rnd"
                     
                     ctx.set_source_rgb(1,1,1)
                     ctx.set_font_size(15)
@@ -1077,12 +1084,31 @@ class draw_analytics:
                     
                     if my in range(ypart-1, ypart-1+40) and mx in range(stX+border/2, stX+border/2+ubX-border):
                         
+                        xgc.line_width = 1
+                        if CUR:
+                            xgc.line_width = 4
+                        
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                         widget.window.draw_rectangle(xgc, False , stX+border/2, ypart-1,  ubX-border, 40)
                         
                         drawhistory = l
-                    
-                
+                        
+                        
+                        # IF CLICKED
+                        if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active() and CUR:
+                            
+                            if CUR != "Checklist":
+                                self.box.destroy()
+                                self.box = gtk.VBox(False)
+                                self.mainbox.pack_start(self.box, True)
+                                
+                                if CUR == "rnd":
+                                    story_editor.story(os.getcwd(), self.box, self.win, self.mainbox)
+                                
+                                else:                            
+                                    assets.draw_assets(os.getcwd(), self.box, self.win, CUR, printname)
+                            else:
+                                checklist.checkwindow(pf=self.pf, title="Main Checklist", FILE="project.progress")
                         
             
             
@@ -1846,19 +1872,27 @@ class draw_analytics:
                             needicon = self.locicon
                         elif taskfile.startswith("/dev/obj"):
                             needicon = self.objicon
-                        
+                        elif taskfile.startswith("/rnd/"):
+                            needicon = self.scnicon
                         # IF WE HAVE AN ITEM
                         
-                        if taskfile != "project.progress" and taskfile.startswith("/dev/"):
+                        if taskfile != "project.progress" and taskfile.startswith("/dev/") or taskfile.startswith("/rnd/") :
                             #we need to get type of the file the CUR
                             CUR = taskfile[5:8]
                             
                             
                             name = taskfile[9:taskfile.rfind("/")]
+                            
+                            
+                            if taskfile.startswith("/rnd/"):
+                                CUR = "rnd"
+                            
+                            
+                                name = taskfile[5:taskfile.rfind("/")].replace("/", " > ")
+                            
+                                
+                            
                             taskfile = name
-                            
-                            
-                            
                             
                             
                             
@@ -1868,7 +1902,7 @@ class draw_analytics:
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
                                 widget.window.draw_rectangle(xgc, True, xpos-1, ypos, isty-44, 22 )
-                                tooltip = "Go to Asset"
+                                tooltip = "Go to "+name
                             
                                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
                             
@@ -1881,13 +1915,16 @@ class draw_analytics:
                                     self.box = gtk.VBox(False)
                                     self.mainbox.pack_start(self.box, True)
                                     
-                                    
-                                    assets.draw_assets(os.getcwd(), self.box, self.win, CUR, name)
+                                    print CUR, "CUR"
+                                
+                                    if CUR == "rnd":
+                                        story_editor.story(os.getcwd(), self.box, self.win, self.mainbox)
+                                    else:
+                                        assets.draw_assets(os.getcwd(), self.box, self.win, CUR, name)
                                         
                                         
                                     
-                        if taskfile.startswith("/rnd/"):
-                            needicon = self.scnicon
+                        
                         
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(10)
@@ -2322,7 +2359,7 @@ class draw_analytics:
                     
                     t = l[11:20]
                     
-                    ypart = my + n*15
+                    ypart = my + n*20
             
                     while ypart > h-10:
                         ypart = ypart - (h - my)
@@ -2330,9 +2367,10 @@ class draw_analytics:
                 
                 
                     ctx3.set_source_rgba(0,0,0,0.75)
-                    ctx3.rectangle(stX+border/2, ypart-15,  ubX-border, 15)
+                    ctx3.rectangle(stX+border/2, ypart-20,  ubX-border, 20)
                     ctx3.fill()
                     
+                    ypart = ypart - 5
                     
                     ctx.set_source_rgb(0.8,0.8,1)
                     ctx.set_font_size(15)

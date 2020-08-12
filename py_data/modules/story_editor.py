@@ -4486,7 +4486,7 @@ class story:
                     
                     # IF CLICKED
                     
-                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and self.frame > 2:
                         
                         def ee(e=None):
                             

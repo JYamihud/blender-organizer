@@ -1085,10 +1085,9 @@ class draw_analytics:
                     if my in range(ypart-1, ypart-1+40) and mx in range(stX+border/2, stX+border/2+ubX-border):
                         
                         xgc.line_width = 1
-                        if CUR:
-                            xgc.line_width = 4
                         
-                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
                         widget.window.draw_rectangle(xgc, False , stX+border/2, ypart-1,  ubX-border, 40)
                         
                         drawhistory = l

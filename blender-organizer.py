@@ -525,7 +525,7 @@ def drawmain(w=None):
     mainbox.pack_start(drawbox, True)
     
     if CUR in ["chr","obj","loc","veh"]:
-        assets.draw_assets(os.getcwd(), drawbox, mainwin, CUR,)
+        assets.draw_assets(os.getcwd(), drawbox, mainwin, CUR, mainbox=mainbox)
         
     
     if CUR == "stats":

@@ -28,6 +28,7 @@ import linkconfig
 import history
 import oscalls
 import imageselector
+import story_editor
 
 from subprocess import *
 
@@ -162,17 +163,20 @@ class asset:
 ####   ACTUALL DRAWING OF THE DIALOG ( WITH DRAWABLE BECAUSE WHY NOT )
 class draw_assets:
     
-    def __init__(self, pf, box, win, CUR, Goto=None):
+    def __init__(self, pf, box, win, CUR, Goto=None, mainbox=False):
     
         self.pf = pf # pf stands for project folder. It's a string to know
                      # where the project's folders start with
         
         self.box = box # the gtk.Box() container to put this widget into
+        self.mainbox = mainbox
         
         self.win = win
         self.CUR = CUR
         
         self.assets = []
+        
+        self.itemscenedata = []
         
         
         ## THIS IS WHERE THE READING OF THE FOLDER HAPPENDS
@@ -194,7 +198,7 @@ class draw_assets:
         
         self.scroll = 0
         #in item scrolls
-        self.iscroll = [0,0,0]
+        self.iscroll = [0,0,0,0]
         self.blscroll = 0
         
         self.dW = 0
@@ -221,6 +225,8 @@ class draw_assets:
         self.okicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/ok.png")
         self.vidicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/vid.png")
         self.settingsicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/settings.png")
+        self.scn_asset_undone = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/scn_asset_undone.png")
+        
         
         self.refresh = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/refresh.png")
         self.plusicon = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
@@ -699,7 +705,7 @@ class draw_assets:
                 
                 #basic math to get the sizes of stuff
                 
-                raws = len(self.iteminfo) #how much raws
+                raws = 4#len(self.iteminfo) #how much raws
                                           # so far it's like 3
                                           # look def loaditem():
                 
@@ -720,7 +726,7 @@ class draw_assets:
                     
                     
                     #an attemt to bring Tetures and references up a little
-                    if raw != 0 and (mmx+100) < the_raw_w_start:
+                    if raw != 0 and (mmx+80) < the_raw_w_start:
                         raw_start = 105 + 140
                         raw_h = h - raw_start
                     
@@ -1050,19 +1056,119 @@ class draw_assets:
                 
                 
                 
-                
+                # SCENES LIST
                 
                 
                         
                 
+                if not self.itemscenedata:
+                    
+                    story = story_editor.bos("pln/main.bos")
+                    story.load()
+                    scnDATA = story.get_scenes_data()
+                    
+                    for scn in scnDATA:
+                        
+                        
+                        
+                        for sh in scn:
+                            
+                            
+                            scnname = sh[1]
+                            if "/dev/"+self.CUR+"/"+self.screen.name in sh[3]:
+                                self.itemscenedata.append(scnname)
                 
                 
                 
                 
+                raw = 3
+                
+                the_raw_w_start = raw_true_w*raw+10
+                    
+                    
+                #an attemt to bring Tetures and references up a little
+                if raw != 0 and (mmx+80) < the_raw_w_start:
+                    raw_start = 105 + 140
+                    raw_h = h - raw_start
                 
                 
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0,0,0,0.4)
+                ctx3.rectangle(the_raw_w_start, raw_start,raw_w, raw_h)
+                ctx3.fill()
                 
                 
+                for n, scn in enumerate(self.itemscenedata):
+                    
+                    if raw_start+10+45*n+self.iscroll[raw] in range(raw_start, h):
+                    
+                    
+                        ctx3.set_source_rgba(0.1,0.1,0.1,0.75)
+                        ctx3.rectangle(the_raw_w_start, raw_start+10+45*n + self.iscroll[raw],  raw_w, 40)
+                        ctx3.fill()
+                    
+                        
+                        widget.window.draw_pixbuf(None, self.scn_asset_undone, 0, 0, the_raw_w_start+5, raw_start+17+45*n + self.iscroll[raw], -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                        ctx.set_font_size(15)
+                        ctx.set_source_rgb(1,1,1)
+                        ctx.move_to( the_raw_w_start+14+30, raw_start+20+15+45*n + self.iscroll[raw])
+                        ctx.show_text(scn)
+                        
+                        if my in range(raw_start+10+45*n + self.iscroll[raw], raw_start+10+45*n + self.iscroll[raw]+40) and mx in range(the_raw_w_start, the_raw_w_start+raw_w):
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa")) ## CHOSE COLOR
+                            widget.window.draw_rectangle(xgc, False,the_raw_w_start, raw_start+10+45*n + self.iscroll[raw],  raw_w, 40)
+                            
+                            mouseoverany = True
+                            
+                            # IF CLICKED
+                            if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active():
+                                
+                                
+                                self.box.destroy()
+                                self.box = gtk.VBox(False)
+                                self.mainbox.pack_start(self.box, True)
+                                
+                                story_editor.story(os.getcwd(), self.box, self.win, self.mainbox, scene=scn)
+                            
+                            
+                if my in range(raw_start, h) and mx in range(the_raw_w_start, the_raw_w_start+raw_w):
+                
+                
+                    if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf):
+                                
+                                
+                        self.iscroll[raw] = self.iscroll[raw] + (my-self.mpy)
+                    
+                    if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf):
+                        
+                        self.iscroll[raw] = self.iscroll[raw] - (self.mpy-my) 
+                
+                Yinpix = raw_h+(45*len(self.itemscenedata))*-1-20
+                        
+                if self.iscroll[raw] < Yinpix:
+                    self.iscroll[raw] = Yinpix
+                    
+                if self.iscroll[raw] > 0:
+                    self.iscroll[raw] = 0
+                
+                ## tab thingy
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222")) ## CHOSE COLOR
+                widget.window.draw_rectangle(xgc, True, the_raw_w_start , raw_start-30, raw_w, 30)
+                
+                
+                # tab icons
+                
+                widget.window.draw_pixbuf(None, self.scn_asset_undone, 0, 0, the_raw_w_start+5, raw_start-28, -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)
+                
+                
+                # teb name
+                
+                ctx.set_font_size(15)
+                ctx.set_source_rgb(1,1,1)
+                ctx.move_to( the_raw_w_start+14+30, raw_start-10)
+                ctx.show_text("Scenes List")
                 
                 
                 

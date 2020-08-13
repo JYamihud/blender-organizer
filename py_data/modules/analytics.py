@@ -1102,10 +1102,16 @@ class draw_analytics:
                                 self.mainbox.pack_start(self.box, True)
                                 
                                 if CUR == "rnd":
-                                    story_editor.story(os.getcwd(), self.box, self.win, self.mainbox)
+                                    
+                                    
+                                    gscene = printname[:printname.find(" > ")]
+                                    gshot = printname[printname.rfind(" > ")+3:]
+                                        
+                                    
+                                    story_editor.story(os.getcwd(), self.box, self.win, self.mainbox, scene=gscene, shot=gshot)
                                 
                                 else:                            
-                                    assets.draw_assets(os.getcwd(), self.box, self.win, CUR, printname)
+                                    assets.draw_assets(os.getcwd(), self.box, self.win, CUR, printname, mainbox=self.mainbox)
                             else:
                                 checklist.checkwindow(pf=self.pf, title="Main Checklist", FILE="project.progress")
                         
@@ -1917,9 +1923,14 @@ class draw_analytics:
                                     print CUR, "CUR"
                                 
                                     if CUR == "rnd":
-                                        story_editor.story(os.getcwd(), self.box, self.win, self.mainbox)
+                                        
+                                        gscene = taskfile[:taskfile.find(" > ")]
+                                        gshot = taskfile[taskfile.rfind(" > ")+3:]
+                                        
+                                        
+                                        story_editor.story(os.getcwd(), self.box, self.win, self.mainbox, scene=gscene, shot=gshot)
                                     else:
-                                        assets.draw_assets(os.getcwd(), self.box, self.win, CUR, name)
+                                        assets.draw_assets(os.getcwd(), self.box, self.win, CUR, name, mainbox=self.mainbox)
                                         
                                         
                                     

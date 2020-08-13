@@ -1,8 +1,8 @@
 def timestring(tleft):
-    print "tleft", tleft
+    #print "tleft", tleft
                                                 
     valt = str(tleft)+" SEC"
-    print valt , "VALT HERE1"
+    #print valt , "VALT HERE1"
     if tleft > 60 :
         le = tleft
         tleft = tleft / 60

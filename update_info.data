@@ -1,3 +1,12 @@
+VERSION 4.81
+FILE update_info.data
+FILE py_data/modules/story_editor.py
+FILE py_data/modules/quick.py
+FILE py_data/icons/big_edit.png
+FILE py_data/icons/big_left.png
+FILE py_data/icons/big_right.png
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.81
+
 VERSION 4.80
 FILE update_info.data
 FILE py_data/modules/analytics.py

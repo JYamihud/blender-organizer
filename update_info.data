@@ -1,3 +1,12 @@
+VERSION 4.82
+FILE update_info.data
+FILE py_data/modules/story_editor.py
+FILE py_data/modules/quick.py
+FILE py_data/modules/analytics.py
+FILE py_data/modules/assets.py
+MAIN_FILE
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.82
+
 VERSION 4.81
 FILE update_info.data
 FILE py_data/modules/story_editor.py

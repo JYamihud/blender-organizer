@@ -7,7 +7,11 @@ def timestring(tleft):
         le = tleft
         tleft = tleft / 60
         le = le - (tleft * 60)
-        valt = str(tleft)+":"+ str(le)
+        
+        stleft = "0"*(2-len(str(tleft)))+str(tleft)
+        sle = "0"*(2-len(str(le)))+str(le)
+        
+        valt = stleft+":"+ sle
     
         if tleft > 60 :
             lele = le
@@ -18,7 +22,11 @@ def timestring(tleft):
             if lele < 0:
                 lele = lele * -1
             
-            valt = str(tleft)+":"+ str(le) + ":" + str(lele) 
+            stleft = "0"*(2-len(str(tleft)))+str(tleft)
+            sle = "0"*(2-len(str(le)))+str(le)
+            slele = "0"*(2-len(str(lele)))+str(lele)
+            
+            valt = stleft+":"+ sle + ":" + slele
     
             if tleft > 24 :
                 le = tleft

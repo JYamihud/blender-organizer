@@ -33,6 +33,7 @@ import render_lists
 import assets # SO I COULD LINK TO ITEMS
 import linkconfirm #AUTOMATIC LINKING WTF
 import oscalls
+import quick
 
 import copy # OMG OPTIMIZATION HACKS OMG I HOPE IT'S GOING TO WORK
 
@@ -314,6 +315,9 @@ class story:
         
         self.render_big = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/render_big.png")
         
+        self.big_right = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/big_right.png")
+        self.big_left = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/big_left.png")
+        
         
         
         #shots editor
@@ -329,6 +333,7 @@ class story:
         self.render = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/render.png")
         self.checklist = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/checklist.png")
         self.ok = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/ok.png")
+        self.big_edit = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/big_edit.png")
         
         
         self.fade_01 = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/INT/fade_01.png")
@@ -1156,6 +1161,9 @@ class story:
                         
                         docopy = False
                         
+                        
+                    
+                        
                         #REF
                         if my in range(imY+piY+14, imY+piY+14+11) and mx in range(imX, imX+piX):
                             self.arrow_to = [imX, imY+piY+10+10]
@@ -1183,13 +1191,15 @@ class story:
                             puturl = checkurl+"/renders/"+puturl
                             
                             docopy = True
-                        
                         else:
                             checkurl = ""
+                            
                         # OUTPUTTING THE IMAGE OUT
                         
                         if "GDK_BUTTON1" not in str(fx) and "GDK_BUTTON1" in str(self.mpf) and checkurl and self.tool != "arrow" and self.win.is_active():
-                            if not self.imagesearch:
+                            
+                            
+                            if not self.imagesearch and my > 50 and mx < (w/3)*2:
                                 self.imagesearch = puturl
                                 if puturl.count("/") > 3:
                                     self.imagesearch = puturl[:puturl.rfind("/")]
@@ -1517,9 +1527,6 @@ class story:
                                 try:
                                     scnDATA = self.FILE.get_scenes_data()
                                     scenestory = scnDATA[ind][n][3]
-                                    
-                                    
-                                    
                                     self.shotsDATA = get_shots(scenestory, scnDATA[ind][n][1])
                                 except:
                                     pass
@@ -2904,19 +2911,6 @@ class story:
             ##### OTHER SIDE PANEL ####
             
             
-            
-            
-            
-            
-            
-            
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#333333"))
-            widget.window.draw_rectangle(xgc, True, w-(w)/3, 0, (w)/3, 220) 
-            
-            
-            
-            
-            
             Pstart = w-(w)/3
             Ppart = (w)/3-50
             
@@ -2939,31 +2933,131 @@ class story:
            
            
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))   #7e5349
-            #widget.window.draw_rectangle(xgc, True, Pstart, 220, Ppart, h-220)
+            #widget.window.draw_rectangle(xgc, True, Pstart, 120, Ppart, h-120)
             
             ctx3 = widget.window.cairo_create()
             ctx3.set_source_rgba(0.1,0.1,0.1,0.9)
-            ctx3.rectangle(Pstart, 220, Ppart, h-220)
+            ctx3.rectangle(Pstart, 120, Ppart, h-120)
             ctx3.fill()
             
             
                     
             #mark for faster moves
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
-            widget.window.draw_rectangle(xgc, True, w-50, 220, 200, h-220)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+            widget.window.draw_rectangle(xgc, True, w-50, 0, 200, h)
             
             #mark for faster moves
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#292929"))
-            widget.window.draw_rectangle(xgc, True, w-50, 220, 200, 50)
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#232323"))
+            widget.window.draw_rectangle(xgc, True, w-50, 0, 200, 50)
             
             widget.window.draw_rectangle(xgc, True, w-50, h-50, 200, 50)
             
+            
+            
             try:
+                
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
+                widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL-20, Ppart, 45)
+                
+                
+                
+                SSname = scnDATA[self.event_select][self.scene_select][1]
+                
                 ctx2.set_source_rgb(1,1,1)
-                ctx2.set_font_size(15)
-                ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
-                ctx2.show_text("rnd/"+scnDATA[self.event_select][self.scene_select][1]+"/")
+                ctx2.set_font_size(20)
+                ctx2.move_to( Pstart+20+(Ppart-50)/2-len(SSname)*12/2, shotlistlength+120+self.shotsSCROLL+5)
+                ctx2.show_text(SSname)
+                
+                
+                #PREVIOUS SCENE
+                
+                for ar in self.FILE.arrows:
+                    if ar[1][0] == self.event_select and ar[1][1] == SSname and ar[0][1] != "start":
+                        if my in range(shotlistlength+120+self.shotsSCROLL-25, shotlistlength+120+self.shotsSCROLL+20) and mx in range(Pstart+20, Pstart+60):
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c"))
+                            widget.window.draw_rectangle(xgc, True, Pstart+20, shotlistlength+120+self.shotsSCROLL-25, 40, 40)
+                        
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                                
+                                
+                                        
+                                        
+                                        
+                                p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
+                                
+                                self.event_select = ar[0][0]
+                                
+                                for ns, sc in enumerate(scnDATA[self.event_select]):
+                                    if sc[1] == ar[0][1]:
+                                        self.scene_select = ns
+                                
+                                try:
+                                    scnDATA = self.FILE.get_scenes_data()
+                                    scenestory = scnDATA[self.event_select][self.scene_select][3]
+                                    self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
+                                except:
+                                    pass
+                                self.shotsSCROLL = 0
+                                
+                                
+                                # FOCUS THE EVENT IN THE CENTER OF THE SCREEN
+                                
+                                d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
+                                
+                                self.px = px + ((p0 * sx)-(d0 * sx))
+                                self.py = py + ((p2 * sy)-(d2 * sy))
+                                        
+                                        
+                                        
+                            
+                        widget.window.draw_pixbuf(None, self.big_left, 0, 0, Pstart+20, shotlistlength+120+self.shotsSCROLL-25 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                
+                #NEXT SCENE
+                for ar in self.FILE.arrows:
+                    if ar[0][0] == self.event_select and ar[0][1] == SSname and ar[1][1] != "end":
+                        if my in range(shotlistlength+120+self.shotsSCROLL-25, shotlistlength+120+self.shotsSCROLL+20) and mx in range(w-100, w-60):
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c"))
+                            widget.window.draw_rectangle(xgc, True, w-100, shotlistlength+120+self.shotsSCROLL-25, 40, 40)
+                        
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                                
+                                
+                                        
+                                p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
+                                
+                                self.event_select = ar[1][0]
+                                
+                                for ns, sc in enumerate(scnDATA[self.event_select]):
+                                    if sc[1] == ar[1][1]:
+                                        self.scene_select = ns
+                                
+                                try:
+                                    scnDATA = self.FILE.get_scenes_data()
+                                    scenestory = scnDATA[self.event_select][self.scene_select][3]
+                                    self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
+                                except:
+                                    pass
+                                self.shotsSCROLL = 0
+                                
+                                # FOCUS THE EVENT IN THE CENTER OF THE SCREEN
+                                
+                                d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
+                                
+                                self.px = px + ((p0 * sx)-(d0 * sx))
+                                self.py = py + ((p2 * sy)-(d2 * sy))
+                        
+                        
+                        
+                        widget.window.draw_pixbuf(None, self.big_right, 0, 0, w-100, shotlistlength+120+self.shotsSCROLL-25 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                        
+                
                 shotlistlength = shotlistlength + 45
+            
+            
+            
+            
             except:
                 pass
             
@@ -2994,13 +3088,14 @@ class story:
                 if shotname:
                     for b in shotname[shotname.rfind("/")+1:].split("\n"):
                         
-                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
+                        widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL-20, Ppart, 45)
                         
                         ctx2.set_source_rgb(1,1,1)
-                        ctx2.set_font_size(30)
-                        ctx2.move_to( Pstart+20, 15+shotlistlength+220+self.shotsSCROLL)
+                        ctx2.set_font_size(20)
+                        ctx2.move_to( Pstart+20+(Ppart-50)/2-len(b)*12/2, 7+shotlistlength+120+self.shotsSCROLL)
                         ctx2.show_text(b)
-                        shotlistlength = shotlistlength + 30
+                        shotlistlength = shotlistlength + 50
                         
                         ctx2.set_font_size(15)
                 
@@ -3009,7 +3104,7 @@ class story:
                 
                 
                 #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#575757"))
-                #widget.window.draw_rectangle(xgc, True, Pstart+20, 15+shotlistlength+220+self.shotsSCROLL-15, w/3-90, len(story.split("\n"))*15+5)
+                #widget.window.draw_rectangle(xgc, True, Pstart+20, 15+shotlistlength+120+self.shotsSCROLL-15, w/3-90, len(story.split("\n"))*15+5)
                 
                 if '"' in story[:story.find("<item>")]:
                     story = story[story.replace('"', " ", 1).find('"')+1:] # IDK WHAT IT DID BUT IT SEEMS LIKE IT DID NOTHING
@@ -3109,27 +3204,27 @@ class story:
                                 #image square
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#363636")) #403666   #6e5daf
-                                #widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+220+self.shotsSCROLL+20, 154, 154)
+                                #widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+120+self.shotsSCROLL+20, 154, 154)
                                 
                                 ctx3 = widget.window.cairo_create()
                                 ctx3.set_source_rgba(0,0,0,0.4)
-                                ctx3.rectangle(Pstart+20+movex-4, shotlistlength+220+self.shotsSCROLL+20, 154, 154)
+                                ctx3.rectangle(Pstart+20+movex-4, shotlistlength+120+self.shotsSCROLL+20, 154, 154)
                                 ctx3.fill()
                                 
                                 
                                 # MOUSE OVER
-                                if mx in range(Pstart+20+movex-2, Pstart+20+movex-2 + 154) and my in range(shotlistlength+220+self.shotsSCROLL+20, shotlistlength+220+self.shotsSCROLL+20+154):
+                                if mx in range(Pstart+20+movex-2, Pstart+20+movex-2 + 154) and my in range(shotlistlength+120+self.shotsSCROLL+20, shotlistlength+120+self.shotsSCROLL+20+154):
                                     
                                     tooltip = "Open the Image \n"+imageurl
                                     
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384")) #403666   #6e5daf
-                                    widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+220+self.shotsSCROLL+20, 154, 154)
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+120+self.shotsSCROLL+20, 154, 154)
                                     
                                     
                                     # get mouse to show the hand
                                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                     
-                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h) : 
+                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h) : 
                                         
                                         if os.path.exists(imageurl):
                                             oscalls.Open(imageurl)    
@@ -3146,9 +3241,9 @@ class story:
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#af5d5d"))
                                 
                                 
-                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+220+self.shotsSCROLL, 154, 22)
+                                widget.window.draw_rectangle(xgc, True, Pstart+20+movex-4, shotlistlength+120+self.shotsSCROLL, 154, 22)
                                 
-                                widget.window.draw_pixbuf(None, self.picicon, 0, 0, Pstart+20+movex-2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                widget.window.draw_pixbuf(None, self.picicon, 0, 0, Pstart+20+movex-2, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                                 
                                 
                                 text = imageurl[imageurl.rfind("/")+1:]
@@ -3158,13 +3253,13 @@ class story:
                                 
                                 ctx2.set_source_rgb(1,1,1)
                                 ctx2.set_font_size(15)
-                                ctx2.move_to( Pstart+20+movex + 24, 15+shotlistlength+220+self.shotsSCROLL)
+                                ctx2.move_to( Pstart+20+movex + 24, 15+shotlistlength+120+self.shotsSCROLL)
                                 ctx2.show_text(text)
                                 
                                 
                                 
                                 imagex = Pstart+20+movex-2 + (150 - i[1].get_width())/2
-                                imagey = shotlistlength+220+self.shotsSCROLL+22 + (150 - i[1].get_height())/2
+                                imagey = shotlistlength+120+self.shotsSCROLL+22 + (150 - i[1].get_height())/2
                                 
                                 widget.window.draw_pixbuf(None, i[1], 0, 0, imagex, imagey , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                                 
@@ -3232,7 +3327,7 @@ class story:
                                 for wor in t.split("\n"):
                                     GraphicsX = Pstart+20+movex-2
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c")) #403666   #6e5daf
-                                    widget.window.draw_rectangle(xgc, True, GraphicsX-20, shotlistlength+220+self.shotsSCROLL, Ppart-150, 20)
+                                    widget.window.draw_rectangle(xgc, True, GraphicsX-20, shotlistlength+120+self.shotsSCROLL, Ppart-150, 20)
                                     
                                     for wo in wor.split(" "):
                                     
@@ -3244,7 +3339,7 @@ class story:
                                         
                                         
                                         ctx2.set_source_rgb(1,1,1)
-                                        ctx2.move_to( GraphicsX, 15+shotlistlength+220+self.shotsSCROLL)
+                                        ctx2.move_to( GraphicsX, 15+shotlistlength+120+self.shotsSCROLL)
                                         ctx2.show_text(wo)
                                         
                                         movex = movex + len(wo)*9+9
@@ -3255,7 +3350,7 @@ class story:
                                             movex = 100
                                             GraphicsX = Pstart+20+movex-2
                                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c")) #403666   #6e5daf
-                                            widget.window.draw_rectangle(xgc, True, GraphicsX-20, shotlistlength+220+self.shotsSCROLL, Ppart-150, 20)
+                                            widget.window.draw_rectangle(xgc, True, GraphicsX-20, shotlistlength+120+self.shotsSCROLL, Ppart-150, 20)
                                         
                                         
                                         skipto = letter + len(t)+1
@@ -3271,7 +3366,7 @@ class story:
                         for item in items:
                             if item[0] in range(letter, letter+len(word)) and letter >= skipto:
                                 
-                                if shotlistlength+220+self.shotsSCROLL in range(220, h):
+                                if shotlistlength+120+self.shotsSCROLL in range(120, h):
                                 
                                     GraphicsX = Pstart+20+movex-2
                                     if isName:
@@ -3279,10 +3374,10 @@ class story:
                                     
                                     #ITEM COLOR
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6e5daf")) #403666   #6e5daf
-                                    widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+220+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 20)
+                                    widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+120+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 20)
                                     
                                     #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0")) #403666   #6e5daf
-                                    #widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+220+self.shotsSCROLL+20, len(story[item[0]:item[2]])*9+9+22, 2)
+                                    #widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+120+self.shotsSCROLL+20, len(story[item[0]:item[2]])*9+9+22, 2)
                                     
                                     
                                     
@@ -3302,22 +3397,22 @@ class story:
                                     #lenofsecondcube = int(round(float(len(story[item[0]:item[2]])*9+9+22) * itempercent))
                                     #
                                     #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165")) #403666   #6e5daf
-                                    #widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+220+self.shotsSCROLL+20, lenofsecondcube, 2)
+                                    #widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+120+self.shotsSCROLL+20, lenofsecondcube, 2)
                                     
                                     
                                     
                                     # MOUSE OVER
-                                    if mx in range(GraphicsX, GraphicsX + len(story[item[0]:item[2]])*9+9+22) and my in range(shotlistlength+220+self.shotsSCROLL+2, shotlistlength+220+self.shotsSCROLL+18):
+                                    if mx in range(GraphicsX, GraphicsX + len(story[item[0]:item[2]])*9+9+22) and my in range(shotlistlength+120+self.shotsSCROLL+2, shotlistlength+120+self.shotsSCROLL+18):
                                         
                                         tooltip = "Go to the item"
                                         
                                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                                        widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+220+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 18)
+                                        widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+120+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 18)
                                         
                                         # get mouse to show the hand
                                         widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                         
-                                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h) :
+                                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h) :
                                             
                                             
                                             
@@ -3335,13 +3430,13 @@ class story:
                                     
                                     
                                     if CUR == "obj":
-                                        widget.window.draw_pixbuf(None, self.objicon, 0, 0, GraphicsX, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                        widget.window.draw_pixbuf(None, self.objicon, 0, 0, GraphicsX, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                                     elif CUR == "chr":
-                                        widget.window.draw_pixbuf(None, self.chricon, 0, 0, GraphicsX, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                        widget.window.draw_pixbuf(None, self.chricon, 0, 0, GraphicsX, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                                     elif CUR == "loc":
-                                        widget.window.draw_pixbuf(None, self.locicon, 0, 0, GraphicsX, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                        widget.window.draw_pixbuf(None, self.locicon, 0, 0, GraphicsX, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                                     elif CUR == "veh":
-                                        widget.window.draw_pixbuf(None, self.vehicon, 0, 0, GraphicsX, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                                        widget.window.draw_pixbuf(None, self.vehicon, 0, 0, GraphicsX, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                                     
                                     
                                     
@@ -3354,7 +3449,7 @@ class story:
                                     
                                     
                                     ctx2.set_source_rgb(1,1,1)
-                                    ctx2.move_to( GraphicsX+22, 15+shotlistlength+220+self.shotsSCROLL)
+                                    ctx2.move_to( GraphicsX+22, 15+shotlistlength+120+self.shotsSCROLL)
                                     if isName:
                                         ctx2.show_text(story[item[0]:item[2]].upper())
                                     else:
@@ -3380,11 +3475,11 @@ class story:
                                    
                             ctx2.set_source_rgb(1,1,1)
                             ctx2.set_font_size(15)
-                            ctx2.move_to( Pstart+20+movex, 15+shotlistlength+220+self.shotsSCROLL)
+                            ctx2.move_to( Pstart+20+movex, 15+shotlistlength+120+self.shotsSCROLL)
                             if isName:
                                     t = story[frase[0]:frase[1]]
                                     
-                                    ctx2.move_to( Pstart+Ppart/2-len(t)*9/2, 15+shotlistlength+220+self.shotsSCROLL)
+                                    ctx2.move_to( Pstart+Ppart/2-len(t)*9/2, 15+shotlistlength+120+self.shotsSCROLL)
                                     
                                     ctx2.show_text(t.upper())
                                     skipto = letter + len(t)+1
@@ -3469,7 +3564,7 @@ class story:
                     
                     img = "None"
                     
-                    if pixbuf == False and shotlistlength+220+self.shotsSCROLL+self.empty_frame.get_height() > 220 and shotlistlength+220+self.shotsSCROLL < h:
+                    if pixbuf == False and shotlistlength+120+self.shotsSCROLL+self.empty_frame.get_height() > 120 and shotlistlength+120+self.shotsSCROLL < h:
                         
                         
                         
@@ -3533,34 +3628,34 @@ class story:
                             
                         
                         
-                        if shotlistlength+220+self.shotsSCROLL+self.empty_frame.get_height() > 220 and shotlistlength+220+self.shotsSCROLL < h: # IF IN FRAME
+                        if shotlistlength+120+self.shotsSCROLL+self.empty_frame.get_height() > 120 and shotlistlength+120+self.shotsSCROLL < h: # IF IN FRAME
                             
-                            picW = Pstart+Ppart/2-self.empty_frame.get_width()/2
+                            picW = Pstart+10 #+Ppart/2-pixbuf.get_width()/2
                             
-                            widget.window.draw_pixbuf(None, self.empty_frame, 0, 0, picW, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                            widget.window.draw_pixbuf(None, self.empty_frame, 0, 0, picW, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
                         shotlistlength = shotlistlength + self.empty_frame.get_height()
                     
                     
                     else:   ##### IF THE IMAGE ACTUALLY WAS FOUND
                         
-                        if shotlistlength+220+self.shotsSCROLL+pixbuf.get_height() > 220 and shotlistlength+220+self.shotsSCROLL < h: # IF IN FRAME
+                        if shotlistlength+120+self.shotsSCROLL+pixbuf.get_height() > 120 and shotlistlength+120+self.shotsSCROLL < h: # IF IN FRAME
                             
-                            picW = Pstart+Ppart/2-pixbuf.get_width()/2
+                            picW = Pstart+10 #+Ppart/2-pixbuf.get_width()/2
                             
                             
                             # MOUSE OVER
-                            if mx in range(picW, picW+pixbuf.get_width()) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+pixbuf.get_height()):
+                            if mx in range(picW, picW+pixbuf.get_width()) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+pixbuf.get_height()):
                                 
                                 tooltip = self.imgAT[ind]
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
-                                widget.window.draw_rectangle(xgc, True, picW -3, shotlistlength+220+self.shotsSCROLL -3, pixbuf.get_width()+6, pixbuf.get_height()+6)
+                                widget.window.draw_rectangle(xgc, True, picW -3, shotlistlength+120+self.shotsSCROLL -3, pixbuf.get_width()+6, pixbuf.get_height()+6)
                                 
                                 # get mouse to show the hand
                                 widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                 
-                                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h) :
+                                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h) :
                                     
                                     
                                     
@@ -3568,20 +3663,131 @@ class story:
                                 
                             
                             
-                            widget.window.draw_pixbuf(None, pixbuf, 0, 0, picW, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                            widget.window.draw_pixbuf(None, pixbuf, 0, 0, picW, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
-                        shotlistlength = shotlistlength + pixbuf.get_height()
+                        shotlistlength = shotlistlength + self.empty_frame.get_height()
                     
                     
                     
                     
-                    shotlistlength = shotlistlength + 5
+                    shotlistlength = shotlistlength + 10
                     
+                    if shotlistlength+120+self.shotsSCROLL+self.empty_frame.get_height() > 120 and shotlistlength+120+self.shotsSCROLL < h: # IF IN FRAME
+                        
+                        
+                        frmdata = {}
+                        lframe = 0
+                        try:
+                            for rndfile in os.walk(self.pf+"/"+shotname+"/extra").next()[2]:
+                                if rndfile.endswith(".blend.rnd"):
+                                    rndfile = open(self.pf+"/"+shotname+"/extra/"+rndfile, "r")
+                                    rndfile = rndfile.read().split("\n")
+                                    
+                                    for line in rndfile:
+                                        
+                                        try:
+                                            frm, seconds = line.split(" ")
+                                            frm = "0"*(4-len(frm)) + frm
+                                            seconds = int(seconds)
+                                            if frm not in frmdata:
+                                                frmdata[frm] = seconds
+                                            else:
+                                                frmdata[frm] = ( frmdata[frm] + seconds ) / 2
+                                            if seconds > lframe:
+                                                lframe = seconds
+                                                
+                                            
+                                        except:
+                                            pass
+                        except:
+                            pass
+                        
+                        foravarage = []
+                        
+                        
+                        xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
+                        widget.window.draw_rectangle(xgc, True, Pstart+8, shotlistlength+120+self.shotsSCROLL -5, Ppart-16, 104)
+                                    
+                        for tfrm, frm in enumerate(sorted(frmdata)):
+                            
+                            foravarage.append(frmdata[frm])
+                            
+                            frmy =  int(round(100.0/lframe*frmdata[frm]))
+                            frmx =  int(round(float(Ppart-20)/len(frmdata)*tfrm)) + Pstart+10
+                            frmxs = int(round(float(Ppart-20)/len(frmdata)))
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
+                            widget.window.draw_rectangle(xgc, True, frmx, shotlistlength+120+self.shotsSCROLL -3+(100-frmy), frmxs, frmy)
+                            
+                            if my in range(shotlistlength+120+self.shotsSCROLL -3, shotlistlength+120+self.shotsSCROLL -3+100) and mx in range(frmx, frmx+frmxs):
+                                
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
+                                widget.window.draw_rectangle(xgc, True, frmx, shotlistlength+120+self.shotsSCROLL -3+(100-frmy), frmxs, frmy)
+                                
+                                
+                                img = "None"
+                                for folder in ["rendered", "test_rnd", "opengl", "storyboard", "extra"]:
+                                    for L in os.walk(self.pf+"/"+shotname+"/"+folder):
+                                        for FILE in L[2]:                                        
+                                            for F in fileformats.images:   ### WHAT IF FOUND AN IMAGE
+                                                if FILE.lower().endswith(F):
+                                                    
+                                                    imgurlthumb = self.pf+"/"+shotname+"/"+folder+"/"+frm+FILE[FILE.rfind("."):]
+                                                    
+                                                    if os.path.exists(imgurlthumb):
+                                                        imgurlthumb = thumbnailer.thumbnail(imgurlthumb, self.empty_frame.get_width(),self.empty_frame.get_height())
+                                                    
+                                                        img = gtk.gdk.pixbuf_new_from_file(imgurlthumb)                                                    
+                                                        self.imgAT[ind] = shotname+"/"+folder+"/"+frm+FILE[FILE.rfind("."):]
+                                                        break
+                                            if img != "None":
+                                                break    
+                                        if img != "None":
+                                            break        
+                                    if img != "None":
+                                        break 
+                                self.shotsDATA[ind][2] = img
+                            
+                    
+                    # OUTPUTTING SOME STATISTICS
+                    try:
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( Pstart+20+self.empty_frame.get_width(), shotlistlength+120+self.shotsSCROLL-self.empty_frame.get_height())
+                        ctx2.show_text("Frames  : "+str(len(foravarage)))
+                        
+                        
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( Pstart+20+self.empty_frame.get_width(), shotlistlength+120+self.shotsSCROLL-self.empty_frame.get_height()+20)
+                        ctx2.show_text("Time    : "+quick.timestring(sum(foravarage)))
+                        
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( Pstart+20+self.empty_frame.get_width(), shotlistlength+120+self.shotsSCROLL-self.empty_frame.get_height()+40)
+                        ctx2.show_text("Avarage : "+quick.timestring(sum(foravarage)/len(foravarage)))
+                        
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( Pstart+20+self.empty_frame.get_width(), shotlistlength+120+self.shotsSCROLL-self.empty_frame.get_height()+60)
+                        ctx2.show_text("Current : "+self.imgAT[ind][self.imgAT[ind].rfind("/")+1:self.imgAT[ind].rfind(".")]+ "")
+                        
+                    
+                        ctx2.set_source_rgb(1,1,1)
+                        ctx2.set_font_size(15)
+                        ctx2.move_to( Pstart+20+self.empty_frame.get_width(), shotlistlength+120+self.shotsSCROLL-self.empty_frame.get_height()+80)
+                        ctx2.show_text("Time    : "+quick.timestring(frmdata[self.imgAT[ind][self.imgAT[ind].rfind("/")+1:self.imgAT[ind].rfind(".")]]))
+                        
+                    except:
+                        pass
+                    
+                    
+                    shotlistlength = shotlistlength + 105
                     
                     if os.path.exists(self.pf+"/"+shotname) == False: # IF FOLDER DOES NOT EXISIS
                         
                         # MOUSE OVER
-                        if mx in range(Pstart, w) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
                             
                             tooltip = "Generate Shot's Folders \n\n Every shot can have a directory\nin /rnd folder to work\non the shot directly,\ncreate blend files,\nhold footage."
                             
@@ -3589,9 +3795,9 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart, 23)
                             
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h) :
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h) :
                                 
                                 os.makedirs(self.pf+"/"+shotname)
                             
@@ -3599,11 +3805,11 @@ class story:
                         
                         # DRAW BUTTON
                         
-                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(15)
-                        ctx.move_to( Pstart+50, 15+shotlistlength+220+self.shotsSCROLL+2)
+                        ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL+2)
                         ctx.show_text("Generate Shot's Folders")
                         
                         
@@ -3637,7 +3843,7 @@ class story:
                         
                         
                         # MOUSE OVER
-                        if mx in range(Pstart, w-50) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w-50) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
                             
                             tooltip = "/"+shotname
                             
@@ -3645,9 +3851,9 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart, 23)
                             
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                 
                                 oscalls.Open(self.pf+"/"+shotname)
                             
@@ -3655,11 +3861,11 @@ class story:
                         
                         # DRAW BUTTON
                         
-                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(15)
-                        ctx.move_to( Pstart+50, 15+shotlistlength+220+self.shotsSCROLL+2)
+                        ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL+2)
                         ctx.show_text("Open Shot's Folder")
                         
                         
@@ -3676,10 +3882,10 @@ class story:
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/storyboard")) > 0:
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#222222"))
-                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart/2, 23)
                             shotstatussidepanel = 1
                         # MOUSE OVER
-                        if mx in range(Pstart, w-Ppart/2-60) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w-Ppart/2-60) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
                             
                             
                             
@@ -3687,9 +3893,9 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart/2, 23)
                             
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                 
                                 oscalls.Open(self.pf+"/"+shotname+"/storyboard")
                                 
@@ -3697,11 +3903,11 @@ class story:
                         
                         # DRAW BUTTON
                         
-                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(15)
-                        ctx.move_to( Pstart+50, 15+shotlistlength+220+self.shotsSCROLL+2)
+                        ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL+2)
                         ctx.show_text("storyboard")
                         
                           
@@ -3712,11 +3918,11 @@ class story:
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/opengl")) > 0:
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+120+self.shotsSCROLL, Ppart/2, 23)
                             shotstatussidepanel = 0
                         
                         # MOUSE OVER
-                        if mx in range(Pstart+Ppart/2, w-50) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart+Ppart/2, w-50) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
                             
                             
                             
@@ -3724,9 +3930,9 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+120+self.shotsSCROLL, Ppart/2, 23)
                             
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                 
                                 oscalls.Open(self.pf+"/"+shotname+"/opengl")
                             
@@ -3734,11 +3940,11 @@ class story:
                         
                         # DRAW BUTTON
                         
-                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10+Ppart/2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10+Ppart/2, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(15)
-                        ctx.move_to( Pstart+50+Ppart/2, 15+shotlistlength+220+self.shotsSCROLL+2)
+                        ctx.move_to( Pstart+50+Ppart/2, 15+shotlistlength+120+self.shotsSCROLL+2)
                         ctx.show_text("opengl")
                         
                         
@@ -3750,10 +3956,10 @@ class story:
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/test_rnd")) > 0:
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
-                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart/2, 23)
                             shotstatussidepanel = 2
                         # MOUSE OVER
-                        if mx in range(Pstart, w-Ppart/2-60) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w-Ppart/2-60) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
                             
                             
                             
@@ -3761,9 +3967,9 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart/2, 23)
                             
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                 
                                 oscalls.Open(self.pf+"/"+shotname+"/test_rnd")
                             
@@ -3771,11 +3977,11 @@ class story:
                         
                         # DRAW BUTTON
                         
-                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(15)
-                        ctx.move_to( Pstart+50, 15+shotlistlength+220+self.shotsSCROLL+2)
+                        ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL+2)
                         ctx.show_text("test_rnd")
                         
                         
@@ -3785,13 +3991,13 @@ class story:
                         
                         if len(os.listdir(self.pf+"/"+shotname+"/rendered")) > 0:
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649")) 
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+120+self.shotsSCROLL, Ppart/2, 23)
                             shotstatussidepanel = 3
                             
                         
                         
                         # MOUSE OVER
-                        if mx in range(Pstart+Ppart/2, w-50) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart+Ppart/2, w-50) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
                             
                             
                             
@@ -3799,9 +4005,9 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+120+self.shotsSCROLL, Ppart/2, 23)
                             
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                 
                                 oscalls.Open(self.pf+"/"+shotname+"/rendered")
                             
@@ -3809,11 +4015,11 @@ class story:
                         
                         # DRAW BUTTON
                         
-                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10+Ppart/2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10+Ppart/2, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(15)
-                        ctx.move_to( Pstart+50+Ppart/2, 15+shotlistlength+220+self.shotsSCROLL+2)
+                        ctx.move_to( Pstart+50+Ppart/2, 15+shotlistlength+120+self.shotsSCROLL+2)
                         ctx.show_text("rendered")
                         
                         
@@ -3827,7 +4033,7 @@ class story:
                         
                         
                         # MOUSE OVER
-                        if mx in range(Pstart, w-Ppart/2-60) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w-Ppart/2-60) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
                             
                             
                             
@@ -3835,9 +4041,9 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart-Ppart/2-60, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart-Ppart/2-60, 23)
                             
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                 Pstart
                                 oscalls.Open(self.pf+"/"+shotname+"/extra")
                             
@@ -3845,13 +4051,13 @@ class story:
                         
                         # DRAW BUTTON
                         
-                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
                         
                         
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(15)
-                        ctx.move_to( Pstart+50, 15+shotlistlength+220+self.shotsSCROLL+2)
+                        ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL+2)
                         ctx.show_text("extra")
                         
                         
@@ -3871,20 +4077,20 @@ class story:
                             checkfloat = checklist.partcalculate(checklist.openckecklist(checkpath))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL+35, Ppart-Ppart/2-100, 5)
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+120+self.shotsSCROLL+35, Ppart-Ppart/2-100, 5)
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL+35, int((Ppart-Ppart/2-100)*checkfloat), 5)
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+120+self.shotsSCROLL+35, int((Ppart-Ppart/2-100)*checkfloat), 5)
                             
                             ctx.set_source_rgb(1,1,1)
                             ctx.set_font_size(15)
-                            ctx.move_to( Pstart+Ppart/2+(Ppart-Ppart/2-95), 15+shotlistlength+220+self.shotsSCROLL+25)
+                            ctx.move_to( Pstart+Ppart/2+(Ppart-Ppart/2-95), 15+shotlistlength+120+self.shotsSCROLL+25)
                             ctx.show_text(str(int(checkfloat*100))+"%")
                         
                         
                         
                         # MOUSE OVER
-                        if mx in range(Pstart+Ppart/2, w-50) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart+Ppart/2, w-50) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
                             
                             
                             
@@ -3892,9 +4098,9 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#8c8c8c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+220+self.shotsSCROLL, Ppart/2, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart+Ppart/2, shotlistlength+120+self.shotsSCROLL, Ppart/2, 23)
                             
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                 if checkexist:
                                     checklist.checkwindow(pf=self.pf, title="SHOT", FILE=checkpath)
                                 else:
@@ -3918,14 +4124,14 @@ class story:
                         
                         # DRAW BUTTON
                         
-                        widget.window.draw_pixbuf(None, self.checklist, 0, 0, Pstart+10+Ppart/2, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        widget.window.draw_pixbuf(None, self.checklist, 0, 0, Pstart+10+Ppart/2, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                         
                         
                         
                         
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(15)
-                        ctx.move_to( Pstart+50+Ppart/2, 15+shotlistlength+220+self.shotsSCROLL+2)
+                        ctx.move_to( Pstart+50+Ppart/2, 15+shotlistlength+120+self.shotsSCROLL+2)
                         if checkexist:
                             ctx.show_text("Checklist")
                         else:
@@ -3973,40 +4179,40 @@ class story:
                             
                             # TEST CELL
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
-                            #widget.window.draw_rectangle(xgc, False, Pstart+20+(cellsize*xstep), shotlistlength+220+self.shotsSCROLL, cellsize, cellsize)
+                            #widget.window.draw_rectangle(xgc, False, Pstart+20+(cellsize*xstep), shotlistlength+120+self.shotsSCROLL, cellsize, cellsize)
                             
                             
                             #IF IN FRAME
-                            if shotlistlength+220+self.shotsSCROLL+20+cellsize-40 > 220 and shotlistlength+220+self.shotsSCROLL+20 < h: # IF IN FRAME
+                            if shotlistlength+120+self.shotsSCROLL+20+cellsize-40 > 120 and shotlistlength+120+self.shotsSCROLL+20 < h: # IF IN FRAME
                                 
                                 
                                 
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#464646"))
-                                #widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
+                                #widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+120+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
                                 
                                 ctx3 = widget.window.cairo_create()
                                 ctx3.set_source_rgba(0,0,0,0.4)
-                                ctx3.rectangle(Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
+                                ctx3.rectangle(Pstart+20+(cellsize*xstep)+15, shotlistlength+120+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
                                 ctx3.fill()
                                 
                                 
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#526969"))
-                                widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15, cellsize-50, 22)
+                                widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+120+self.shotsSCROLL+15, cellsize-50, 22)
                                 
                                 
                                 ctx.set_source_rgb(1,1,1)
                                 ctx.set_font_size(10)
-                                ctx.move_to( Pstart+20+(cellsize*xstep)+15+22, shotlistlength+220+self.shotsSCROLL+15+15)
+                                ctx.move_to( Pstart+20+(cellsize*xstep)+15+22, shotlistlength+120+self.shotsSCROLL+15+15)
                                 ctx.show_text(BName)
                                 
                                 
                                 
-                                widget.window.draw_pixbuf(None, self.blendericon, 0, 0, Pstart+20+(cellsize*xstep)+17, shotlistlength+220+self.shotsSCROLL+15 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)   
+                                widget.window.draw_pixbuf(None, self.blendericon, 0, 0, Pstart+20+(cellsize*xstep)+17, shotlistlength+120+self.shotsSCROLL+15 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)   
                                 
                                 # MOUSE OVER BLENDFILE
-                                if mx in range(Pstart+20+(cellsize*xstep)+20, Pstart+20+(cellsize*xstep)+20+cellsize-60) and my in range(shotlistlength+220+self.shotsSCROLL+20, shotlistlength+220+self.shotsSCROLL+20+cellsize-60+22):
+                                if mx in range(Pstart+20+(cellsize*xstep)+20, Pstart+20+(cellsize*xstep)+20+cellsize-60) and my in range(shotlistlength+120+self.shotsSCROLL+20, shotlistlength+120+self.shotsSCROLL+20+cellsize-60+22):
                                     
                                     tooltip = "Open Blendfile\n"+BName
                                     
@@ -4014,9 +4220,9 @@ class story:
                                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                     
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
-                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+220+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+15, shotlistlength+120+self.shotsSCROLL+15+22, cellsize-50, cellsize-50)
                             
-                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                         
                                         
                                         cblndr = ""
@@ -4045,7 +4251,7 @@ class story:
                                 ##### RENDER BUTTON ####
                                 
                                 # MOUSE OVER
-                                if mx in range(Pstart+20+(cellsize*xstep)+20+110, Pstart+20+(cellsize*xstep)+20+130) and my in range(shotlistlength+220+self.shotsSCROLL+20, shotlistlength+220+self.shotsSCROLL+40):
+                                if mx in range(Pstart+20+(cellsize*xstep)+20+110, Pstart+20+(cellsize*xstep)+20+130) and my in range(shotlistlength+120+self.shotsSCROLL+20, shotlistlength+120+self.shotsSCROLL+40):
                                     
                                     tooltip = "Render The File"
                                     
@@ -4053,9 +4259,9 @@ class story:
                                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                     
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+220+self.shotsSCROLL+20, 20, 20)
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+120+self.shotsSCROLL+20, 20, 20)
                                     
-                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                         
                                         
                                         # SHOWING WATCH CURSOR
@@ -4071,13 +4277,13 @@ class story:
                                             dialogs.rendersettings(self.pf, shotname+"/"+BName)
                                         glib.timeout_add(10, ee, shotname, BName)
                                 
-                                widget.window.draw_pixbuf(None, self.render, 0, 0, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+220+self.shotsSCROLL+20 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)   
+                                widget.window.draw_pixbuf(None, self.render, 0, 0, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+120+self.shotsSCROLL+20 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)   
                                 
                                 
                                 ##### COPY BUTTON ####
                                 
                                 # MOUSE OVER
-                                if mx in range(Pstart+20+(cellsize*xstep)+20+110, Pstart+20+(cellsize*xstep)+20+130) and my in range(shotlistlength+220+self.shotsSCROLL+50, shotlistlength+220+self.shotsSCROLL+50+22):
+                                if mx in range(Pstart+20+(cellsize*xstep)+20+110, Pstart+20+(cellsize*xstep)+20+130) and my in range(shotlistlength+120+self.shotsSCROLL+50, shotlistlength+120+self.shotsSCROLL+50+22):
                                     
                                     tooltip = "Copy Blendfile to ClipBoard"
                                     
@@ -4085,13 +4291,13 @@ class story:
                                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                     
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+220+self.shotsSCROLL+50, 20, 20)
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+120+self.shotsSCROLL+50, 20, 20)
                                     
-                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                         
                                         self.BLboard = self.pf+"/"+shotname+"/"+BName
                                 
-                                widget.window.draw_pixbuf(None, self.copy, 0, 0, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+220+self.shotsSCROLL+50 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)   
+                                widget.window.draw_pixbuf(None, self.copy, 0, 0, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+120+self.shotsSCROLL+50 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)   
                                    
                                 
                                 
@@ -4100,7 +4306,7 @@ class story:
                                 #### LINK CONFRIM BUTTON ####
                                 
                                 # MOUSE OVER
-                                if mx in range(Pstart+20+(cellsize*xstep)+20+110, Pstart+20+(cellsize*xstep)+20+130) and my in range(shotlistlength+220+self.shotsSCROLL+50+30, shotlistlength+220+self.shotsSCROLL+50+22+30):
+                                if mx in range(Pstart+20+(cellsize*xstep)+20+110, Pstart+20+(cellsize*xstep)+20+130) and my in range(shotlistlength+120+self.shotsSCROLL+50+30, shotlistlength+120+self.shotsSCROLL+50+22+30):
                                     
                                     tooltip = "Link assets to the blendfile"
                                     
@@ -4108,18 +4314,22 @@ class story:
                                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                     
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+220+self.shotsSCROLL+50+30, 20, 20)
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+120+self.shotsSCROLL+50+30, 20, 20)
                                     
-                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                         
                                         def ee(shotname, BName):
+                                            
+                                            if not os.path.exists(self.pf+"/"+shotname+"/extra/autolink.data"):
+                                                s = open(self.pf+"/"+shotname+"/extra/autolink.data", "w")
+                                                s.close()
                                             
                                             
                                             
                                             linkconfirm.config(self.pf,  self.pf+"/"+shotname+"/extra/autolink.data", self.pf+"/"+shotname+"/"+BName)
                                         glib.timeout_add(10, ee, shotname, BName)
                                 
-                                widget.window.draw_pixbuf(None, self.linkicon, 0, 0, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+220+self.shotsSCROLL+50+30 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)   
+                                widget.window.draw_pixbuf(None, self.linkicon, 0, 0, Pstart+20+(cellsize*xstep)+20+110, shotlistlength+120+self.shotsSCROLL+50+30 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)   
                                    
                                 
                                 
@@ -4154,11 +4364,11 @@ class story:
                                 
                                 
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#FFF"))
-                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+20, shotlistlength+220+self.shotsSCROLL+20, cellsize-60, cellsize-60)
+                                    widget.window.draw_rectangle(xgc, True, Pstart+20+(cellsize*xstep)+20, shotlistlength+120+self.shotsSCROLL+20, cellsize-60, cellsize-60)
                             
                                 else:
                                     
-                                    widget.window.draw_pixbuf(None, BPic, 0, 0, Pstart+20+(cellsize*xstep)+20, shotlistlength+220+self.shotsSCROLL+20 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                                    widget.window.draw_pixbuf(None, BPic, 0, 0, Pstart+20+(cellsize*xstep)+20, shotlistlength+120+self.shotsSCROLL+20 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                                 
                                 
                                 shotlistlength = tmp
@@ -4189,7 +4399,7 @@ class story:
                             
                             
                             # MOUSE OVER
-                            if mx in range(Pstart, w) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                            if mx in range(Pstart, w) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
                                 
                                 tooltip = "Paste Blend File\n"+self.BLboard
                                 
@@ -4197,9 +4407,9 @@ class story:
                                 widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                                widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                                widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart, 23)
                                 
-                                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                     
                                     widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.WATCH))
                                 
@@ -4242,11 +4452,11 @@ class story:
                                         
                                         
                             
-                            widget.window.draw_pixbuf(None, self.paste, 0, 0, Pstart+10, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                            widget.window.draw_pixbuf(None, self.paste, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                             
                             ctx.set_source_rgb(1,1,1)
                             ctx.set_font_size(15)
-                            ctx.move_to( Pstart+50, 15+shotlistlength+220+self.shotsSCROLL-2)
+                            ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL-2)
                             ctx.show_text(self.BLboard[self.BLboard.rfind("/")+1:])
                             
                         shotlistlength = shotlistlength + 23
@@ -4257,7 +4467,7 @@ class story:
                         ### ADD BLEND FILE BUTTON ###
                         
                         # MOUSE OVER
-                        if mx in range(Pstart, w) and my in range(shotlistlength+220+self.shotsSCROLL, shotlistlength+220+self.shotsSCROLL+20):
+                        if mx in range(Pstart, w) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
                             
                             tooltip = "Create New, Blank\nBlend File"
                             
@@ -4265,9 +4475,9 @@ class story:
                             widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
-                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart, 23)
+                            widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart, 23)
                             
-                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(220, h):
+                            if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
                                 
                                 
                                 
@@ -4305,11 +4515,11 @@ class story:
                                                 pass
                                 glib.timeout_add(10, ee, shotname) 
                                 
-                        widget.window.draw_pixbuf(None, self.plus, 0, 0, Pstart+10, shotlistlength+220+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                        widget.window.draw_pixbuf(None, self.plus, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                             
                         ctx.set_source_rgb(1,1,1)
                         ctx.set_font_size(15)
-                        ctx.move_to( Pstart+50, 15+shotlistlength+220+self.shotsSCROLL-2)
+                        ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL-2)
                         ctx.show_text("Add New Blend File")
                         
                         shotlistlength = shotlistlength + 23
@@ -4321,9 +4531,9 @@ class story:
                         
                         
                 
-                shotlistlength = shotlistlength + 20
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#424242"))
-                widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+220+self.shotsSCROLL, Ppart, 1)
+                #shotlistlength = shotlistlength + 20
+                #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#424242"))
+                #widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart, 1)
                 shotlistlength = shotlistlength + 20
                     
             
@@ -4331,7 +4541,121 @@ class story:
                 
                 shotlistlength = shotlistlength + 20
                
-               
+           
+           ################################ COPY FROM THE TOP ##########################################
+           
+           # I couln't make it work using a function. So I just copied the code
+           
+                try:
+                    
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
+                    widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL-30, Ppart, h)
+                    
+                    
+                    
+                    SSname = scnDATA[self.event_select][self.scene_select][1]
+                    
+                    ctx2.set_source_rgb(1,1,1)
+                    ctx2.set_font_size(20)
+                    ctx2.move_to( Pstart+20+(Ppart-50)/2-len(SSname)*12/2, shotlistlength+120+self.shotsSCROLL+5)
+                    ctx2.show_text(SSname)
+                    
+                    
+                    #PREVIOUS SCENE
+                    
+                    for ar in self.FILE.arrows:
+                        if ar[1][0] == self.event_select and ar[1][1] == SSname and ar[0][1] != "start":
+                            if my in range(shotlistlength+120+self.shotsSCROLL-25, shotlistlength+120+self.shotsSCROLL+20) and mx in range(Pstart+20, Pstart+60):
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c"))
+                                widget.window.draw_rectangle(xgc, True, Pstart+20, shotlistlength+120+self.shotsSCROLL-25, 40, 40)
+                            
+                                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                                    
+                                    
+                                            
+                                            
+                                            
+                                    p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
+                                    
+                                    self.event_select = ar[0][0]
+                                    
+                                    for ns, sc in enumerate(scnDATA[self.event_select]):
+                                        if sc[1] == ar[0][1]:
+                                            self.scene_select = ns
+                                    
+                                    try:
+                                        scnDATA = self.FILE.get_scenes_data()
+                                        scenestory = scnDATA[self.event_select][self.scene_select][3]
+                                        self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
+                                    except:
+                                        pass
+                                    self.shotsSCROLL = 0
+                                    
+                                    
+                                    # FOCUS THE EVENT IN THE CENTER OF THE SCREEN
+                                    
+                                    d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
+                                    
+                                    self.px = px + ((p0 * sx)-(d0 * sx))
+                                    self.py = py + ((p2 * sy)-(d2 * sy))
+                                            
+                                            
+                                            
+                                
+                            widget.window.draw_pixbuf(None, self.big_left, 0, 0, Pstart+20, shotlistlength+120+self.shotsSCROLL-25 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                            
+                    
+                    #NEXT SCENE
+                    for ar in self.FILE.arrows:
+                        if ar[0][0] == self.event_select and ar[0][1] == SSname and ar[1][1] != "end":
+                            if my in range(shotlistlength+120+self.shotsSCROLL-25, shotlistlength+120+self.shotsSCROLL+20) and mx in range(w-100, w-60):
+                                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c"))
+                                widget.window.draw_rectangle(xgc, True, w-100, shotlistlength+120+self.shotsSCROLL-25, 40, 40)
+                            
+                                if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                                    
+                                    
+                                            
+                                    p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
+                                    
+                                    self.event_select = ar[1][0]
+                                    
+                                    for ns, sc in enumerate(scnDATA[self.event_select]):
+                                        if sc[1] == ar[1][1]:
+                                            self.scene_select = ns
+                                    
+                                    try:
+                                        scnDATA = self.FILE.get_scenes_data()
+                                        scenestory = scnDATA[self.event_select][self.scene_select][3]
+                                        self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
+                                    except:
+                                        pass
+                                    self.shotsSCROLL = 0
+                                    
+                                    # FOCUS THE EVENT IN THE CENTER OF THE SCREEN
+                                    
+                                    d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
+                                    
+                                    self.px = px + ((p0 * sx)-(d0 * sx))
+                                    self.py = py + ((p2 * sy)-(d2 * sy))
+                            
+                            
+                            
+                            widget.window.draw_pixbuf(None, self.big_right, 0, 0, w-100, shotlistlength+120+self.shotsSCROLL-25 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                            
+                    
+                    shotlistlength = shotlistlength + 20
+                
+                
+                
+                
+                except:
+                    pass    
+           
+           
+           ################################ COPY FROM THE TOP END ##########################################
+           
                 
                 
             
@@ -4339,7 +4663,7 @@ class story:
             
             # SCROLL
             
-            if mx in range(Pstart, w) and my in range(220, h):
+            if mx in range(Pstart, w) and my in range(120, h):
                 
                 if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
                     
@@ -4354,23 +4678,23 @@ class story:
                     
             
             
-            if self.shotsSCROLL < 0-shotlistlength+(h-220):
-                self.shotsSCROLL = 0-shotlistlength+(h-220)
+            if self.shotsSCROLL < 0-shotlistlength+(h-120):
+                self.shotsSCROLL = 0-shotlistlength+(h-120)
             
             if self.shotsSCROLL > 0:
                 self.shotsSCROLL = 0
             
-            Pofruler = h-220-100
-            Ponruler = my-220-50
+            Pofruler = h-100
+            Ponruler = my-50
             
             
             
-            RulerY = int(Pofruler*(float(self.shotsSCROLL*-1)/shotlistlength))+220+50
+            RulerY = int(Pofruler*(float(self.shotsSCROLL*-1)/shotlistlength))+50
             
             
             # get ruler properly
-            d = h-220
-            din = h-220-110
+            d = h
+            din = h-110
             
             l = shotlistlength
             
@@ -4378,7 +4702,7 @@ class story:
             
             
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#292929"))
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#232323"))
             widget.window.draw_rectangle(xgc, True, w-50, RulerY, 50, leng)
             
             
@@ -4391,12 +4715,12 @@ class story:
                     self.shotsSCROLL  = int(shotlistlength*PerRuler)*-1
                     
                     
-                    if my in range(220, 220+50):
+                    if my in range(0, 50):
                     
                         self.shotsSCROLL = 0
                     if my in range(h-50, h):
                          
-                        self.shotsSCROLL = 0-shotlistlength+(h-220)
+                        self.shotsSCROLL = 0-shotlistlength+(h-120)
             
             
             
@@ -4404,19 +4728,19 @@ class story:
                 
                 yfloat = float(loc)/shotlistlength
                 
-                y = int(float(h-220-100)*yfloat)+220+50+15
+                y = int(float(h-100)*yfloat)+50+15
                 
                 
                 if status == 0:                         ####OPENGL
-                    ctx2.set_source_rgb(1,1,0.0)
+                    ctx2.set_source_rgb(0.5,0.5,0.0)
                 elif status == 1:
-                    ctx2.set_source_rgb(0.75,0.75,0.0)    #PREP
+                    ctx2.set_source_rgb(0.3,0.3,0.0)    #PREP
                 elif status == 2:
                     ctx2.set_source_rgb(0.0,0.0,0.8)    #TESTING
                 elif status == 3:
-                    ctx2.set_source_rgb(0.0,1,0.0)      # DONE
+                    ctx2.set_source_rgb(0.0,0.5,0.0)      # DONE
                 else:
-                    ctx2.set_source_rgb(0.5,0.5,0.5)     ##NOTHING
+                    ctx2.set_source_rgb(0.3,0.3,0.3)     ##NOTHING
                     
                 ctx2.set_font_size(12)
                 ctx2.move_to( w-50, y)
@@ -4429,12 +4753,15 @@ class story:
             
             
             
-            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#333333"))
-            widget.window.draw_rectangle(xgc, True, w-(w)/3, 0, (w)/3, 220) ##################
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
+            widget.window.draw_rectangle(xgc, True, w-(w)/3, 0, (w)/3-50, 120) ##################
+            
+            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) # BUTTON HIGHLIGHT
+            widget.window.draw_rectangle(xgc, True, w-(w)/3+50, 50, (w)/3-150, 50)
             
             # loading selected event to the side panel
             
-            try:        
+            try:        # I don't want to touch the TRY but WHY is it here. It doesn't make any sense.
                 
                 event = self.FILE.events[self.event_select]
                 
@@ -4444,45 +4771,12 @@ class story:
                 
                 
                 # IF MOUSE OVER THE TEXT
-                if mx in range(Pstart, w) and my in range(0, 220):
+                if mx in range(Pstart+50, w-100) and my in range(50, 100):
                     
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                    widget.window.draw_rectangle(xgc, True, w-(w)/3+50, 50, (w)/3-150, 50)
                     
-                    ### ARROW KEY    SLLLOOOOOOOWWWW
-                    
-                    if 65362 in self.keys:
-                        self.event_text_scroll = self.event_text_scroll-0.3
-                    if 65364 in self.keys:
-                        self.event_text_scroll = self.event_text_scroll+0.3
-                    
-                    ### PG UP PG DOWN FAST
-                    
-                    
-                    
-                    
-                    if 65365 in self.keys:
-                        self.event_text_scroll = self.event_text_scroll-1
-                    if 65366 in self.keys:
-                        self.event_text_scroll = self.event_text_scroll+1
-                    
-                    
-                    
-                    # MOUSE SCROLL
-                
-                    if self.mpy > my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
-                        
-                        self.event_text_scroll = self.event_text_scroll - ((my-self.mpy) / 35 )
-                    
-                    if self.mpy < my and "GDK_BUTTON2" in str(fx) and "GDK_BUTTON2" in str(self.mpf) and self.win.is_active():
-                        
-                        self.event_text_scroll = self.event_text_scroll + ((self.mpy-my) / 35 )
-                    
-                    
-                    
-                    
-                    
-                    
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f"))
-                    widget.window.draw_rectangle(xgc, True, w-(w)/3, 0, (w)/3, 220)
+                    tooltip = "[ Tab ]\n\n  Edit the text of the scene, \nsetup shots, mark items etc."
                     
                     # IF CLICKED
                     
@@ -4499,36 +4793,31 @@ class story:
                             self.doundo = True
                             
                             
+                            try:
+                                scnDATA = self.FILE.get_scenes_data()
+                                scenestory = scnDATA[self.event_select][self.scene_select][3]
+                                self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
+                            except:
+                                pass
+                            #self.shotsSCROLL = 0
+                            
+                            
                         glib.timeout_add(10, ee)
                         
                     
                 
                 
                 ctx.set_source_rgb(1,1,1)
-                ctx.set_font_size(20)
+                ctx.set_font_size(17)
                 ctx.move_to( Pstart+20, 30)
-                ctx.show_text(name)
+                ctx.show_text("Event ID: "+name)
+               
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(30)
+                ctx.move_to( Pstart+20+100, 85)
+                ctx.show_text("EDIT")
                 
-                if self.event_text_scroll < 0:
-                    self.event_text_scroll = 0
-                if len( story.split("\n") )-9 < self.event_text_scroll:
-                    self.event_text_scroll  = len( story.split("\n") )-9
-                
-                sclval = int(self.event_text_scroll)
-                
-                for LI, Line in enumerate(story.split("\n")[sclval:sclval+9]):
-                    
-                    
-                    ctx2.set_source_rgb(0.6,0.6,0.6)
-                    ctx2.set_font_size(15)
-                    ctx2.move_to( Pstart+20, 15*LI+20+50)
-                    ctx2.show_text(Line)
-                ctx.set_source_rgb(.8,.8,.8)
-                ctx.set_font_size(12)
-                ctx.move_to( Pstart+20, 15*10+20+45)
-                ctx.show_text("... Click To View Scene Code Nor EDIT ...")
-                
-                
+                widget.window.draw_pixbuf(None, self.big_edit, 0, 0, Pstart+20+50, 55 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                 
             
             except:
@@ -4566,26 +4855,20 @@ class story:
                         
                         b = len(i)
                 
-                xsize = b*6+2
-                ysize = len(str(tooltip).split("\n"))*11
+                xsize = b*9+2
+                ysize = len(str(tooltip).split("\n"))*16
                 
                 
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#424242"))
-                widget.window.draw_rectangle(xgc, True, mx+10, my+10, xsize,ysize)
+                widget.window.draw_rectangle(xgc, True, mx+10, my+8, xsize,ysize)
                 
                 
                 for n, i in enumerate(str(tooltip).split("\n")):
                     
                     
-                    
-                    
-                
-                
-                
-                
                     ctx2.set_source_rgb(1,1,1)
-                    ctx2.set_font_size(10)
-                    ctx2.move_to( mx+11, my+20+(n*10))
+                    ctx2.set_font_size(15)
+                    ctx2.move_to( mx+11, my+20+(n*15)+2)
                     ctx2.show_text(i)
             
             

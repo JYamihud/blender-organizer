@@ -4874,7 +4874,7 @@ class story:
             
             try:        # I don't want to touch the TRY but WHY is it here. It doesn't make any sense.
                 
-                if self.event_select:
+                if type(self.event_select) != bool:
                     
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) # BUTTON HIGHLIGHT
                     widget.window.draw_rectangle(xgc, True, w-(w)/3+50, 50, (w)/3-150, 50)

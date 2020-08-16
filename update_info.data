@@ -1,3 +1,9 @@
+VERSION 4.84
+FILE update_info.data
+FILE py_data/modules/analytics.py
+FILE py_data/modules/dialogs.py
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/4.84
+
 VERSION 4.83
 FILE update_info.data
 FILE py_data/modules/story_editor.py

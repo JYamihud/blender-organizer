@@ -1058,6 +1058,7 @@ class draw_analytics:
                         CUR = "rnd"
                     elif "project.progress" in l:
                         printname = "Main Checklist"
+                        needicon = self.checklist
                         CUR = "Checklist"
                     elif "/rnd/" in l:
                         printname = l.replace("/rnd/", "").replace("/", " > ")

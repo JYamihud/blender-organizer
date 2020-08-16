@@ -1151,7 +1151,8 @@ class AddAsset:
     def getpath(self):
         
         #WRITTING TO HYSTORY
-        history.write(self.pf ,self.name, "[Added Asset]")
+        if self.name:
+            history.write(self.pf ,self.name, "[Added Asset]")
         
         return self.name
 

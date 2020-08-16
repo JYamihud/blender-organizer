@@ -1074,16 +1074,16 @@ class AddAsset:
         fldr = gtk.combo_box_new_text()
         fldr.append_text("Character")
         fldr.append_text("Vehicle")
-        fldr.append_text("Object")
         fldr.append_text("Location")
+        fldr.append_text("Other")
         
         if self.CUR == "chr":
             fldr.set_active(0)
         elif self.CUR == "veh":
             fldr.set_active(1)
-        elif self.CUR == "obj":
-            fldr.set_active(2)
         elif self.CUR == "loc":
+            fldr.set_active(2)
+        elif self.CUR == "obj":
             fldr.set_active(3)
         
         fc.pack_start(fldr)
@@ -1507,6 +1507,8 @@ class event:
                                                "Discard Changes", gtk.RESPONSE_CLOSE))
         
         box = dialog.get_child() # getting the box
+        dialog.set_size_request(1200, 650)
+        
         
         namebox = gtk.HBox(False)
         box.pack_start(namebox, False)
@@ -1596,6 +1598,7 @@ class event:
             
             
             searchfor = textbuffer.get_text(s, e)
+            searchfor.decode("utf-8")
             
             name = itemselector.select(pf, searchfor) # THIS COULD CAUSE ISSUES IDK
             
@@ -1634,6 +1637,7 @@ class event:
             s, e = textbuffer.get_selection_bounds()
             
             x = textbuffer.get_text(s, e)
+            x = x.decode("utf-8")
             x = len(x)
             
             s = s.get_offset()
@@ -1968,7 +1972,7 @@ class event:
         # scroller for the text editor
         textscroll = gtk.ScrolledWindow()
         textscroll.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_ALWAYS)
-        textscroll.set_size_request(500, 500)
+        textscroll.set_size_request(720, 500)
         textscroll.set_shadow_type(gtk.SHADOW_NONE)
         
         # text editor

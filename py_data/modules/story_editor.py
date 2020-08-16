@@ -200,7 +200,27 @@ class story:
         
         if len(self.undoDATA) > 32:
             self.undoDATA = self.undoDATA[32:] # RECORD ONLY LAST 32 INSTANCES
+    
+    def animate(self, thex, they):
         
+        lx = [self.px, thex]
+        lx = [lx[0], sum(lx)/len(lx), lx[1]]
+        lx = [lx[0], sum([lx[0],lx[1]])/len([lx[0],lx[1]]), lx[1], sum([lx[1],lx[2]])/len([lx[1],lx[2]]), lx[2] ]
+        
+        ly = [self.py, they]
+        ly = [ly[0], sum(ly)/len(ly), ly[1]]
+        ly = [ly[0], sum([ly[0],ly[1]])/len([ly[0],ly[1]]), ly[1], sum([ly[1],ly[2]])/len([ly[1],ly[2]]), ly[2] ]
+        
+        
+        
+        
+        self.animation = {}
+        
+        
+        for n, i in enumerate(lx):
+            
+            self.animation[str(self.frame+n)] = [i, ly[n]]
+            
         
         
     def editor(self):
@@ -215,7 +235,7 @@ class story:
         self.select = "bos"
         
         
-        
+        self.animation = {}
         
         
         
@@ -533,8 +553,17 @@ class story:
             # TRANSFORMATION
             sx = self.sx
             sy = self.sy
-            px = self.px
+            px = self.px 
             py = self.py
+            
+            
+            
+            #ANIMATION 
+            
+            if str(self.frame) in self.animation:
+                self.px, self.py = self.animation[str(self.frame)]
+            
+            
             
             nw = (w-(w)/3)/2
                 
@@ -683,14 +712,7 @@ class story:
             stf = datetime.datetime.now()    
                 
             
-            # for sake of it
-            # SHORT CUT TO MAKE VIEW NORMILIZE TO STAR UP VALUES
-            if 65307 in self.keys:  # ESCAPE BUTTON
-                
-                self.sx = 0.6
-                self.sy = 61.5
-                self.px = 0
-                self.py = 0
+            
             
             
                 
@@ -1511,7 +1533,7 @@ class story:
                         if mx in range(ds, dw+ds) and my in range(ey, int(esy)+ey) and mx in range(0, w-w/3):
                             
                             
-                            tooltip = "event ["+name+"]\nscene["+scnDATA[ind][n][1]+"]"
+                            tooltip = "Event ID : "+name+"\nScene ID : "+scnDATA[ind][n][1]+"\n"+str(int(event[0]))+":"+str(int(event[2]))
                             
                             
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
@@ -1617,11 +1639,13 @@ class story:
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4987af"))
                             widget.window.draw_rectangle(xgc, True, ds+1, ey, dw-2, int(esy)/3)
                         
+                        # SCENE NAME
+                        
                         try:                              # IDK WTF IS WITH THIS PEACE BUT IT WAS LAGGING WHEN SLIPT
                             ctx.set_source_rgb(1,1,1)     # IS ACTIVATED SO YEAH... I NEED TO LOOK INTO IT FURTHER
                             ctx.set_font_size(11)
                             ctx.move_to( ds+2, ey+12)
-                            ctx.show_text(scnDATA[ind][n][1]) 
+                            ctx.show_text(scnDATA[ind][n][1][:dw/7]) 
                         except:
                             pass
                 
@@ -1677,10 +1701,12 @@ class story:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e47649"))
                     
                 #widget.window.draw_rectangle(xgc, False, ex, ey, esx, int(esy))
+                
+                # EVENT NAME
                 ctx.set_source_rgb(1,1,1)
                 ctx.set_font_size(11)
                 ctx.move_to( ex+2, ey+esy/3+12)
-                ctx.show_text(event[3])
+                ctx.show_text(event[3][:esx/7])
                 
                 
                 #this_frame_events.append([ex, ey, esx, esy, event[3]])
@@ -3022,41 +3048,48 @@ class story:
                     
                     for ar in self.FILE.arrows:
                         if ar[1][0] == self.event_select and ar[1][1] == SSname and ar[0][1] != "start":
+                            
+                            doprevious = False
+                            
                             if my in range(shotlistlength+120+self.shotsSCROLL-25, shotlistlength+120+self.shotsSCROLL+20) and mx in range(Pstart+20, Pstart+60):
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c"))
                                 widget.window.draw_rectangle(xgc, True, Pstart+20, shotlistlength+120+self.shotsSCROLL-25, 40, 40)
                             
                                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
+                                    doprevious = True
                                     
-                                    
+                            if 65361 in self.keys or doprevious:                    
                                             
                                             
+                                p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
+                                
+                                self.event_select = ar[0][0]
+                                
+                                for ns, sc in enumerate(scnDATA[self.event_select]):
+                                    if sc[1] == ar[0][1]:
+                                        self.scene_select = ns
+                                
+                                try:
+                                    scnDATA = self.FILE.get_scenes_data()
+                                    scenestory = scnDATA[self.event_select][self.scene_select][3]
+                                    self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
+                                except:
+                                    pass
+                                self.shotsSCROLL = 0
+                                
+                                
+                                # FOCUS THE EVENT IN THE CENTER OF THE SCREEN
+                                
+                                d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
+                                
+                                thex = px-(d0 * sx +px) + (w/3)
+                                they = py-(d2 * sy +py) + (h/2)
+                                
+                                
+                                
+                                self.animate(thex, they)
                                             
-                                    p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
-                                    
-                                    self.event_select = ar[0][0]
-                                    
-                                    for ns, sc in enumerate(scnDATA[self.event_select]):
-                                        if sc[1] == ar[0][1]:
-                                            self.scene_select = ns
-                                    
-                                    try:
-                                        scnDATA = self.FILE.get_scenes_data()
-                                        scenestory = scnDATA[self.event_select][self.scene_select][3]
-                                        self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
-                                    except:
-                                        pass
-                                    self.shotsSCROLL = 0
-                                    
-                                    
-                                    # FOCUS THE EVENT IN THE CENTER OF THE SCREEN
-                                    
-                                    d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
-                                    
-                                    self.px = px + ((p0 * sx)-(d0 * sx))
-                                    self.py = py + ((p2 * sy)-(d2 * sy))
-                                            
-                                            
+                                self.keys = []         
                                             
                                 
                             widget.window.draw_pixbuf(None, self.big_left, 0, 0, Pstart+20, shotlistlength+120+self.shotsSCROLL-25 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
@@ -3065,37 +3098,46 @@ class story:
                     #NEXT SCENE
                     for ar in self.FILE.arrows:
                         if ar[0][0] == self.event_select and ar[0][1] == SSname and ar[1][1] != "end":
+                            
+                            donext = False
                             if my in range(shotlistlength+120+self.shotsSCROLL-25, shotlistlength+120+self.shotsSCROLL+20) and mx in range(w-100, w-60):
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3c3c3c"))
                                 widget.window.draw_rectangle(xgc, True, w-100, shotlistlength+120+self.shotsSCROLL-25, 40, 40)
                             
                                 if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                                     
-                                    
+                                    donext = True
                                             
-                                    p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
-                                    
-                                    self.event_select = ar[1][0]
-                                    
-                                    for ns, sc in enumerate(scnDATA[self.event_select]):
-                                        if sc[1] == ar[1][1]:
-                                            self.scene_select = ns
-                                    
-                                    try:
-                                        scnDATA = self.FILE.get_scenes_data()
-                                        scenestory = scnDATA[self.event_select][self.scene_select][3]
-                                        self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
-                                    except:
-                                        pass
-                                    self.shotsSCROLL = 0
-                                    
-                                    # FOCUS THE EVENT IN THE CENTER OF THE SCREEN
-                                    
-                                    d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
-                                    
-                                    self.px = px + ((p0 * sx)-(d0 * sx))
-                                    self.py = py + ((p2 * sy)-(d2 * sy))
-                            
+                            if 65363 in self.keys or donext:    
+                                
+                                p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
+                                
+                                self.event_select = ar[1][0]
+                                
+                                for ns, sc in enumerate(scnDATA[self.event_select]):
+                                    if sc[1] == ar[1][1]:
+                                        self.scene_select = ns
+                                
+                                try:
+                                    scnDATA = self.FILE.get_scenes_data()
+                                    scenestory = scnDATA[self.event_select][self.scene_select][3]
+                                    self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
+                                except:
+                                    pass
+                                self.shotsSCROLL = 0
+                                
+                                # FOCUS THE EVENT IN THE CENTER OF THE SCREEN
+                                
+                                d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
+                                
+                                thex = px-(d0 * sx +px) + (w/3)
+                                they = py-(d2 * sy +py) + (h/2)
+                                
+                                
+                                
+                                self.animate(thex, they)
+                                
+                                self.keys = []
                             
                             
                             widget.window.draw_pixbuf(None, self.big_right, 0, 0, w-100, shotlistlength+120+self.shotsSCROLL-25 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
@@ -3425,15 +3467,22 @@ class story:
                             for item in items:
                                 if item[0] in range(letter, letter+len(word)) and letter >= skipto:
                                     
-                                    if shotlistlength+120+self.shotsSCROLL in range(120, h):
+                                    if movex+(len(story[story[:item[0]+1].replace("\n", " ").rfind(" "):item[2]+story[item[2]:].replace("\n", " ").find(" ")+1].replace("\n", " "))*9+24) > Ppart-51 or isName:# or movex > Ppart - 500 and isFrase:
+                                
+                                        shotlistlength = shotlistlength + 20
+                                        movex = 0
                                     
+                                    if shotlistlength+120+self.shotsSCROLL in range(110, h):
+                                        
+                                        
+                                        
                                         GraphicsX = Pstart+20+movex-2
                                         if isName:
                                             GraphicsX = Pstart+Ppart/2-len(story[item[0]:item[2]])*9/2
                                         
                                         #ITEM COLOR
                                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#6e5daf")) #403666   #6e5daf
-                                        widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+120+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 20)
+                                        widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+120+self.shotsSCROLL+1, len(story[story[:item[0]+1].replace("\n", " ").rfind(" "):item[2]+story[item[2]:].replace("\n", " ").find(" ")+1].replace("\n", " "))*9+24, 20)
                                         
                                         #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#d0d0d0")) #403666   #6e5daf
                                         #widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+120+self.shotsSCROLL+20, len(story[item[0]:item[2]])*9+9+22, 2)
@@ -3461,15 +3510,15 @@ class story:
                                         
                                         
                                         # MOUSE OVER
-                                        if mx in range(GraphicsX, GraphicsX + len(story[item[0]:item[2]])*9+9+22) and my in range(shotlistlength+120+self.shotsSCROLL+2, shotlistlength+120+self.shotsSCROLL+18):
+                                        if mx in range(GraphicsX, GraphicsX + len(story[story[:item[0]+1].replace("\n", " ").rfind(" "):item[2]+story[item[2]:].replace("\n", " ").find(" ")+1].replace("\n", " "))*9+22) and my in range(shotlistlength+120+self.shotsSCROLL+1, shotlistlength+120+self.shotsSCROLL+21):
                                             
-                                            tooltip = "Go to the item"
+                                            tooltip = URL
                                             
                                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
-                                            widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+120+self.shotsSCROLL+2, len(story[item[0]:item[2]])*9+9+22, 18)
+                                            widget.window.draw_rectangle(xgc, True, GraphicsX, shotlistlength+120+self.shotsSCROLL+1, len(story[story[:item[0]+1].replace("\n", " ").rfind(" "):item[2]+story[item[2]:].replace("\n", " ").find(" ")+1].replace("\n", " "))*9+24, 20)
                                             
                                             # get mouse to show the hand
-                                            widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                                            #widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
                                             
                                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h) :
                                                 
@@ -3510,28 +3559,33 @@ class story:
                                         ctx2.set_source_rgb(1,1,1)
                                         ctx2.move_to( GraphicsX+22, 15+shotlistlength+120+self.shotsSCROLL)
                                         if isName:
-                                            ctx2.show_text(story[item[0]:item[2]].upper())
+                                            ctx2.show_text(story[item[0]-1:item[2]+story[item[2]:].replace("\n", " ").find(" ")+1].upper().replace("\n", " "))
                                         else:
-                                            ctx2.show_text(story[item[0]:item[2]])
+                                            ctx2.show_text(story[story[:item[0]+1].replace("\n", " ").rfind(" "):item[2]+story[item[2]:].replace("\n", " ").find(" ")+1].replace("\n", " "))
                                         
+                                            
                                         
-                                        
                                     
                                     
                                     
                                     
                                     
                                     
-                                    movex = movex + len(story[item[0]:item[2]])*9+9
+                                    movex = movex + len(story[story[:item[0]+1].replace("\n", " ").rfind(" "):item[2]+story[item[2]:].replace("\n", " ").find(" ")+1].replace("\n", " "))*9+9
                                     
-                                    skipto = letter + len(story[item[0]:item[2]])+1
+                                    skipto = letter + len(story[item[0]-1:item[2]])
                                     
                                     break
                             
                             
                             
                             if letter >= skipto:
-                                       
+                                
+                                if movex+(len(word)*9) > Ppart-51 or isName:# or movex > Ppart - 500 and isFrase:
+                                
+                                    shotlistlength = shotlistlength + 20
+                                    movex = 0
+                                  
                                 ctx2.set_source_rgb(1,1,1)
                                 ctx2.set_font_size(15)
                                 ctx2.move_to( Pstart+20+movex, 15+shotlistlength+120+self.shotsSCROLL)
@@ -3548,10 +3602,7 @@ class story:
                             letter = letter + len(word)+1
                             
                             
-                            if movex > Ppart-80 or isName:# or movex > Ppart - 500 and isFrase:
-                                
-                                shotlistlength = shotlistlength + 20
-                                movex = 0
+                            
                                 
                         
                         
@@ -3773,12 +3824,12 @@ class story:
                                 
                                 frmy =  int(round(100.0/lframe*frmdata[frm]))
                                 frmx =  int(round(float(Ppart-20)/len(frmdata)*tfrm)) + Pstart+10
-                                frmxs = int(round(float(Ppart-20)/len(frmdata)))
+                                frmxs = int(round(float(Ppart-20)/len(frmdata)))+1
                                 
                                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#1c1c1c"))
                                 widget.window.draw_rectangle(xgc, True, frmx, shotlistlength+120+self.shotsSCROLL -3+(100-frmy), frmxs, frmy)
                                 
-                                if my in range(shotlistlength+120+self.shotsSCROLL -3, shotlistlength+120+self.shotsSCROLL -3+100) and mx in range(frmx, frmx+frmxs):
+                                if my in range(shotlistlength+120+self.shotsSCROLL -3, shotlistlength+120+self.shotsSCROLL -3+100) and mx in range(frmx, frmx+frmxs-1):
                                     
                                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
                                     widget.window.draw_rectangle(xgc, True, frmx, shotlistlength+120+self.shotsSCROLL -3+(100-frmy), frmxs, frmy)
@@ -3807,7 +3858,10 @@ class story:
                                             break 
                                     self.shotsDATA[ind][2] = img
                                 
-                        
+                                if self.imgAT[ind] == self.imgAT[ind][:self.imgAT[ind].rfind("/")+1]+frm+self.imgAT[ind][self.imgAT[ind].rfind("."):]:
+                                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#db3c16"))
+                                    widget.window.draw_rectangle(xgc, True, frmx, shotlistlength+120+self.shotsSCROLL -3+(100-frmy), frmxs, frmy)
+                                    
                         # OUTPUTTING SOME STATISTICS
                         try:
                             ctx2.set_source_rgb(1,1,1)
@@ -4656,10 +4710,16 @@ class story:
                                     
                                     d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
                                     
-                                    self.px = px + ((p0 * sx)-(d0 * sx))
-                                    self.py = py + ((p2 * sy)-(d2 * sy))
+                                    #self.px = px + ((p0 * sx)-(d0 * sx))
+                                    #self.py = py + ((p2 * sy)-(d2 * sy))
                                             
-                                            
+                                    thex = px-(d0 * sx +px) + (w/3)
+                                    they = py-(d2 * sy +py) + (h/2)
+                                    
+                                    
+                                    
+                                    self.animate(thex, they)
+                                    
                                             
                                 
                             widget.window.draw_pixbuf(None, self.big_left, 0, 0, Pstart+20, shotlistlength+120+self.shotsSCROLL-25 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
@@ -4696,9 +4756,15 @@ class story:
                                     
                                     d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
                                     
-                                    self.px = px + ((p0 * sx)-(d0 * sx))
-                                    self.py = py + ((p2 * sy)-(d2 * sy))
+                                    #self.px = px + ((p0 * sx)-(d0 * sx))
+                                    #self.py = py + ((p2 * sy)-(d2 * sy))
                             
+                                    thex = px-(d0 * sx +px) + (w/3)
+                                    they = py-(d2 * sy +py) + (h/2)
+                                    
+                                    
+                                    
+                                    self.animate(thex, they)
                             
                             
                             widget.window.draw_pixbuf(None, self.big_right, 0, 0, w-100, shotlistlength+120+self.shotsSCROLL-25 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
@@ -4753,7 +4819,21 @@ class story:
                 self.searchscene = ""
                 
                 
+            elif self.frame == 1:
                 
+                focusonnow = 0
+                for i in self.FILE.arrows:
+                    if i[0] == [-1, 'start']:
+                        focusonnow = i[1][0]
+                        break
+                self.event_select = focusonnow
+                self.scene_select = 0
+                try:
+                    scnDATA = self.FILE.get_scenes_data()
+                    scenestory = scnDATA[self.event_select][self.scene_select][3]
+                    self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
+                except:
+                    pass    
                 
                 
             #also clean if not found
@@ -4761,16 +4841,7 @@ class story:
                 self.searchscene = ""
                 self.searchshot = ""
             
-            
-            if 65454 in self.keys or focusevent:
-                
-                # LET'S ATTEMPT TO MOVE CAMERA TO THE SELECTED SCENE
-                d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
-                                    
-                self.px = px-(d0 * sx +px) + (w/3)
-                self.py = py-(d2 * sy +py) + (h/2)
-                        
-                
+               
             
             
             # SCROLL
@@ -4787,14 +4858,20 @@ class story:
                     
                     self.shotsSCROLL = self.shotsSCROLL - (self.mpy-my)
                     
-                    
+            
+            if 65362 in self.keys:
+                self.shotsSCROLL = self.shotsSCROLL + 100
+            elif 65364 in self.keys:
+                self.shotsSCROLL = self.shotsSCROLL - 100
             
             
-            if self.shotsSCROLL < 0-shotlistlength+(h-120):
-                self.shotsSCROLL = 0-shotlistlength+(h-120)
             
-            if self.shotsSCROLL > 0:
-                self.shotsSCROLL = 0
+            
+            
+                
+            
+            
+            
             
             Pofruler = h-100
             Ponruler = my-50
@@ -4858,6 +4935,15 @@ class story:
                 ctx2.move_to( w-50, y)
                 ctx2.show_text(name)
                 
+            
+            
+            
+            if self.shotsSCROLL < 0-shotlistlength+(h-120):
+                self.shotsSCROLL = 0-shotlistlength+(h-120)
+            
+            if self.shotsSCROLL > 0:
+                self.shotsSCROLL = 0
+            
             
             
             
@@ -4951,10 +5037,96 @@ class story:
             stf = datetime.datetime.now()     
                 
             
+            ##################################
             
-        
             
+            # NUMBER PAD .
+            if 65454 in self.keys or 65452 in self.keys or focusevent:
+                
+                # LET'S ATTEMPT TO MOVE CAMERA TO THE SELECTED SCENE
+                d0, d1, d2, d3, d4 =  self.FILE.events[self.event_select] # YOU CAN CHANGE THIS TO ANY EVENT
+                                    
+                thex = px-(d0 * sx +px) + (w/3)
+                they = py-(d2 * sy +py) + (h/2)
+                
+                
+                
+                self.animate(thex, they)
+    
+                        
+            # ESCAPE
+            if 65307 in self.keys:  # ESCAPE BUTTON
+                
+                self.tool = "select"
             
+            # HOME
+            if 65360 in self.keys:    
+                
+                self.shotsSCROLL = 0
+                
+                try:
+                    found = False
+                    
+                    for i in self.FILE.arrows:
+                        if i[0] == [-1, 'start']:
+                            self.searchscene = i[1][1]
+                            found = True
+                            break
+                                            
+                     
+                    
+                    
+                    if not found:
+                        d0, d1, d2, d3, d4 =  self.FILE.events[0] # YOU CAN CHANGE THIS TO ANY EVENT
+                                            
+                        #self.px = px-(d0 * sx +px) + (w/3)
+                        #self.py = py-(d2 * sy +py) + (h/2)
+                        
+                        
+                        thex = px-(d0 * sx +px) + (w/3)
+                        they = py-(d2 * sy +py) + (h/2)
+                        
+                        
+                        
+                        self.animate(thex, they)
+            
+                        
+                        
+                        
+                        
+                        self.event_select = 0
+                        self.scene_select = 0
+                        try:
+                            scnDATA = self.FILE.get_scenes_data()
+                            scenestory = scnDATA[self.event_select][self.scene_select][3]
+                            self.shotsDATA = get_shots(scenestory, scnDATA[self.event_select][self.scene_select][1])
+                        except:
+                            pass 
+                        
+                except:
+                    pass
+                
+                self.keys = []
+                
+            # END
+            if 65367 in self.keys:    
+                
+                self.shotsSCROLL = 0
+                
+                try:
+                    focusonnow = 0
+                    
+                    for i in self.FILE.arrows:
+                        if i[1] == [-1, 'end']:
+                            self.searchscene = i[0][1]
+                            break
+                     
+                except:
+                    pass
+                
+                self.keys = []
+                
+            #65367
             
             ####################################
             
@@ -4975,9 +5147,11 @@ class story:
                 ysize = len(str(tooltip).split("\n"))*16
                 
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#424242"))
-                widget.window.draw_rectangle(xgc, True, mx+10, my+8, xsize,ysize)
                 
+                ctx3 = widget.window.cairo_create()
+                ctx3.set_source_rgba(0,0,0,0.75)
+                ctx3.rectangle(mx+10, my+8, xsize,ysize)
+                ctx3.fill()
                 
                 for n, i in enumerate(str(tooltip).split("\n")):
                     
@@ -5524,10 +5698,9 @@ class bos:
             
             return camera #outputiing the camera data and shutting the fuck up
                 
+        
     
-    
-    
-        return 0.0,0.0,1.0,20.0
+        return 0.0,0.0,0.6, 61.5
     
     
     def event_delete(self, num):

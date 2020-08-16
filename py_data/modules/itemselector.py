@@ -68,6 +68,8 @@ def select(pf, searchitem=""):
             self.mpy = 0
             self.mpf = ""
             
+            self.frame = 0
+            
             
             # LET'S PREPARE ALL THE ITEMS
             
@@ -90,6 +92,8 @@ def select(pf, searchitem=""):
             self.plus = gtk.gdk.pixbuf_new_from_file(self.pf+"/py_data/icons/plus.png")
             
             def framegraph(widget, event):
+                              
+                self.frame = self.frame + 1
                                                                 
                 w, h = widget.window.get_size()
                 xgc = widget.window.new_gc()
@@ -146,7 +150,7 @@ def select(pf, searchitem=""):
                     if self.search.get_text() in ["chr", "veh", "obj", "loc", i[1]]:
                         foundsearch = True
                         
-                        if self.search.get_text() == i[1]:
+                        if self.search.get_text() == i[1] and self.frame < 3:
                             self.finalname.set_text("/dev/"+i[0]+"/"+i[1])
                     
                     hoti = (20*n)+S # HEIGHT OF THIS ITEM

@@ -29,6 +29,7 @@ import schedule
 import assets
 import imageselector
 import oscalls
+import settingsfile
 
 class draw_analytics:
     
@@ -139,10 +140,12 @@ class draw_analytics:
         
         
         asstfols = ["chr", "veh", "loc", "obj"]
+        opnames  = ["Character", "Vehicles", "Locations", "Objects", "Scenes"]
+        
         
         astlist = []
         
-        for f in asstfols:
+        for n , f in enumerate(asstfols):
             
             flist = []
             
@@ -162,10 +165,26 @@ class draw_analytics:
                         except:
                             flist.append(0.0)
                 
-                astlist.append(sum(flist)/len(flist))
+                rawmultiply = settingsfile.get(opnames[n])
+                print f,   rawmultiply
+                try:
+                    multiply = int(rawmultiply)
+                except:
+                    multiply = 1
+                
+                for m in range(multiply):
+                    astlist.append(sum(flist)/len(flist))
             
-            
-        astlist.append(scenpercent)
+        
+        rawmultiply = settingsfile.get(opnames[4])  
+        print "scn",   rawmultiply
+        try:
+            multiply = int(rawmultiply)
+        except:
+            multiply = 1
+        for m in range(multiply):
+            astlist.append(scenpercent)
+        
         projectpercent = (sum(astlist)/len(astlist))*100
         
         

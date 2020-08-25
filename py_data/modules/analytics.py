@@ -301,7 +301,12 @@ class draw_analytics:
                                 sdate = datetime.datetime.strftime(datetime.datetime.today(), self.schedule_date_format)
                                 today = True
                                 over = True 
-                                
+                            
+                            #if self.selectdate != datetime.datetime.today().strftime(self.schedule_date_format):
+                            #    over = True
+                            #    today = False
+                            #else:
+                            #    today = True
                                 
                             if not today:
                                 a = datetime.datetime.today()
@@ -311,8 +316,10 @@ class draw_analytics:
                             
                                 s = ""
                                 
-                                
-                                if delta.days < 0:
+                                if datetime.datetime.strptime(sdate, self.schedule_date_format) == datetime.datetime.today():
+                                    daystring = "Today"
+                                    
+                                elif delta.days < 0:
                                     
                                     if not (delta.days)*-1-1 > 1:
                                         daystring = "Yesterday"
@@ -772,24 +779,71 @@ class draw_analytics:
             ctx.move_to( border*2, ubY-50+15)
             ctx.show_text(str(projectpercent)+"%")
             
-            timepassedstring = "Time Passed : "+str(int(deadline))+"%  "+str(self.alltime-passed)+" days left"
+            #timepassedstring = "Time Passed : "+str(int(deadline))+"%  "+str(self.alltime-passed)+" days left"
+            timepassedstring = str(self.alltime-passed)+" days left"
+            timegonestring   = str(passed)+" days gone"
             
-            #incase overframe
-            tmp = timespace
-            if len(timepassedstring)*6+timespace > ubX - border:
-                timespace = timespace - len(timepassedstring)*6
+            time1X = border+4+(timespace+(ubX-timespace)/2) - (len(timepassedstring)*6)/2
+            time1Y = ubY-52-10
+            time2X = border+4+((timespace-border)/2) - (len(timegonestring)*6)/2
+            time2Y = ubY-52-10          
             
+            if time2X < border + 5:
+                time2X = border + 5
+                time2Y = time2Y - 10
+                
+            if time1X > ubX-50:
+                time1X = ubX-50
+                time1Y = time1Y - 10
             
             ctx.set_source_rgb(1,1,1)
             ctx.set_font_size(10)
-            ctx.move_to( border+4+timespace, ubY-52-10)
+            ctx.move_to( time1X, time1Y)
             ctx.show_text(timepassedstring)
             
-            timespace = tmp
+            ctx.set_source_rgb(1,1,1)
+            ctx.set_font_size(10)
+            ctx.move_to( time2X, time2Y)
+            ctx.show_text(timegonestring)
+            
+            ctx.set_source_rgb(1,1,1)
+            ctx.set_font_size(10)
+            ctx.move_to( timespace, ubY-52-10)
+            ctx.show_text(str(int(deadline))+"%")
+            
+            
             
             #timeline
+            xgc.line_width = 1
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
-            widget.window.draw_rectangle(xgc, True, border+timespace, ubY-70, 1, 40)
+            widget.window.draw_rectangle(xgc, True, border+timespace, ubY-60, 1, 30)
+            
+            
+            time1Y = ubY-52-10
+            time2Y = ubY-52-10 
+            
+            #passet arrow
+            widget.window.draw_line(xgc, border+5, time2Y-5, time2X-10, time2Y-5) 
+            widget.window.draw_line(xgc, time2X+len(timegonestring)*6+5, time2Y-5, timespace-10, time2Y-5) 
+            
+            widget.window.draw_line(xgc, border+5, time2Y-5, border+5+5, time2Y-10) 
+            widget.window.draw_line(xgc, border+5, time2Y-5, border+5+5, time2Y) 
+            widget.window.draw_line(xgc, timespace-11, time2Y-5, timespace-16, time2Y-10) 
+            widget.window.draw_line(xgc, timespace-11, time2Y-5, timespace-16, time2Y)
+            
+            #Left arrow
+            widget.window.draw_line(xgc, timespace+30, time1Y-5, time1X-10, time1Y-5) 
+            widget.window.draw_line(xgc, time1X+len(timepassedstring)*6+5, time1Y-5, ubX-10, time1Y-5) 
+            
+            widget.window.draw_line(xgc, timespace+30, time1Y-5, timespace+30+5, time1Y-10) 
+            widget.window.draw_line(xgc, timespace+30, time1Y-5, timespace+30+5, time1Y) 
+            widget.window.draw_line(xgc, ubX-11, time1Y-5, ubX-16, time1Y-10) 
+            widget.window.draw_line(xgc, ubX-11, time1Y-5, ubX-16, time1Y)
+            
+            
+            
+            
+            
             
             
             
@@ -1676,15 +1730,27 @@ class draw_analytics:
                 #    ctx3.fill()
                 
                 
-                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#203762"))
-                ctx3.set_source_rgba(0,0,0,0.5)
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
+                ctx3.set_source_rgba(0,0,0.5,0.5)
                 
                 if under:
                     xgc.set_rgb_fg_color(gtk.gdk.color_parse("#e13d3d"))
                     ctx3.set_source_rgba(0.5,0,0,0.5)
-                elif not today:
-                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#395384"))
-                    ctx3.set_source_rgba(0,0,0.5,0.5)
+                
+                if rawline.startswith(datetime.datetime.today().strftime(self.schedule_date_format)):
+                    ctx3.set_source_rgba(0,0,0,0.5)
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#000"))
+                
+                if rawline.startswith(self.selectdate):
+                    ctx3.set_source_rgba(0.5,0.5,0.5,0.5)
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
+                
+                
+                    
+                    
+                    
+                        
+                    
                 widget.window.draw_rectangle(xgc, True, gxpos, gypos, int(float(w)/self.alltime)+1, int(float(ubY)/highestypos) )
                 #widget.window.draw_rectangle(xgc, True, bgxpos, bgypos, 20, int(float(bubY)/highestypos) )
                 
@@ -1797,8 +1863,11 @@ class draw_analytics:
                 
                 
                 
-                if today: # or over and draw:
+                if today or over:
                     
+                    if not rawline.startswith(self.selectdate) and self.selectdate != datetime.datetime.today().strftime(self.schedule_date_format) and over:
+                        if not rawline.startswith("1997/07/30"):
+                            continue
                     
                      
                     
@@ -1808,7 +1877,7 @@ class draw_analytics:
                     
                     #RESEALE MOVING
                     
-                    if my in range(ypos, ypos+45) and self.taskmove != -1:
+                    if my in range(ypos, ypos+45) and self.taskmove != -1 and not over:
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#aaa"))
                         widget.window.draw_rectangle(xgc, False, xpos-1, ypos, tubX, 45 )
                         
@@ -1850,11 +1919,14 @@ class draw_analytics:
                         if istx + len(taskfile)*9 > w:
                             istx = w-len(taskfile)*9
                         
-                        
-                        ctx3.set_source_rgba(0.1,0.1,0.1,0.75)
-                        if under:
+                        if rawline.startswith("1997/07/30"):
+                            ctx3.set_source_rgba(0.1,0.3,0.1,0.75)
+                            daystring = "Always"
+                        elif today:
+                            ctx3.set_source_rgba(0.1,0.1,0.1,0.75)
+                        elif under:
                             ctx3.set_source_rgba(0.3,0.1,0.1,0.75)
-                        if over and not under:
+                        elif over and not under:
                             ctx3.set_source_rgba(0.1,0.1,0.3,0.75)
                         ctx3.rectangle(xpos-1, ypos, isty+22, 42)
                         ctx3.fill()
@@ -1868,7 +1940,7 @@ class draw_analytics:
                             
                             ctx.set_source_rgb(1,1,1)
                             ctx.set_font_size(15)
-                            ctx.move_to( xpos+isty-130, ypos+16)
+                            ctx.move_to( xpos+isty-150, ypos+16)
                             ctx.show_text(daystring)
                         
                         if mx in range(xpos-1, xpos+isty+22) and my in range(ypos+22, ypos+44) and self.taskmove == -1:
@@ -2017,7 +2089,7 @@ class draw_analytics:
                         
                         
                         
-                        if mx in range(tubX+tstX-24-44, tubX+tstX-24-44+22) and my in range(ypos, ypos+22) and self.taskmove == -1: #IF MOUSE OVER
+                        if mx in range(tubX+tstX-24-44, tubX+tstX-24-44+22) and my in range(ypos, ypos+22) and self.taskmove == -1 and not over: #IF MOUSE OVER
                                 
                             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#4f4f4f"))
                             widget.window.draw_rectangle(xgc, True, tubX+tstX-24-44, ypos, 22, 22 )
@@ -2027,7 +2099,7 @@ class draw_analytics:
                             if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
                                 self.taskmove = tind
                         
-                        if self.taskmove == -1:
+                        if self.taskmove == -1 and not over:
                             widget.window.draw_pixbuf(None, self.moveicon, 0, 0, tubX+tstX-22-46, ypos+1 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
                     
                     
@@ -2168,6 +2240,7 @@ class draw_analytics:
                         xgc.set_line_attributes(2, gtk.gdk.LINE_SOLID, gtk.gdk.CAP_NOT_LAST, gtk.gdk.JOIN_MITER)
                     
                     if my in range(bstY, bstY+bubY) and mx in range(i*20-20+self.scroll, i*20+self.scroll):
+                        xgc.line_width = 1
                         xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                         widget.window.draw_rectangle(xgc, False, i*20-20+self.scroll, bstY, 20, bubY)
                         

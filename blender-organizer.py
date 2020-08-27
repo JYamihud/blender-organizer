@@ -29,6 +29,12 @@ savename.close()
 
 ER = 0
 
+
+ostype = platform.system()    
+if ostype == "Windows":
+    from py_data.modules import troubleshooter
+    troubleshooter.shoot(0)
+
 try:            # GIVING THE USER ALL NEEDED INFORMATION IF MODULES ARE MISSING
     # system
     import os
@@ -36,15 +42,16 @@ try:            # GIVING THE USER ALL NEEDED INFORMATION IF MODULES ARE MISSING
     # calculational help
     import datetime
     import urllib2
-    
+    import subprocess
+    import platform
     #1.0/0   # TESTER
     
 except:
     ER = 1
     from py_data.modules import troubleshooter
     troubleshooter.shoot(ER)
-    
-    
+
+
     
 try:  
   
@@ -74,7 +81,6 @@ except:
     from py_data.modules import troubleshooter
     troubleshooter.shoot(ER)
 
-    
     
     
     

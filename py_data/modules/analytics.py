@@ -60,6 +60,8 @@ class draw_analytics:
         
         
         
+        self.toolx = 0
+        self.tooly = 0
         
         
         
@@ -442,6 +444,10 @@ class draw_analytics:
             
             mx, my, fx  = widget.window.get_pointer()
             
+            if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): 
+                self.toolx = mx
+                self.tooly = my
+            
             
             # GETTING WHETHER THE WINDOW IS ACTIVE
             
@@ -788,13 +794,18 @@ class draw_analytics:
             time2X = border+4+((timespace-border)/2) - (len(timegonestring)*6)/2
             time2Y = ubY-52-10          
             
-            if time2X < border + 5:
+            arrow1 = True
+            arrow2 = True
+            
+            if time2X+len(timegonestring)*6+5 > timespace-10:
                 time2X = border + 5
                 time2Y = time2Y - 10
+                arrow2 = False
                 
-            if time1X > ubX-50:
+            if time1X+len(timepassedstring)*6+5 > ubX-10:
                 time1X = ubX-50
                 time1Y = time1Y - 10
+                arrow1 = False
             
             ctx.set_source_rgb(1,1,1)
             ctx.set_font_size(10)
@@ -823,30 +834,73 @@ class draw_analytics:
             time2Y = ubY-52-10 
             
             #passet arrow
-            widget.window.draw_line(xgc, border+5, time2Y-5, time2X-10, time2Y-5) 
-            widget.window.draw_line(xgc, time2X+len(timegonestring)*6+5, time2Y-5, timespace-10, time2Y-5) 
             
-            widget.window.draw_line(xgc, border+5, time2Y-5, border+5+5, time2Y-10) 
-            widget.window.draw_line(xgc, border+5, time2Y-5, border+5+5, time2Y) 
-            widget.window.draw_line(xgc, timespace-11, time2Y-5, timespace-16, time2Y-10) 
-            widget.window.draw_line(xgc, timespace-11, time2Y-5, timespace-16, time2Y)
+            if arrow2:
+                widget.window.draw_line(xgc, border+5, time2Y-5, time2X-10, time2Y-5) 
+                widget.window.draw_line(xgc, time2X+len(timegonestring)*6+5, time2Y-5, timespace-10, time2Y-5) 
+                
+                widget.window.draw_line(xgc, border+5, time2Y-5, border+5+5, time2Y-10) 
+                widget.window.draw_line(xgc, border+5, time2Y-5, border+5+5, time2Y) 
+                widget.window.draw_line(xgc, timespace-11, time2Y-5, timespace-16, time2Y-10) 
+                widget.window.draw_line(xgc, timespace-11, time2Y-5, timespace-16, time2Y)
             
             #Left arrow
-            widget.window.draw_line(xgc, timespace+30, time1Y-5, time1X-10, time1Y-5) 
-            widget.window.draw_line(xgc, time1X+len(timepassedstring)*6+5, time1Y-5, ubX-10, time1Y-5) 
+            if arrow1:
+                widget.window.draw_line(xgc, timespace+30, time1Y-5, time1X-10, time1Y-5) 
+                widget.window.draw_line(xgc, time1X+len(timepassedstring)*6+5, time1Y-5, ubX-10, time1Y-5) 
+                
+                widget.window.draw_line(xgc, timespace+30, time1Y-5, timespace+30+5, time1Y-10) 
+                widget.window.draw_line(xgc, timespace+30, time1Y-5, timespace+30+5, time1Y) 
+                widget.window.draw_line(xgc, ubX-11, time1Y-5, ubX-16, time1Y-10) 
+                widget.window.draw_line(xgc, ubX-11, time1Y-5, ubX-16, time1Y)
+                
+                
             
-            widget.window.draw_line(xgc, timespace+30, time1Y-5, timespace+30+5, time1Y-10) 
-            widget.window.draw_line(xgc, timespace+30, time1Y-5, timespace+30+5, time1Y) 
-            widget.window.draw_line(xgc, ubX-11, time1Y-5, ubX-16, time1Y-10) 
-            widget.window.draw_line(xgc, ubX-11, time1Y-5, ubX-16, time1Y)
+            if self.toolx in range(border, ubX) and mx in range(border, ubX) and self.tooly in range(ubY-50-10, ubY-50-10+30) and "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" in str(self.mpf):
             
-            
-            
-            
-            
-            
-            
-            
+                widget.window.draw_line(xgc, self.toolx, ubY-50-10+23, mx+1, ubY-50-10+23) 
+                
+                t1 = self.toolx
+                t2 = mx
+                
+                if t1 > t2:
+                    t1 = t2
+                    t2 = self.toolx
+                
+                if t2 - t1 > 10:
+                
+                    widget.window.draw_line(xgc, t1, ubY-50-10+23, t1+6, ubY-50-10+23-6) 
+                    widget.window.draw_line(xgc, t1, ubY-50-10+23, t1+6, ubY-50-10+23+6) 
+                    widget.window.draw_line(xgc, t2, ubY-50-10+23, t2-5, ubY-50-10+23-5) 
+                    widget.window.draw_line(xgc, t2, ubY-50-10+23, t2-5, ubY-50-10+23+5)
+                
+                
+                allpix   = ubX - (border)
+                t1pix    = t1  - (border)
+                t2pix    = t2  - (border)
+                fraction = 100.0/allpix * (t2pix - t1pix)
+                tdays    = float(self.alltime)/allpix * (t2pix - t1pix)
+                
+                ctx.set_source_rgb(1,1,1)
+                if border + int((ubX - border)*(float(projectpercent)/100)) < (t1+t2)/2-(len(str(int(tdays))+" days")*6/2)+(len(str(int(tdays))+" days")*6):
+                    if timespace < (t1+t2)/2-(len(str(int(tdays))+" days")*6/2)+(len(str(int(tdays))+" days")*6):
+                        ctx.set_source_rgb(0,0,0)
+                ctx.set_font_size(10)
+                ctx.move_to( (t1+t2)/2-(len(str(int(tdays))+" days")*6/2), ubY-50-10+10)
+                ctx.show_text(str(int(tdays))+" days")
+                
+                ctx.set_source_rgb(1,1,1)
+                if border + int((ubX - border)*(float(projectpercent)/100)) < (t1+t2)/2-(len(str(int(fraction))+"%")*6/2)+(len(str(int(fraction))+"%")*6):
+                    if timespace < (t1+t2)/2-(len(str(int(fraction))+"%")*6/2)+(len(str(int(fraction))+"%")*6):
+                        ctx.set_source_rgb(0,0,0)
+                ctx.set_font_size(10)
+                ctx.move_to( (t1+t2)/2-(len(str(int(fraction))+"%")*6/2), ubY-50-10+20)
+                ctx.show_text(str(int(fraction))+"%")
+                
+                
+                
+                
+                ctx.set_source_rgb(1,1,1)
             ## FROM AND DEADLINE STUFF ##
             
             #getting time values
@@ -896,11 +950,7 @@ class draw_analytics:
                     save.write(i+"\n")
                 save.close()
                 
-                
-            a = datetime.datetime.strptime(self.startdate, date_format)
-            b = datetime.datetime.strptime(self.enddate, date_format)
-            delta = b - a
-            self.alltime = int(delta.days)
+            
             
             ### START TIME ###
             def ee(what, date):
@@ -1238,6 +1288,12 @@ class draw_analytics:
             ############################################################       GRAPH      ###############################################33
             
             
+            #this is gonna be used for when you use ruler mesurment on the small graph.
+            rulerdata = {}
+            rulerdata["percent"]   = 0
+            rulerdata["scheduled"] = 0
+            
+            
             xgc.set_rgb_fg_color(gtk.gdk.color_parse("#202020"))
             #widget.window.draw_polygon(xgc, True, [(border, h),(todayongrapth, h-int(ubY*(1.0/self.alltime*passed))),(todayongrapth,h)])
             
@@ -1265,7 +1321,7 @@ class draw_analytics:
                     
                     
                     
-                    prevV = lastpercent
+            prevV = 0        
             
             prevW = 0
             prevH = h
@@ -1309,6 +1365,15 @@ class draw_analytics:
                     bnowW = pos*20 + self.scroll + 20
                     bnowH = int(round( float(bubY) / 100 * thepercent ))*-1 +bstY +bubY #- 20
                     bnowRH = 0-int(round( float(bubY) / 100 * thepercent ))*-1 +20
+                    
+                    
+                    #assigining some values to ruler
+                    
+                    if self.tooly in range(stY, h) and "GDK_BUTTON1" in str(fx) and win.is_active():
+                        if nowW in range( self.toolx, mx ) or nowW in range( mx, self.toolx ):
+                        
+                            rulerdata["percent"]   = rulerdata["percent"] + ( thepercent - prevV )
+                    
                     
                     
                     
@@ -1747,7 +1812,10 @@ class draw_analytics:
                 
                 
                     
-                    
+                if self.tooly in range(stY, h) and "GDK_BUTTON1" in str(fx) and win.is_active():
+                    if gxpos in range( self.toolx, mx ) or gxpos in range( mx, self.toolx ):
+                        
+                        rulerdata["scheduled"]   = rulerdata["scheduled"] + 1  
                     
                         
                     
@@ -2150,7 +2218,7 @@ class draw_analytics:
                 
                 s.close()
                 
-                
+            
             ################################################################  OLD CODE #########################################################
             
             # MOTIVATION THING
@@ -2195,6 +2263,9 @@ class draw_analytics:
             perfStat.append([ "SCHEDULE GRAPH - ", mil.microseconds])
             
             stf = datetime.datetime.now()
+            
+            
+            
             
             #if self.taskmove != -1:
             #    tooltip = "Moving "+str(self.taskmove)
@@ -2255,8 +2326,9 @@ class draw_analytics:
                             ctx.show_text("Today")
                         else:
                             ctx.show_text(selectingdate)
-                
-                        if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and win.is_active(): ## IF CLICKED
+                        
+                        # SELECTING THE DAY
+                        if "GDK_BUTTON1" in str(fx) and win.is_active() and self.taskmove == -1: ## IF CLICKED
                             self.selectdate = selectingdate
                             self.hscroll = 0
                             self.tscroll = 0
@@ -2447,6 +2519,63 @@ class draw_analytics:
                 if "GDK_BUTTON2" in str(fx) and win.is_active(): ## IF DRAGGED
                     self.scroll = int(float(20*self.alltime)/w*(mx-size/2)) * -1          
              
+            
+            
+            
+            rulerdata["days"] = 0
+            rulerdata["expected"] = 0
+            
+            if self.tooly in range(stY, h) and "GDK_BUTTON1" in str(fx) and win.is_active():
+                
+                t1 = self.toolx
+                t2 = mx
+                if mx < self.toolx:
+                    t2 = self.toolx
+                    t1 = mx
+                
+                
+                
+                rulerdata["days"]     = int(float(self.alltime) / w  * (t2 - t1))
+                rulerdata["expected"] =     float(100)          / w  * (t2 - t1)
+                
+                xgc.line_width = 1
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                widget.window.draw_line(xgc, self.toolx, h-10, mx+1, h-10) 
+                
+                if t2 - t1 > 10:
+                
+                    widget.window.draw_line(xgc, t1, h-10, t1+6, h-10-6) 
+                    widget.window.draw_line(xgc, t1, h-10, t1+6, h-10+6) 
+                    widget.window.draw_line(xgc, t2, h-10, t2-5, h-10-5) 
+                    widget.window.draw_line(xgc, t2, h-10, t2-5, h-10+5)
+                
+                ctx3.set_source_rgba(0,0,0,0.75)
+                ctx3.rectangle( (t1+t2)/2-(len(str(int(rulerdata["percent"]))+" delivered")*6/2)-10,h-20-55, (len(str(int(rulerdata["percent"]))+" delivered")*6)+25, 50)
+                ctx3.fill()
+                
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(10)
+                ctx.move_to( (t1+t2)/2-(len(str(int(rulerdata["days"]))+" days")*6/2), h-20-40)
+                ctx.show_text(str(int(rulerdata["days"]))+" days")
+                
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(10)
+                ctx.move_to( (t1+t2)/2-(len(str(int(rulerdata["expected"]))+"% expected")*6/2), h-20-30)
+                ctx.show_text(str(int(rulerdata["expected"]))+"% expected")
+                
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(10)
+                ctx.move_to( (t1+t2)/2-(len(str(int(rulerdata["percent"]))+"% delivered")*6/2), h-20-20)
+                ctx.show_text(str(int(rulerdata["percent"]))+"% delivered")
+                
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(10)
+                ctx.move_to( (t1+t2)/2-(len(str(int(rulerdata["scheduled"]))+" tasks")*6/2), h-20-10)
+                ctx.show_text(str(int(rulerdata["scheduled"]))+" tasks")               
+            
+                
+            
+            
              
             # LIST OF THINGS TOOLTIP
             if drawhistory:
@@ -2750,7 +2879,7 @@ class draw_analytics:
             ###########################
             
             
-            rue = mx in range(0, 200) and my in range(h-400, h-200)
+            rue = mx in range(0, 50) and my in range(h-50, h)
             
             
             

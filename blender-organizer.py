@@ -30,10 +30,7 @@ savename.close()
 ER = 0
 
 
-ostype = platform.system()    
-if ostype == "Windows":
-    from py_data.modules import troubleshooter
-    troubleshooter.shoot(0)
+
 
 try:            # GIVING THE USER ALL NEEDED INFORMATION IF MODULES ARE MISSING
     # system
@@ -51,7 +48,10 @@ except:
     from py_data.modules import troubleshooter
     troubleshooter.shoot(ER)
 
-
+ostype = platform.system()    
+if ostype == "Windows":
+    from py_data.modules import troubleshooter
+    troubleshooter.shoot(0)
     
 try:  
   

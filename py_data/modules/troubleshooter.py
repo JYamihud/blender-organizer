@@ -164,7 +164,7 @@ def shoot(ER):
                 print "\033[1;40m  \033[1;36m   Even tho Windows does not respect your 4 essential freedoms\033[1;40m "
                 print "\033[1;40m  \033[1;36m   we do. As a FOSS (Free And Open Source) project we have to \033[1;40m "
                 print "\033[1;40m  \033[1;36m   respect user freedoms to run, study, modify and destribute \033[1;40m "
-                print "\033[1;40m  \033[1;36m   software. So type ignoe and press enter and it will launch.\033[1;40m "
+                print "\033[1;40m  \033[1;36m   software. So type ignore and press enter.                  \033[1;40m "
                 print "\033[1;m\033[1;40m                      http://www.gnu.org/                       \033[1;40m "
                 print "\033[1;40m  \033[1;36m                                                              \033[1;40m "
                 print "\033[1;40m  \033[1;36m Just Press ENTER to go to fix.                               \033[1;40m "

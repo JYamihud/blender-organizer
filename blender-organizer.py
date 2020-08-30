@@ -426,11 +426,11 @@ def secondarybuttonsOMGWTF():
     def tutorials(w):
         
         if CUR in ["chr", "veh", "loc", "obj"]: 
-            oscalls.Open("https://youtu.be/wiejIqHS0Vg")
+            oscalls.Open("https://open.lbry.com/@blender-organizer:5/BlenderOrganizerAssetsTutorialv4.87:e?r=5adqY5G5DyH8YxFL9UpT4ubYnWnaK2hN")
         elif CUR == "rnd":
-            oscalls.Open("https://youtu.be/086qRkHCa6c")
+            oscalls.Open("https://open.lbry.com/@blender-organizer:5/BlenderOrganizerStoryEditorTutorialv4.87:0?r=5adqY5G5DyH8YxFL9UpT4ubYnWnaK2hN")
         else:
-            oscalls.Open("https://youtu.be/ohTgpc-FuXE") # PUT
+            oscalls.Open("https://open.lbry.com/@blender-organizer:5/BlenderOrganizerAnalyticsTutorial4.87:6?r=5adqY5G5DyH8YxFL9UpT4ubYnWnaK2hN") # PUT
         
     
     syncider = gtk.Button()

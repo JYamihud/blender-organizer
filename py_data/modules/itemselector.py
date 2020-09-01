@@ -226,6 +226,7 @@ def select(pf, searchitem=""):
                                     self.listofitems.append([CUR, NAME])
                                     
                                     self.search.set_text(NAME)
+                                    self.finalname.set_text("/dev/"+CUR+"/"+NAME)
 
                             glib.timeout_add(10, ee)
                             

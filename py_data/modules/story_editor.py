@@ -274,6 +274,7 @@ class story:
         self.event_resize = False
         self.event_move = False
         self.event_select = False
+        self.image_select = False
         
         
         #scenes
@@ -781,7 +782,7 @@ class story:
                         # IF CLICKED
                         self.marker_select = ind
                         self.event_select = len(self.FILE.events)+2
-                        
+                        self.image_select = False
                         
                        
                 
@@ -1023,31 +1024,40 @@ class story:
                         
                         
                         if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and self.tool == "select":
-                            
-                            if launchitem:
-                                
-                                def ee(CUR, url):
-                                    self.box.destroy()
+                            if self.image_select and self.image_select[0] == count:
+                                if launchitem:
                                     
-                                    
-                                    self.box = gtk.VBox(False)
-                                    self.mainbox.pack_start(self.box, True)
-                                    
-                                    assets.draw_assets(os.getcwd(), self.box, self.win, CUR, url, mainbox=self.mainbox)
-                                
-                                glib.timeout_add(10, ee, CUR, url)
-                                
-                                launchitem = False
-                                
-                                
-                                
-                            else:   
-                                if mode == "ABSOLUTE":
-                                    oscalls.Open(url)
-                                elif mode == "RELATIVE":
-                                    oscalls.Open(self.pf+url)
-                                
+                                    def ee(CUR, url):
+                                        self.box.destroy()
                                         
+                                        
+                                        self.box = gtk.VBox(False)
+                                        self.mainbox.pack_start(self.box, True)
+                                        
+                                        assets.draw_assets(os.getcwd(), self.box, self.win, CUR, url, mainbox=self.mainbox)
+                                    
+                                    glib.timeout_add(10, ee, CUR, url)
+                                    
+                                    launchitem = False
+                                    
+                                    
+                                    
+                                else:   
+                                    if mode == "ABSOLUTE":
+                                        oscalls.Open(url)
+                                    elif mode == "RELATIVE":
+                                        oscalls.Open(self.pf+url)
+                            else:
+                                if launchitem:
+                                    self.image_select = [count, "[item]/dev/"+CUR+"/"+url]
+                                else:
+                                    self.image_select = [count, "[image]"+url]
+                                
+                                self.itemscenedata = []
+                                self.event_select = False        
+                                self.shotsDATA = False
+                                self.shotsSCROLL = 0
+                                
                                     
                                     
                     elif mx in range(imX, imX+piX) and my in range(imY-22, imY) and mx in range(0, w-w/3) and my in range(50, h):
@@ -1059,8 +1069,15 @@ class story:
                          if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                             self.imageselected = count
                     
-                    
-                                    
+                    if self.image_select and self.image_select[0] == count:  #HIGHLIGHTING SELECTED IMAGE
+                        if launchitem:
+                            
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                            widget.window.draw_rectangle(xgc, False, imX-3, imY-23, piX+6, piX+26+51)
+                        else:
+                            xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
+                            widget.window.draw_rectangle(xgc, False, imX-3, imY-23, piX+6, piX+26)
+                                        
                                 
                     if "GDK_BUTTON1" in str(fx) and self.win.is_active() and self.imageselected == count and self.tool == "select":
                         
@@ -1075,7 +1092,7 @@ class story:
                     
                     
                     
-                    if mx in range(imX, imX+piX) and my in range(imY-22, imY+piY) and my in range(50, h):
+                    if self.image_select and self.image_select[0] == count:
                          
                         # DELETE EVENT SHOR KEY #
                         
@@ -1088,7 +1105,7 @@ class story:
                             
                             
                             
-                            if self.event_select < len(self.FILE.events)  and allowdelete  and self.tool == "select":
+                            if allowdelete  and self.tool == "select":
                                 
                                 self.undo_record()
                                 
@@ -1098,7 +1115,8 @@ class story:
                                 except:
                                     pass
                                 
-                                self.event_select = -1
+                                self.event_select = False
+                                self.image_select = False
                                 self.deletelastframe = True
                                 
                                 self.doundo = True
@@ -1415,7 +1433,7 @@ class story:
                 
                 
                 ############## SHOWING THE SCENES IN THE EVENT #############
-                if self.event_select == ind:
+                if self.event_select == ind and type(self.event_select) != bool:
                     self.scenes_in_event = []
                 
                 
@@ -1442,7 +1460,7 @@ class story:
                         # Adding scenes to a list to process later
                         
                         scene_text = ts[7:ts.find("</scene>")]
-                        if self.event_select == ind:
+                        if self.event_select == ind and type(self.event_select) != bool:
                             self.scenes_in_event.append(scene_text)
                         
                         ts = ts[ts.find("</scene>")+8:]
@@ -1632,7 +1650,7 @@ class story:
                                 widget.window.draw_rectangle(xgc, False, ds+1, ey, dw-2, int(esy)/3)        
                                 
                                 
-                        if n == self.scene_select and self.event_select == ind and self.tool != "arrow":
+                        if n == self.scene_select and self.event_select == ind and type(self.event_select) != bool and self.tool != "arrow":
                             
                             #xgc.set_rgb_fg_color(gtk.gdk.color_parse("#fff"))
                             
@@ -1654,7 +1672,7 @@ class story:
                 
                 # IF THIS EVEN IS CURRENTLY SELECTED
                 xgc.set_rgb_fg_color(gtk.gdk.color_parse("#868686"))
-                if self.event_select == ind:
+                if self.event_select == ind and type(self.event_select) != bool:
                     
                     
                     # TAB
@@ -1797,7 +1815,11 @@ class story:
                              
                             try:
                                 u = itemselector.select(self.pf)+"/renders/"
-                                
+                                if u == "/renders/":
+                                    self.tool = "select"
+                                    self.toolactive = False 
+                                    self.imagesearch = ""
+                                    return
                                 
                             except:
                                 
@@ -1962,6 +1984,7 @@ class story:
                             if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                                 self.event_resize = [0, ind]  
                                 self.event_select = ind
+                                self.image_select = False
                                 self.marker_select = len(self.FILE.markers)+2
                                 
                                 if "<scene>" not in self.FILE.events[ind][4]: #REMOVING BUGGY SCENE PREVIEWS
@@ -1975,6 +1998,7 @@ class story:
                             if "GDK_BUTTON1" in str(fx) and self.allowed and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active():
                                 self.event_resize = [1, ind]  
                                 self.event_select = ind
+                                self.image_select = False
                                 self.marker_select = len(self.FILE.markers)+2
                                 
                                 if "<scene>" not in self.FILE.events[ind][4]:  #REMOVING BUGGY SCENE PREVIEWS
@@ -1995,6 +2019,7 @@ class story:
                                 
                                 self.event_move = [True, ind]
                                 self.event_select = ind
+                                self.image_select = False
                                 self.marker_select = len(self.FILE.markers)+2
                                 
                                 if "<scene>" not in self.FILE.events[ind][4]:  #REMOVING BUGGY SCENE PREVIEWS
@@ -2257,6 +2282,7 @@ class story:
                     
                     self.FILE.events.append([pureX, pureS, pureY, eventname, storypart])
                     self.event_select = len(self.FILE.events)-1
+                    self.image_select = False
                     
                     self.tool = "select"
                     self.toolactive = False
@@ -2958,6 +2984,7 @@ class story:
                 
                     self.shotsDATA = []
                     self.event_select = False
+                    self.image_select = False
                     self.deletelastframe = True
                     
                     self.doundo = True
@@ -3064,6 +3091,7 @@ class story:
                                 p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
                                 
                                 self.event_select = ar[0][0]
+                                self.image_select = False
                                 
                                 for ns, sc in enumerate(scnDATA[self.event_select]):
                                     if sc[1] == ar[0][1]:
@@ -3113,6 +3141,7 @@ class story:
                                 p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
                                 
                                 self.event_select = ar[1][0]
+                                self.image_select = False
                                 
                                 for ns, sc in enumerate(scnDATA[self.event_select]):
                                     if sc[1] == ar[1][1]:
@@ -4692,6 +4721,7 @@ class story:
                                     p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
                                     
                                     self.event_select = ar[0][0]
+                                    self.image_select = False
                                     
                                     for ns, sc in enumerate(scnDATA[self.event_select]):
                                         if sc[1] == ar[0][1]:
@@ -4739,6 +4769,7 @@ class story:
                                     p0, p1, p2, p3, p4 =  self.FILE.events[self.event_select] #SAVING FOR THE FOCUS
                                     
                                     self.event_select = ar[1][0]
+                                    self.image_select = False
                                     
                                     for ns, sc in enumerate(scnDATA[self.event_select]):
                                         if sc[1] == ar[1][1]:
@@ -4781,6 +4812,204 @@ class story:
            
            ################################ COPY FROM THE TOP END ##########################################
            
+            
+            elif type(self.image_select) != bool:      
+                
+                  url = self.image_select[1]
+                  if url.startswith("[item]"):     
+                        
+                      #ITEM FOLDER
+                      
+                      shotname = url[url.find("]")+2:]
+                      
+                      # MOUSE OVER
+                      if mx in range(Pstart, w-50) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
+                          
+                          
+                          
+                          tooltip = "/"+shotname
+                          
+                          # get mouse to show the hand
+                          widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                          
+                          xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                          widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart, 23)
+                          
+                          if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
+                              
+                              oscalls.Open(self.pf+"/"+shotname)
+                          
+                          
+                      
+                      # DRAW BUTTON
+                      
+                      widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                      
+                      ctx.set_source_rgb(1,1,1)
+                      ctx.set_font_size(15)
+                      ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL+2)
+                      ctx.show_text("Item's Folder")
+                      
+                      
+                      shotlistlength = shotlistlength + 30
+                      
+                      #REFERENCES
+                      
+                      
+                      
+                      # MOUSE OVER
+                      if mx in range(Pstart, w-50) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
+                          
+                          
+                          
+                          tooltip = "/"+shotname+"/reference"
+                          
+                          # get mouse to show the hand
+                          widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                          
+                          xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                          widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart, 23)
+                          
+                          if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
+                              
+                              oscalls.Open(self.pf+"/"+shotname+"/reference")
+                          
+                          
+                      
+                      # DRAW BUTTON
+                      
+                      widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                      
+                      ctx.set_source_rgb(1,1,1)
+                      ctx.set_font_size(15)
+                      ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL+2)
+                      ctx.show_text("References")
+                      
+                      shotlistlength = shotlistlength + 30
+                      
+                      
+                      
+                      #tex
+                      
+                      
+                    
+                      # MOUSE OVER
+                      if mx in range(Pstart, w-50) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
+                          
+                          
+                          
+                          tooltip = "/"+shotname+"/tex"
+                          
+                          # get mouse to show the hand
+                          widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                          
+                          xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                          widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart, 23)
+                          
+                          if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
+                              
+                              oscalls.Open(self.pf+"/"+shotname+"/tex")
+                          
+                          
+                      
+                      # DRAW BUTTON
+                      
+                      widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                      
+                      ctx.set_source_rgb(1,1,1)
+                      ctx.set_font_size(15)
+                      ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL+2)
+                      ctx.show_text("Textures")
+                      
+                      shotlistlength = shotlistlength + 30
+                      
+                      
+                      #renders
+                      
+                      
+                      
+                      # MOUSE OVER
+                      if mx in range(Pstart, w-50) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
+                          
+                            
+                          
+                          tooltip = "/"+shotname+"/renders"
+                          
+                          # get mouse to show the hand
+                          widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                          
+                          xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                          widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart, 23)
+                          
+                          if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
+                              
+                              oscalls.Open(self.pf+"/"+shotname+"/renders")
+                          
+                          
+                      
+                      # DRAW BUTTON
+                      
+                      widget.window.draw_pixbuf(None, self.foldericon, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                      
+                      ctx.set_source_rgb(1,1,1)
+                      ctx.set_font_size(15)
+                      ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL+2)
+                      ctx.show_text("Renders")
+                      
+                      shotlistlength = shotlistlength + 30
+                      
+                      
+                      #scenes
+                      scnDATA = self.FILE.get_scenes_data()
+                      
+                      if not self.itemscenedata:
+                        
+                          for scn in scnDATA:
+                              for sh in scn:
+                                  scnname = sh[1]
+                                  if shotname in sh[3]:
+                                      self.itemscenedata.append(scnname)
+                      
+                      
+                      for scn in self.itemscenedata:
+                          
+                          # MOUSE OVER
+                          if mx in range(Pstart, w-50) and my in range(shotlistlength+120+self.shotsSCROLL, shotlistlength+120+self.shotsSCROLL+20):
+                              
+                              
+                              
+                              tooltip = "Go to "+scn+" scene."
+                              
+                              # get mouse to show the hand
+                              widget.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.HAND1))
+                              
+                              xgc.set_rgb_fg_color(gtk.gdk.color_parse("#5c5c5c"))
+                              widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL, Ppart, 23)
+                              
+                              if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and my in range(120, h):
+                                  
+                                  self.searchscene = scn
+                                  self.frame = 10
+                          widget.window.draw_pixbuf(None, self.scnicon, 0, 0, Pstart+10, shotlistlength+120+self.shotsSCROLL , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
+                          
+                          ctx.set_source_rgb(1,1,1)
+                          ctx.set_font_size(15)
+                          ctx.move_to( Pstart+50, 15+shotlistlength+120+self.shotsSCROLL+2)
+                          ctx.show_text(scn)
+                          
+                          shotlistlength = shotlistlength + 30
+                      
+                      shotlistlength = shotlistlength + 60
+                      
+                      
+                      xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
+                      widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL-30, Ppart, h)
+                      
+                  else:
+                      xgc.set_rgb_fg_color(gtk.gdk.color_parse("#2c2c2c"))
+                      widget.window.draw_rectangle(xgc, True, Pstart, shotlistlength+120+self.shotsSCROLL-30, Ppart, h)
+                        
+                        
             else:
                 
                 
@@ -4808,6 +5037,7 @@ class story:
                         
                         
                                 self.event_select = n
+                                self.image_select = False
                                 self.scene_select = z
                                 focusevent = True
 
@@ -4827,6 +5057,7 @@ class story:
                         focusonnow = i[1][0]
                         break
                 self.event_select = focusonnow
+                self.image_select = False
                 self.scene_select = 0
                 try:
                     scnDATA = self.FILE.get_scenes_data()
@@ -5021,11 +5252,102 @@ class story:
                     
                     widget.window.draw_pixbuf(None, self.big_edit, 0, 0, Pstart+20+50, 55 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0)  
                     
-            
+                
+                    
+                    
             except:
                 pass
             
-            
+            if type(self.image_select) != bool:
+                
+                xgc.set_rgb_fg_color(gtk.gdk.color_parse("#3f3f3f")) # BUTTON HIGHLIGHT
+                widget.window.draw_rectangle(xgc, True, w-(w)/3+50, 50, (w)/3-150, 50)
+                
+                url = self.image_select[1]
+                
+                if url.startswith("[item]"):
+                    name = url[url.rfind("/")+1:]
+                    
+                    if "/chr/" in url:
+                        widget.window.draw_pixbuf(None, self.chricon, 0, 0, Pstart+20, 12 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                    elif "/loc/" in url:
+                        widget.window.draw_pixbuf(None, self.locicon, 0, 0, Pstart+20, 12 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                    elif "/veh/" in url:
+                        widget.window.draw_pixbuf(None, self.vehicon, 0, 0, Pstart+20, 12 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                    elif "/obj/" in url:
+                        widget.window.draw_pixbuf(None, self.objicon, 0, 0, Pstart+20, 12 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                else:
+                    name = url[url.rfind("]")+1:]
+                    widget.window.draw_pixbuf(None, self.picicon, 0, 0, Pstart+20, 12 , -1, -1, gtk.gdk.RGB_DITHER_NONE, 0, 0) 
+                    
+                
+                # IF MOUSE OVER THE TEXT
+                if mx in range(Pstart+50, w-100) and my in range(50, 100):
+                    
+                    xgc.set_rgb_fg_color(gtk.gdk.color_parse("#cb9165"))
+                    widget.window.draw_rectangle(xgc, True, w-(w)/3+50, 50, (w)/3-150, 50)
+                    
+                    if url.startswith("[item]"):
+                        tooltip = "Open selected item."
+                    else:
+                        tooltip = "Open selected image."
+                    
+                    # IF CLICKED
+                    
+                    if "GDK_BUTTON1" in str(fx) and "GDK_BUTTON1" not in str(self.mpf) and self.win.is_active() and self.frame > 2:
+                        
+                        def ee(e=None):
+                            
+                            
+                            url = self.image_select[1]
+                            
+                            
+                            
+                            if url.startswith("[item]"):
+                                CUR = url[:url.rfind("/")]
+                                CUR = CUR[CUR.rfind("/")+1:]
+                                url = url[url.rfind("/")+1:]
+                                
+                                
+                                def ee(CUR, url):
+                                    self.box.destroy()
+                                    
+                                    
+                                    self.box = gtk.VBox(False)
+                                    self.mainbox.pack_start(self.box, True)
+                                    
+                                    assets.draw_assets(os.getcwd(), self.box, self.win, CUR, url, mainbox=self.mainbox)
+                                
+                                glib.timeout_add(10, ee, CUR, url)
+                                
+                                launchitem = False
+                                
+                                
+                                
+                            else:   
+                                
+                                url = url[url.rfind("]")+1:]
+                                
+                                if os.path.exists(url):
+                                    oscalls.Open(url)
+                                else:
+                                    oscalls.Open(self.pf+url)
+                            
+                            
+                        glib.timeout_add(10, ee)
+                            
+                
+                
+                
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(17)
+                ctx.move_to( Pstart+20+30, 30)
+                ctx.show_text(name)
+               
+                ctx.set_source_rgb(1,1,1)
+                ctx.set_font_size(30)
+                ctx.move_to( Pstart+20+50, 85)
+                ctx.show_text("OPEN")
             
                 
                 
@@ -5095,6 +5417,7 @@ class story:
                         
                         
                         self.event_select = 0
+                        self.image_select = False
                         self.scene_select = 0
                         try:
                             scnDATA = self.FILE.get_scenes_data()
@@ -5705,44 +6028,48 @@ class bos:
     
     def event_delete(self, num):
         
-        del self.events[num]
-        
-        
-        
-        
-        # deleting all arrows connected
-        
-        new = []
-        for n, i in enumerate(self.arrows):
+        try:
             
-            
-            
-            if i[0][0] == num or i[1][0] == num:
+            if type(num) != bool:
+                del self.events[num]
                 
-                pass
-            else:
                 
-                new.append(i)
-        
-        
-        self.arrows = new
-        
-        
-        # REARANGE
-        
-        for n, i in enumerate(self.arrows):
+                
+                
+                # deleting all arrows connected
+                
+                new = []
+                for n, i in enumerate(self.arrows):
+                    
+                    
+                    
+                    if i[0][0] == num or i[1][0] == num:
+                        
+                        pass
+                    else:
+                        
+                        new.append(i)
+                
+                
+                self.arrows = new
+                
+                
+                # REARANGE
+                
+                for n, i in enumerate(self.arrows):
+                    
+                    
+                    
+                    if i[0][0] > num:
+                    
+                        self.arrows[n][0][0] = i[0][0] - 1
+                    
+                    if i[1][0] > num:
+                    
+                        self.arrows[n][1][0] = i[1][0] - 1
             
-            
-            
-            if i[0][0] > num:
-            
-                self.arrows[n][0][0] = i[0][0] - 1
-            
-            if i[1][0] > num:
-            
-                self.arrows[n][1][0] = i[1][0] - 1
-        
-        
+        except:
+            pass        
         
         
     

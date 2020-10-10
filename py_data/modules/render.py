@@ -41,7 +41,7 @@ window.set_title("Rendering...")
 ##### GETTING THE FILE
 
 FILE = sys.argv[-1]
-print FILE
+#print FILE
 
 pf = ""
 
@@ -59,8 +59,8 @@ else:
     rlist = [FILE[FILE.find("rnd"):]]
     pf = FILE[:FILE.find("rnd")-1]
 
-for i in rlist:
-    print i
+#for i in rlist:
+#    print i
 
 print "PF", pf
 
@@ -417,7 +417,7 @@ class draw:
                     
                 
                 
-                print seconds
+                #print seconds
                 REMSECS = ((self.END - DONEFRAMS) * AVARAGE) - seconds
                 REMAINING = quick.timestring(REMSECS)
                 ctx.set_font_size(12)
@@ -526,7 +526,7 @@ class draw:
                 if self.nowframe < START:
                     self.nowframe = START                        
                 
-                print pf+FOLDER
+                #print pf+FOLDER
                 
                 for i in range(START, END+1):
                     

@@ -5,6 +5,7 @@
 If you have a question, suggestion or simply curious about the development of the project. You can go to our [TELEGRAM CHAT](https://t.me/blenderorganizer)
 
 # RUN IT IN PYTHON 2 NOT PYTHON 3. MAKE SURE OF IT.
+For python3 version look at the [VCStudio project](https://github.com/JYamihud/VCStudio)
 
   
   ## Movies done with help of Blender-Organizer

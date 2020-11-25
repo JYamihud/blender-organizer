@@ -1,13 +1,13 @@
 ![BLENDER-ORGANIZER](py_data/icon.png)
 
-## Contact
-[Blender.chat](https://blender.chat/channel/blenderorganizer_vcstudio)
-
-[devtalk.Blender.org](https://devtalk.blender.org/t/blender-organizer-vcstudio-organization-of-the-projects)
 
 # blender-organizer
 
-If you have a question, suggestion or simply curious about the development of the project. You can go to our [TELEGRAM CHAT](https://t.me/blenderorganizer)
+If you have a question, suggestion or simply curious about the development of the project. You can go to our [TELEGRAM CHAT](https://t.me/blenderorganizer) or
+
+[Blender.chat](https://blender.chat/channel/blenderorganizer_vcstudio)
+
+[devtalk.Blender.org](https://devtalk.blender.org/t/blender-organizer-vcstudio-organization-of-the-projects)
 
 # RUN IT IN PYTHON 2 NOT PYTHON 3. MAKE SURE OF IT.
 For python3 version look at the [VCStudio project](https://github.com/JYamihud/VCStudio)

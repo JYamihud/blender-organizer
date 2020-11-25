@@ -2,6 +2,7 @@
 
 ## Contact
 [Blender.chat](https://blender.chat/channel/blenderorganizer_vcstudio)
+
 [devtalk.Blender.org](https://devtalk.blender.org/t/blender-organizer-vcstudio-organization-of-the-projects)
 
 # blender-organizer

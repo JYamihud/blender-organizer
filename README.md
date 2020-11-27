@@ -1,27 +1,12 @@
 ![BLENDER-ORGANIZER](py_data/icon.png)
 
+# New Blender-Organizer [VCSstudio](https://notabug.org/jyamihud/VCStudio)
 
-# blender-organizer
+Work on this version of the software has beed closed due to python2 not being supported anymore. The new python3 version is being developed right now in a differnt repository. 
 
-If you have a question, suggestion or simply curious about the development of the project. You can go to our [TELEGRAM CHAT](https://t.me/blenderorganizer) or
-
-[Blender.chat](https://blender.chat/channel/blenderorganizer_vcstudio)
-
-[devtalk.Blender.org](https://devtalk.blender.org/t/blender-organizer-vcstudio-organization-of-the-projects)
-
-# RUN IT IN PYTHON 2 NOT PYTHON 3. MAKE SURE OF IT.
-For python3 version look at the [VCStudio project](https://github.com/JYamihud/VCStudio)
-
+https://notabug.org/jyamihud/VCStudio
   
-  ## Movies done with help of Blender-Organizer
-  * (Released on June 01, 2018) [I'M NON EVEN HUMAN](https://open.lbry.com/@VCS:7/Imnotevenhumanshortfilm:3?r=HnvEmZbrkAHCcWf7PDVzShfp4xafcBMW) (Organizer 0.0 to 3.99)
-  * (Released on November 06, 2018) [THE PACKAGE, THE CAR & THE TIME IS RUNNING OUT](https://open.lbry.com/@VCS:7/ThePackageTheCarAndTheTimeIsRunningOut:3?r=HnvEmZbrkAHCcWf7PDVzShfp4xafcBMW) (Organizer 4.0 to 4.17)
-  * (In Making) [MORIA'S RACE](https://t.me/moriasrace) (Organizer 4.18 to Current)
-  * (Pending to start Production) THE 8 YEAR OLDS
-  
-  
-  
-# [User Manual](https://github.com/JYamihud/blender-organizer/wiki/Help-For-Users!)
+# [User Manual (This version)](https://github.com/JYamihud/blender-organizer/wiki/Help-For-Users!)
 
 
 ![](https://raw.githubusercontent.com/JYamihud/updates-manager/master/vcstudio/vcstudio_banner.png)

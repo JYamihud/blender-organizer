@@ -1,3 +1,7 @@
+VERSION 21
+FILE update_info.data
+UPDATE PAGE https://raw.githubusercontent.com/JYamihud/updates-manager/master/blender-organizer/VCSTUDIO
+
 VERSION 4.89
 FILE update_info.data
 FILE py_data/modules/story_editor.py
